@@ -1,3 +1,3 @@
-export default function test_1() {
+export default function te_st_1() {
 	return <main>test 1</main>;
 }
