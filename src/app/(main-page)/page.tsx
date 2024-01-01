@@ -1,0 +1,29 @@
+import React from "react";
+import Image from "next/image";
+
+const Main = () => {
+	return (
+		<>
+			<section className={"flex h-[calc(100vh-4rem)] items-center justify-center"}>
+				<Image
+					src="/2500x1500.png"
+					alt="aimcup logo"
+					width={2500}
+					height={1500}
+					className={"h-full w-full object-cover"}
+				/>
+			</section>
+			<section id="tournaments" className={"h-80"}>
+				tournaments
+			</section>
+			<section id="about" className={"h-80"}>
+				about
+			</section>
+			<section id="socials" className={"h-80"}>
+				socials
+			</section>
+		</>
+	);
+};
+
+export default Main;
