@@ -9,5 +9,5 @@ module.exports = {
 			mintGreen: "#00CC99",
 		},
 	},
-	plugins: [],
+	plugins: [require("daisyui")],
 };
