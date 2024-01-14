@@ -8,8 +8,8 @@ const Main = () => {
 				<Image
 					src="/2500x1500.png"
 					alt="aimcup logo"
-					width={2500}
-					height={1500}
+					width={2880}
+					height={1928}
 					className={"h-full w-full object-cover"}
 				/>
 			</section>
