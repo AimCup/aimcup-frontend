@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  next:
+    build:
+      context: .
+      dockerfile: ./build.next.Dockerfile
+    container_name: aimcup-next
+    restart: always
+    ports:
+      - "4000:3000"
+    networks:
+      - aimcup-network
+
+networks:
+  default:
+    external: true
+    name: aimcup-network

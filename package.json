@@ -8,7 +8,9 @@
 		"start": "next start",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix --dir src",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"open:api": "curl https://api-next.aimcup.xyz/v3/api-docs -o openapi.json",
+		"open:generate": "openapi --input ./openapi.json --output ./generated"
 	},
 	"dependencies": {
 		"@types/node": "20.6.0",
@@ -30,6 +32,7 @@
 		"eslint-plugin-import": "^2.29.1",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.2.0",
+		"openapi-typescript-codegen": "^0.29.0",
 		"postcss": "^8.4.32",
 		"prettier": "^3.1.1",
 		"prettier-plugin-tailwindcss": "^0.5.9",

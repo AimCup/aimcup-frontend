@@ -1,0 +1,31 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on:
+      group: Default
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run microservice db (if needed)
+        run: |
+          docker-compose -f docker/prd/prd-run-database-job.yml up -d --build
+        env:
+          DB_PRD_USER: ${{ secrets.DB_PRD_USER }}
+          DB_PRD_PASSWORD: ${{ secrets.DB_PRD_PASSWORD }}
+      - name: Build and deploy the Docker image
+        run: |
+          docker-compose -f docker/prd/prd-build-deploy-job.yml up -d --build
+        env:
+          DB_PRD_ADDRESS: ${{ secrets.DB_PRD_ADDRESS }}
+          DB_PRD_USER: ${{ secrets.DB_PRD_USER }}
+          DB_PRD_PASSWORD: ${{ secrets.DB_PRD_PASSWORD }}
+          EUREKA_PRD: ${{ secrets.EUREKA_PRD }}
+          PRD_KEYCLOAK_ISSUER_ID: ${{ secrets.PRD_KEYCLOAK_ISSUER_ID }}
+          PRD_KEYCLOAK_CLIENT_NAME: ${{ secrets.PRD_KEYCLOAK_CLIENT_NAME }}
+          PRD_KEYCLOAK_CLIENT_ID: ${{ secrets.PRD_KEYCLOAK_CLIENT_ID }}
+          PRD_KEYCLOAK_CLIENT_SECRET: ${{ secrets.PRD_KEYCLOAK_CLIENT_SECRET }}
+          PRD_KEYCLOAK_JWK_SET_URI: ${{ secrets.PRD_KEYCLOAK_JWK_SET_URI }}
