@@ -1,6 +1,9 @@
 name: Deploy to Next
 
 on:
+  push:
+    branches:
+      - next
   pull_request:
     types:
       - closed
@@ -25,7 +28,5 @@ jobs:
         run: npm run open:api
       - name: Generate API client
         run: npm run open:generate
-      - name: Build Next.js
-        run: npm run build
-      - name: Deploy to Next environment
+      - name: Build and deploy to Next environment
         run: docker-compose -f docker-compose.next.yml up -d --build

@@ -2,10 +2,10 @@ version: '3.8'
 
 services:
   next:
+    container_name: aimcup-next
     build:
       context: .
       dockerfile: ./build.next.Dockerfile
-    container_name: aimcup-next
     restart: always
     ports:
       - "4000:3000"
