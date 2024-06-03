@@ -10,7 +10,7 @@ services:
     ports:
       - "4000:3000"
     networks:
-      - aimcup-network
+      - default
 
 networks:
   default:
