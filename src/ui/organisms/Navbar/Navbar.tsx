@@ -26,6 +26,8 @@ export const Navbar = () => {
 					<div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost">
 						<div className="w-10 rounded-full">
 							<Image
+								width={40}
+								height={40}
 								alt="Tailwind CSS Navbar component"
 								src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
 							/>
