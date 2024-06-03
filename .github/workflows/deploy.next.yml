@@ -1,0 +1,31 @@
+name: Deploy to Next
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - next
+  workflow_dispatch:
+    branches: [ "next" ]
+
+jobs:
+  build:
+    runs-on:
+      group: Default
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Fetch OpenAPI schema
+        run: npm run open:api
+      - name: Generate API client
+        run: npm run open:generate
+      - name: Build Next.js
+        run: npm run build
+      - name: Deploy to Next environment
+        run: docker-compose -f docker-compose.next.yml up -d --build
