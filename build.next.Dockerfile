@@ -1,5 +1,5 @@
 FROM node:18-alpine AS builder
-ENV NEXT_SHARP_PATH=/app/node_modules/sharp
+ENV NEXT_SHARP_PATH=/node_modules/sharp
 WORKDIR /my-space
 
 COPY package.json package-lock.json ./
