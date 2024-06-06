@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import Image from "next/image";
+import { Button } from "@ui/atoms/Button/Button";
 
 const Main = () => {
 	return (
@@ -15,6 +17,7 @@ const Main = () => {
 			</section>
 			<section id="tournaments" className={"h-80"}>
 				tournaments
+				<Button onClick={() => {}}>eloszka</Button>
 			</section>
 			<section id="about" className={"h-80"}>
 				about

@@ -5,7 +5,7 @@ export default function MainPageLayout({ children }: { children: React.ReactNode
 	return (
 		<>
 			<Navbar />
-			<div>{children}</div>
+			<div className={""}>{children}</div>
 		</>
 	);
 }
