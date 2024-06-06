@@ -1,19 +1,28 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import Link from "next/link";
 import { Button } from "@ui/atoms/Button/Button";
 
 const Main = () => {
 	return (
 		<>
-			<section className={"flex h-[calc(100vh-4rem)] items-center justify-center"}>
+			<section className={"relative h-[calc(100vh-64px)]"}>
 				<Image
-					src="/2500x1500.png"
+					src="/placeholder.png"
 					alt="aimcup logo"
-					width={2880}
-					height={1928}
-					className={"h-full w-full object-cover"}
+					className="h-full w-full object-cover"
+					layout="fill"
 				/>
+				<Link href="/#tournaments">
+					<MdKeyboardArrowDown
+						size={"100px"}
+						className={
+							"absolute bottom-0 left-1/2 -translate-x-1/2 transform animate-bounce"
+						}
+					/>
+				</Link>
 			</section>
 			<section id="tournaments" className={"h-80"}>
 				tournaments
