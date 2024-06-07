@@ -8,8 +8,8 @@ export const Avatar = ({
 	notificationCount,
 	...props
 }: {
-	src: string;
-	alt: string;
+	src?: string;
+	alt?: string;
 	className?: string;
 	notificationCount?: number;
 	props?: { [key: string]: never };
@@ -17,10 +17,10 @@ export const Avatar = ({
 	return (
 		<div className="relative">
 			<Image
-				src={src}
+				src={src || "/empty-avatar.webp"}
 				width={36}
 				height={36}
-				alt={alt}
+				alt={alt || "avatar"}
 				className={`rounded-md ${className}`}
 				{...props}
 			/>

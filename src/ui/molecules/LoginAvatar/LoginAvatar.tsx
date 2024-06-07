@@ -15,12 +15,7 @@ export const LoginAvatar = (props: ILoginAvatar) => {
 
 	return (
 		<div className="m dropdown dropdown-end dropdown-hover">
-			<Avatar
-				src="/empty-avatar.webp"
-				alt="profile"
-				notificationCount={2}
-				className={"ml-2"}
-			/>
+			<Avatar notificationCount={2} className={"ml-2"} />
 			<ul
 				tabIndex={0}
 				className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
