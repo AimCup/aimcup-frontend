@@ -4,14 +4,14 @@ import { type EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
 import { PrevButton, NextButton, usePrevNextButtons } from "./EmblaCarouselArrowButtons";
+import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 
 type PropType = {
 	slides: number[];
 	options?: EmblaOptionsType;
 };
 
-export const EmblaCarousel: React.FC<PropType> = (props) => {
-	const { slides, options } = props;
+export const EmblaCarousel: React.FC<PropType> = ({ slides, options }) => {
 	const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
 	const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi);
@@ -20,12 +20,15 @@ export const EmblaCarousel: React.FC<PropType> = (props) => {
 		usePrevNextButtons(emblaApi);
 
 	return (
-		<section className="embla">
+		<div className="embla">
 			<div className="embla__viewport" ref={emblaRef}>
 				<div className="embla__container">
 					{slides.map((index) => (
-						<div className="embla__slide" key={index}>
-							<div className="embla__slide__number">{index + 1}</div>
+						<div
+							className="embla__slide embla__class-names grid h-96 grid-rows-2"
+							key={index}
+						>
+							<TournamentCard />
 						</div>
 					))}
 				</div>
@@ -49,6 +52,6 @@ export const EmblaCarousel: React.FC<PropType> = (props) => {
 					))}
 				</div>
 			</div>
-		</section>
+		</div>
 	);
 };

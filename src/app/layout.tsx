@@ -11,7 +11,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en" className="scroll-smooth" style={{ scrollBehavior: "smooth" }}>
+		<html
+			lang="en"
+			className="bg-primary-dark text-primary-light scroll-smooth"
+			style={{ scrollBehavior: "smooth" }}
+		>
 			<body className={inter.className}>{children}</body>
 		</html>
 	);
