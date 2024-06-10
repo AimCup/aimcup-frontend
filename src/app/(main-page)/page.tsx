@@ -52,9 +52,7 @@ const Main = () => {
 						alt={"welcome"}
 						width={350}
 						height={350}
-						className={
-							" h-[350px] w-[350px] rounded-md object-cover sm:hidden md:block"
-						}
+						className={" hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
 					/>
 				</div>
 			</section>
