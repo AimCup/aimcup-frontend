@@ -1,66 +1,22 @@
 import React from "react";
 import Image from "next/image";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import Link from "next/link";
-import { type EmblaOptionsType } from "embla-carousel";
 import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiKofi } from "react-icons/si";
-import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 
-const OPTIONS: EmblaOptionsType = { loop: false };
-
-const Main = async () => {
-	const tournamentSlides = [
-		<TournamentCard
-			key={1}
-			date={"05-2025"}
-			status={"Ongoing"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={2}
-			date={"04-2024"}
-			status={"Upcoming"}
-			title={"AimCup 2024"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={3}
-			date={"03-2023"}
-			status={"Finished"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={4}
-			date={"02-2022"}
-			status={"Finished"}
-			title={"AimCup 2022"}
-			url={`/tournament/1`}
-		/>,
+const SingleTournament = async () => {
+	const mappoolSlides = [
+		<TournamentCard key={1} date={"05-2025"} status={"Custom"} title={"AimCup 2023"} />,
+		<TournamentCard key={2} date={"04-2024"} status={"Custom"} title={"AimCup 2024"} />,
+		<TournamentCard key={3} date={"03-2023"} status={"Custom"} title={"AimCup 2023"} />,
+		<TournamentCard key={4} date={"02-2022"} status={"Custom"} title={"AimCup 2022"} />,
 	];
 
 	return (
 		<main className={"text-white"}>
-			<section className={"relative h-[calc(100vh-64px)] w-full"}>
-				<Image
-					src="/placeholder.png"
-					alt="aimcup logo"
-					className="h-full w-full object-cover"
-					layout="fill"
-				/>
-				<Link
-					href="/#welcome"
-					className="absolute bottom-0 left-1/2 -translate-x-1/2 transform "
-				>
-					<MdKeyboardArrowDown size={"100px"} className={" animate-bounce"} />
-				</Link>
-			</section>
 			<section
-				id="welcome"
+				id="general-info"
 				className={
 					"divide-gray-700 md:px-18 md:py-18 flex w-full px-8 py-10 lg:px-20 lg:py-20"
 				}
@@ -94,11 +50,8 @@ const Main = async () => {
 				<div className={"container mx-auto flex"}>
 					<div className={"flex flex-col md:w-full"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
-						<div className={"flex md:hidden"}>
-							<Carousel slides={tournamentSlides} options={OPTIONS} />
-						</div>
-						<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-							{tournamentSlides.map((slide) => slide)}
+						<div className={"flex flex-col gap-10 md:w-full"}>
+							{mappoolSlides.map((slide) => slide)}
 						</div>
 					</div>
 				</div>
@@ -164,4 +117,4 @@ const Main = async () => {
 	);
 };
 
-export default Main;
+export default SingleTournament;
