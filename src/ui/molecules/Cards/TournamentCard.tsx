@@ -18,7 +18,7 @@ export const TournamentCard = ({
 	url?: string;
 }) => {
 	return (
-		<Link href={url || "#"} className={"block"}>
+		<Link href={url || ""} className={"block"}>
 			<div className="border-white grid h-96 rounded-md border border-solid">
 				<div className={"relative h-96"}>
 					<Image
