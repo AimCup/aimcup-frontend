@@ -10,7 +10,13 @@ export const LoginAvatar = (props: ILoginAvatar) => {
 	const { isLogged } = props;
 
 	if (!isLogged) {
-		return <Button href={"/"}>Log in</Button>;
+		return (
+			<Button
+				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${process.env.URL}/`}
+			>
+				Log in
+			</Button>
+		);
 	}
 
 	return (

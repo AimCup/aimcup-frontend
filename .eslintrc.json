@@ -46,6 +46,9 @@
 		// false negatives
 		"import/namespace": ["off"],
 
+		//
+		"@typescript-eslint/no-misused-promises": "off",
+
 		// we allow empty interfaces
 		"no-empty-pattern": "off",
 		"@typescript-eslint/no-empty-interface": "off",

@@ -28,7 +28,7 @@ export const Navbar = () => {
 						</li>
 					</ul>
 				</div>
-				<LoginAvatar isLogged={true} />
+				<LoginAvatar isLogged={false} />
 			</nav>
 		</>
 	);

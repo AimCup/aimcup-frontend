@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<>
-			<section className={"relative h-72 w-full"}>
+			<section className={"relative h-96 w-full"}>
 				<Image
 					src="/placeholder.png"
 					alt="aimcup logo"
