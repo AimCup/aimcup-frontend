@@ -5,8 +5,9 @@ import { Footer } from "@ui/organisms/Footer/Footer";
 
 const navbarProps: INavbarProps[] = [
 	{ name: "Home", href: "/" },
-	{ name: "About", href: "/about" },
-	{ name: "Contact", href: "/contact" },
+	{ name: "Tournaments", href: "/#tournaments" },
+	{ name: "About us", href: "/#about" },
+	{ name: "Socials", href: "/#socials" },
 ];
 
 export default function MainPageLayout({ children }: { children: React.ReactNode }) {
