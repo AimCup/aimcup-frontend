@@ -2,6 +2,9 @@ FROM node:18-alpine AS builder
 ENV NEXT_SHARP_PATH=/node_modules/sharp
 WORKDIR /my-space
 
+ENV API_URL=$API_URL
+ENV URL=$URL
+
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .

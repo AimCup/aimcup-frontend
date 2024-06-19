@@ -7,6 +7,9 @@ services:
       context: .
       dockerfile: ./build.next.Dockerfile
     restart: always
+    environment:
+      - API_URL=${API_URL}
+      - URL=${URL}
     ports:
       - "4000:3000"
     networks:
