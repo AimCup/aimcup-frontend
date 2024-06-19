@@ -10,9 +10,10 @@ export const LoginAvatar = () => {
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
 
 	if (!user.id) {
+		const redirectUri = encodeURIComponent(process.env.URL || "https://next.aimcup.xyz");
 		return (
 			<Button
-				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${process.env.URL}/`}
+				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
 				Log in
 			</Button>
