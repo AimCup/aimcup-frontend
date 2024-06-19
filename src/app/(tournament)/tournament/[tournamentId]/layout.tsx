@@ -1,18 +1,34 @@
 import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
-import { TournamentNavbar } from "@ui/organisms/Navbar/TournamentNavbar";
+import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
 	params: { tournamentId: string };
 };
 
+const navbarRoutes: INavbarProps[] = [
+	{ name: "Home", href: "/" },
+	{ name: "Rules", href: "/rules" },
+	{ name: "Schedule", href: "/schedule" },
+	{ name: "Mappool", href: "/mappool" },
+	{ name: "Teams", href: "/teams" },
+	{ name: "Participants", href: "/participants" },
+	{ name: "Staff", href: "/staff" },
+];
+
 export default function Layout({ children, params }: ITournamentLayout) {
+	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
+		return {
+			...item,
+			href: `/tournament/${params.tournamentId}${item.href}`,
+		};
+	});
 	return (
 		<>
 			<NextTopLoader color="#CA191B" height={5} showSpinner={false} />
-			<TournamentNavbar tournamentId={params.tournamentId} />
+			<Navbar routes={tournamentNavbarRoutes} />
 			<section className={"relative h-96 w-full"}>
 				<Image
 					src="/placeholder.png"
