@@ -1,15 +1,15 @@
+"use client";
+
 import React from "react";
+import { type UserResponseDTO } from "../../../../generated";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Button } from "@ui/atoms/Button/Button";
+import { useAppSelector } from "@/lib/redux/hooks";
 
-interface ILoginAvatar {
-	isLogged: boolean;
-}
+export const LoginAvatar = () => {
+	const user = useAppSelector<UserResponseDTO>((state) => state.user);
 
-export const LoginAvatar = (props: ILoginAvatar) => {
-	const { isLogged } = props;
-
-	if (!isLogged) {
+	if (!user.id) {
 		return (
 			<Button
 				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${process.env.URL}/`}
@@ -21,7 +21,11 @@ export const LoginAvatar = (props: ILoginAvatar) => {
 
 	return (
 		<div className="m dropdown dropdown-end dropdown-hover">
-			<Avatar notificationCount={2} className={"ml-2"} />
+			<Avatar
+				src={`https://a.ppy.sh/${user.osuId}`}
+				notificationCount={2}
+				className={"ml-2"}
+			/>
 			<ul
 				tabIndex={0}
 				className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
