@@ -30,5 +30,6 @@ jobs:
               run: npm run open:generate
             - name: Build and deploy to Next environment
               run: docker-compose -f docker-compose.next.yml up -d --build
-              env: API_URL=${{ secrets.NEXT_API_URL }}
-                  URL=${{ secrets.NEXT_URL }}
+              env:
+                  API_URL: ${{ secrets.NEXT_API_URL }}
+                  URL: ${{ secrets.NEXT_URL }}
