@@ -1,13 +1,16 @@
 "use client";
 
 import React from "react";
+import { useDispatch } from "react-redux";
 import { type UserResponseDTO } from "../../../../generated";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Button } from "@ui/atoms/Button/Button";
 import { useAppSelector } from "@/lib/redux/hooks";
+import { logout } from "@/lib/redux/features/user/userSlice";
 
 export const LoginAvatar = () => {
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
+	const dispatch = useDispatch();
 
 	if (!user.id) {
 		const redirectUri = encodeURIComponent(process.env.URL || "https://next.aimcup.xyz");
@@ -35,7 +38,13 @@ export const LoginAvatar = () => {
 					<a>Account</a>
 				</li>
 				<li>
-					<a>Logout</a>
+					<span
+						onClick={() => {
+							dispatch(logout());
+						}}
+					>
+						Logout
+					</span>
 				</li>
 			</ul>
 		</div>

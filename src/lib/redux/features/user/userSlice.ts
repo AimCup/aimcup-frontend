@@ -13,10 +13,14 @@ export const userSlice = createSlice({
 		setUser: (_state, action: PayloadAction<UserResponseDTO>) => {
 			return action.payload;
 		},
+		logout: () => {
+			window.location.href = "/api/logout";
+			return {};
+		},
 	},
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logout } = userSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectCount = (state: RootState) => state.user;
