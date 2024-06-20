@@ -19,7 +19,7 @@ export const TournamentCard = ({
 }) => {
 	return (
 		<Link href={url || ""} className={"block"}>
-			<div className="border-white grid h-96 rounded-md border border-solid">
+			<div className="grid h-96 rounded-md border border-solid border-transparent bg-tuned">
 				<div className={"relative h-96"}>
 					<Image
 						className="embla__slide__img h-1/2 w-full rounded-t-md object-cover md:hidden"

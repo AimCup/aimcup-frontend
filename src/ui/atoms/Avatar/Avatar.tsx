@@ -15,11 +15,10 @@ export const Avatar = ({
 	props?: { [key: string]: never };
 }) => {
 	return (
-		<div className="relative">
+		<div className="relative max-h-[36px] min-h-[36px] min-w-[36px] max-w-[36px]">
 			<Image
 				src={src || "/empty-avatar.webp"}
-				width={36}
-				height={36}
+				fill={true}
 				alt={alt || "avatar"}
 				className={`rounded-md ${className}`}
 				{...props}

@@ -15,8 +15,9 @@ module.exports = {
 		colors: {
 			deepCharcoal: "#151120",
 			deepRed: "#CA191B",
+			flatRed: "rgb(239 55 57)",
 			mintGreen: "#00CC99",
-			tuned: "#5a4988",
+			tuned: "#241e38",
 		},
 	},
 	plugins: [require("daisyui")],

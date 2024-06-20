@@ -1,8 +1,5 @@
 import React from "react";
-import Image from "next/image";
-import { FaDiscord, FaTwitch, FaUserAlt, FaPlay } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { SiKofi } from "react-icons/si";
+import { FaPlay, FaUserAlt } from "react-icons/fa";
 import { IoTime } from "react-icons/io5";
 import { RiBarChartFill } from "react-icons/ri";
 import type { EmblaOptionsType } from "embla-carousel";
@@ -11,6 +8,10 @@ import Link from "next/link";
 import { Button } from "@ui/atoms/Button/Button";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
+import { TeamCard } from "@ui/molecules/Cards/TeamCard";
+import { generateTeam, generateUsers } from "@/mocks/mockups";
+import { Avatar } from "@ui/atoms/Avatar/Avatar";
+import { Socials } from "@ui/organisms/Socials/Socials";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
@@ -59,7 +60,7 @@ const SingleTournament = async () => {
 						<h2 className={"text-4xl font-bold leading-relaxed "}>Aim Summer 2023</h2>
 						<div className={"flex items-center gap-4 md:justify-start"}>
 							<span className={"h-2 w-2 rounded-full bg-deepRed"} />
-							<span className={"text-xl text-deepRed md:text-2xl"}>Ongoing</span>
+							<span className={"text-flatRed text-xl md:text-2xl"}>Ongoing</span>
 						</div>
 					</div>
 				</div>
@@ -67,7 +68,7 @@ const SingleTournament = async () => {
 					<div className={"flex items-center gap-4"}>
 						{/* its links btw*/}
 						<Button>Register</Button>
-						<span className={"text-md text-deepRed"}>Apply for staff</span>
+						<span className={"text-md text-flatRed"}>Apply for staff</span>
 					</div>
 				</div>
 			</section>
@@ -98,7 +99,7 @@ const SingleTournament = async () => {
 				</div>
 			</section>
 			<section
-				id="Rules"
+				id="rules"
 				className={
 					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
 				}
@@ -163,7 +164,7 @@ const SingleTournament = async () => {
 						turpis quis mollis.
 					</span>
 				</div>
-				<Link href={""} className={"inline-block text-deepRed hover:underline"}>
+				<Link href={""} className={"text-flatRed inline-block hover:underline"}>
 					Read full rules
 				</Link>
 			</section>
@@ -358,17 +359,22 @@ const SingleTournament = async () => {
 						</div>
 					</div>
 				</div>
-				<Link href={""} className={"inline-block text-deepRed hover:underline"}>
+				<Link href={""} className={"text-flatRed inline-block hover:underline"}>
 					See match schedule
 				</Link>
 			</section>
 			<section
 				id="mappool"
-				className={"divide-gray-700  md:py-18  md:px-18 w-full px-8 lg:py-20"}
+				className={
+					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
+				}
 			>
 				<div className={"container mx-auto flex"}>
 					<div className={"flex flex-col md:w-full"}>
-						<Link href={""} className={"group flex cursor-pointer items-center gap-4 "}>
+						<Link
+							href={""}
+							className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+						>
 							<h2
 								className={
 									"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
@@ -392,62 +398,133 @@ const SingleTournament = async () => {
 					</div>
 				</div>
 			</section>
+
 			<section
-				id="about"
+				id="teams"
 				className={
-					"divide-gray-700 md:px-18 md:py-18 flex w-full px-8 py-10 lg:px-20 lg:py-20"
+					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
 				}
 			>
-				<div className={"container mx-auto flex"}>
-					<div className={"flex flex-col"}>
-						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>About us</h2>
-						<p className={"text-lg leading-loose sm:pr-8 "}>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet
-							est at enim porta luctus. Nunc suscipit volutpat odio ut posuere. Morbi
-							nec velit justo. Proin ipsum diam, volutpat sed turpis ac, accumsan
-							rhoncus enim. Etiam sollicitudin, lacus at lobortis vestibulum, tortor
-							sapien fermentum dolor, vel pharetra massa libero rhoncus lectus.
-						</p>
+				<div className={"flex"}>
+					<Link href={""} className={"group flex cursor-pointer items-center gap-4 "}>
+						<h2
+							className={
+								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+							}
+						>
+							Teams
+						</h2>{" "}
+						<LiaLongArrowAltRightSolid
+							size={45}
+							className={
+								"transition-all group-hover:-rotate-45 group-hover:transform"
+							}
+						/>
+					</Link>
+				</div>
+				<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
+					<div>
+						<TeamCard team={generateTeam()} />
 					</div>
-					<Image
-						src={"/placeholder.png"}
-						alt={"about-us"}
-						width={350}
-						height={350}
-						className={"hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
-					/>
+					<div className={"hidden md:flex"}>
+						<TeamCard team={generateTeam()} />
+					</div>
 				</div>
 			</section>
-			<section id="socials" className={"flex flex-wrap justify-center gap-14"}>
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<SiKofi size={"32px"} color={"#151120"} />
-				</div>
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<FaTwitch size={"32px"} color={"#151120"} />
-				</div>
 
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<FaDiscord size={"32px"} color={"#151120"} />
+			<section
+				id="prizes"
+				className={
+					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
+				}
+			>
+				<div className={"flex"}>
+					<h2 className={"text-4xl font-bold leading-relaxed"}>Prizes</h2>
 				</div>
 				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
+					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
 				>
-					<FaXTwitter size={"32px"} color={"#151120"} />
+					<span className={"font-bold"}>1st place</span>
+					<span
+						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
+					/>
+					<span>$150</span>
 				</div>
+				<div
+					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
+				>
+					<span className={"font-bold"}>2nd place</span>
+					<span
+						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
+					/>
+					<span>$150</span>
+				</div>
+				<div
+					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
+				>
+					<span className={"font-bold"}>3rd place</span>
+					<span
+						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
+					/>
+					<span>$150</span>
+				</div>
+			</section>
+
+			<section
+				id="staff"
+				className={
+					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
+				}
+			>
+				<div className={"flex"}>
+					<Link
+						href={""}
+						className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+					>
+						<h2
+							className={
+								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+							}
+						>
+							Staff
+						</h2>{" "}
+						<LiaLongArrowAltRightSolid
+							size={45}
+							className={
+								"transition-all group-hover:-rotate-45 group-hover:transform"
+							}
+						/>
+					</Link>
+				</div>
+				<div className={"mc:w-3/5 grid grid-cols-2 gap-4"}>
+					{generateUsers(8)?.map((staff) => (
+						<div key={staff.id} className={"flex items-center gap-4"}>
+							<div className={"relative"}>
+								<Avatar src={`https://a.ppy.sh/${staff?.osuId}`} />
+							</div>
+
+							<span className={"overflow-hidden truncate"}>{staff?.username}</span>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section
+				id="staff"
+				className={
+					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
+				}
+			>
+				<div className={"flex"}>
+					<h2
+						className={
+							"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+						}
+					>
+						Links
+					</h2>
+				</div>
+				<Socials />
 			</section>
 		</main>
 	);
