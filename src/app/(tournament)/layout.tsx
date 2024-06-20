@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
+import { Footer } from "@ui/organisms/Footer/Footer";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -38,6 +39,7 @@ export default function Layout({ children, params }: ITournamentLayout) {
 				/>
 			</section>
 			<div className={""}>{children}</div>
+			<Footer />
 		</>
 	);
 }

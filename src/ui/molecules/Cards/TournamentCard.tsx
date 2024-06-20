@@ -22,14 +22,14 @@ export const TournamentCard = ({
 			<div className="border-white grid h-96 rounded-md border border-solid">
 				<div className={"relative h-96"}>
 					<Image
-						className="embla__slide__img h-full w-full rounded-md object-cover md:hidden"
+						className="embla__slide__img h-1/2 w-full rounded-t-md object-cover md:hidden"
 						src={img || `/placeholder.png`}
 						alt="tournament-card"
 						width={350}
 						height={384}
 					/>
 					<Image
-						className="embla__slide__img h-full w-full rounded-md object-cover md:flex"
+						className="embla__slide__img hidden h-full w-full rounded-md object-cover md:flex"
 						src={img || `/placeholder.png`}
 						alt="tournament-card"
 						fill={true}
@@ -37,8 +37,18 @@ export const TournamentCard = ({
 					<div className="absolute left-2 top-2">
 						<TextBox leftText={status} size={"sm"} />
 					</div>
-					<div className={"absolute -left-0.5 bottom-2.5 w-4/5 md:w-1/2"}>
+					<div className={"absolute -left-0.5 bottom-2.5 hidden w-4/5 md:flex md:w-1/2"}>
 						<TextBox leftText={title} rightText={date} icon={<IoTime />} />
+					</div>
+					<div
+						className={
+							"bg-black absolute bottom-0 flex h-1/2 w-full flex-col justify-between p-5 md:hidden"
+						}
+					>
+						<h3 className={"text-white text-2xl font-bold"}>{title}</h3>
+						<span className={"flex items-center gap-2"}>
+							<IoTime /> {date}
+						</span>
 					</div>
 				</div>
 			</div>
