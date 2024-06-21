@@ -9,6 +9,7 @@ type ITournamentLayout = {
 	params: { tournamentId: string };
 };
 
+// todo: przy tak długiej navbar liscie trzeba poprawić responsywność :-)
 const navbarRoutes: INavbarProps[] = [
 	{ name: "Home", href: "/" },
 	{ name: "Rules", href: "/rules" },
@@ -32,7 +33,7 @@ export default function Layout({ children, params }: ITournamentLayout) {
 			<Navbar routes={tournamentNavbarRoutes} />
 			<section className={"relative h-96 w-full"}>
 				<Image
-					src="/placeholder.png"
+					src="/tm3.jpg_large"
 					alt="aimcup logo"
 					className="h-full w-full object-cover"
 					layout="fill"

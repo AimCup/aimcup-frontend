@@ -25,11 +25,7 @@ export const LoginAvatar = () => {
 
 	return (
 		<div className="m dropdown dropdown-end dropdown-hover">
-			<Avatar
-				src={`https://a.ppy.sh/${user.osuId}`}
-				notificationCount={2}
-				className={"ml-2"}
-			/>
+			<Avatar src={`https://a.ppy.sh/${user.osuId}`} notificationCount={2} />
 			<ul
 				tabIndex={0}
 				className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"

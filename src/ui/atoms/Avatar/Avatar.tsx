@@ -4,13 +4,11 @@ import Image from "next/image";
 export const Avatar = ({
 	src,
 	alt,
-	className,
 	notificationCount,
 	...props
 }: {
 	src?: string;
 	alt?: string;
-	className?: string;
 	notificationCount?: number;
 	props?: { [key: string]: never };
 }) => {
@@ -20,7 +18,7 @@ export const Avatar = ({
 				src={src || "/empty-avatar.webp"}
 				fill={true}
 				alt={alt || "avatar"}
-				className={`rounded-md ${className}`}
+				className={`rounded-md`}
 				{...props}
 			/>
 			{notificationCount && (

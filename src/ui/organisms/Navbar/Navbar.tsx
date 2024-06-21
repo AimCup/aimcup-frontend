@@ -17,7 +17,7 @@ export const Navbar = ({ routes }: { routes: INavbarProps[] }) => {
 						<Image src="/small-logo.svg" alt="Logo" width={30} height={24} />
 					</a>
 				</div>
-				<div className={"hidden md:flex"}>
+				<div className={"mr-2 hidden md:flex"}>
 					<ul className="menu menu-horizontal gap-2 px-1">
 						{routes.map((item) => (
 							<li key={item.name}>

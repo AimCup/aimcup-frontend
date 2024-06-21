@@ -1,14 +1,7 @@
 import React from "react";
-import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
+import { mappoolSlicesMock } from "@/mocks/mockups";
 
 const SingleTournamentMappool = async () => {
-	const mappoolSlides = [
-		<TournamentCard key={1} date={"05-2025"} status={"Custom"} title={"AimCup 2023"} />,
-		<TournamentCard key={2} date={"04-2024"} status={"Custom"} title={"AimCup 2024"} />,
-		<TournamentCard key={3} date={"03-2023"} status={"Custom"} title={"AimCup 2023"} />,
-		<TournamentCard key={4} date={"02-2022"} status={"Custom"} title={"AimCup 2022"} />,
-	];
-
 	return (
 		<main className={"text-white"}>
 			<section
@@ -19,7 +12,7 @@ const SingleTournamentMappool = async () => {
 					<div className={"flex flex-col md:w-full"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Qualifier</h2>
 						<div className={"flex flex-col gap-10 md:w-full"}>
-							{mappoolSlides.map((slide) => slide)}
+							{mappoolSlicesMock.map((slide) => slide)}
 						</div>
 					</div>
 				</div>
@@ -32,7 +25,7 @@ const SingleTournamentMappool = async () => {
 					<div className={"flex flex-col md:w-full"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
 						<div className={"flex flex-col gap-10 md:w-full"}>
-							{mappoolSlides.map((slide) => slide)}
+							{mappoolSlicesMock.map((slide) => slide)}
 						</div>
 					</div>
 				</div>

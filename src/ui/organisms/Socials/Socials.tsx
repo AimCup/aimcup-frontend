@@ -2,7 +2,7 @@ import React from "react";
 import { SiKofi } from "react-icons/si";
 import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { SocialItem } from "@ui/atoms/SocialItem";
+import { SocialItem } from "@ui/atoms/SocialItem/SocialItem";
 
 export const Socials = () => {
 	return (

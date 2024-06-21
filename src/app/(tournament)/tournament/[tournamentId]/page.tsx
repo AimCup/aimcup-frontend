@@ -6,47 +6,21 @@ import type { EmblaOptionsType } from "embla-carousel";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
 import { Button } from "@ui/atoms/Button/Button";
-import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
-import { generateTeam, generateUsers } from "@/mocks/mockups";
+import { generateTeam, generateUsers, mappoolSlicesMock } from "@/mocks/mockups";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Socials } from "@ui/organisms/Socials/Socials";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
-const SingleTournament = async () => {
-	const tournamentSlides = [
-		<TournamentCard
-			key={1}
-			date={"05-2025"}
-			status={"Ongoing"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={2}
-			date={"04-2024"}
-			status={"Upcoming"}
-			title={"AimCup 2024"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={3}
-			date={"03-2023"}
-			status={"Finished"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={4}
-			date={"02-2022"}
-			status={"Finished"}
-			title={"AimCup 2022"}
-			url={`/tournament/1`}
-		/>,
-	];
-
+const SingleTournament = async ({
+	params,
+}: {
+	params: {
+		tournamentId: string;
+	};
+}) => {
 	return (
 		<main className={"text-white container mx-auto"}>
 			<section
@@ -55,12 +29,12 @@ const SingleTournament = async () => {
 					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
 				}
 			>
-				<div className={"  flex"}>
+				<div className={"flex"}>
 					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
 						<h2 className={"text-4xl font-bold leading-relaxed "}>Aim Summer 2023</h2>
 						<div className={"flex items-center gap-4 md:justify-start"}>
 							<span className={"h-2 w-2 rounded-full bg-deepRed"} />
-							<span className={"text-flatRed text-xl md:text-2xl"}>Ongoing</span>
+							<span className={"text-xl text-flatRed md:text-2xl"}>Ongoing</span>
 						</div>
 					</div>
 				</div>
@@ -106,7 +80,7 @@ const SingleTournament = async () => {
 			>
 				<div className={"flex"}>
 					<Link
-						href={"/rules"}
+						href={`${params.tournamentId}/rules`}
 						className={"group flex cursor-pointer items-center gap-4 "}
 					>
 						<h2
@@ -164,9 +138,14 @@ const SingleTournament = async () => {
 						turpis quis mollis.
 					</span>
 				</div>
-				<Link href={""} className={"text-flatRed inline-block hover:underline"}>
-					Read full rules
-				</Link>
+				<div className={"flex"}>
+					<Link
+						href={`${params.tournamentId}/rules`}
+						className={"text-flatRed hover:underline"}
+					>
+						Read full rules
+					</Link>
+				</div>
 			</section>
 			<section
 				id="schedule"
@@ -175,7 +154,10 @@ const SingleTournament = async () => {
 				}
 			>
 				<div className={"flex"}>
-					<Link href={""} className={"group flex cursor-pointer items-center gap-4 "}>
+					<Link
+						href={`${params.tournamentId}/schedule`}
+						className={"group flex cursor-pointer items-center gap-4 "}
+					>
 						<h2
 							className={
 								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
@@ -359,9 +341,14 @@ const SingleTournament = async () => {
 						</div>
 					</div>
 				</div>
-				<Link href={""} className={"text-flatRed inline-block hover:underline"}>
-					See match schedule
-				</Link>
+				<div className={"flex"}>
+					<Link
+						href={`${params.tournamentId}/shedule`}
+						className={"text-flatRed hover:underline"}
+					>
+						See match schedule
+					</Link>
+				</div>
 			</section>
 			<section
 				id="mappool"
@@ -372,7 +359,7 @@ const SingleTournament = async () => {
 				<div className={"container mx-auto flex"}>
 					<div className={"flex flex-col md:w-full"}>
 						<Link
-							href={""}
+							href={`${params.tournamentId}/mappool`}
 							className={"group mb-4 flex cursor-pointer items-center gap-4 "}
 						>
 							<h2
@@ -390,10 +377,12 @@ const SingleTournament = async () => {
 							/>
 						</Link>
 						<div className={"flex md:hidden"}>
-							<Carousel slides={tournamentSlides} options={OPTIONS} />
+							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
+							<Carousel slides={mappoolSlicesMock} options={OPTIONS} />
 						</div>
 						<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-							{tournamentSlides.map((slide) => slide)}
+							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */}
+							{mappoolSlicesMock.map((slide) => slide)}
 						</div>
 					</div>
 				</div>
@@ -406,7 +395,10 @@ const SingleTournament = async () => {
 				}
 			>
 				<div className={"flex"}>
-					<Link href={""} className={"group flex cursor-pointer items-center gap-4 "}>
+					<Link
+						href={`${params.tournamentId}/teams`}
+						className={"group flex cursor-pointer items-center gap-4 "}
+					>
 						<h2
 							className={
 								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
@@ -478,7 +470,7 @@ const SingleTournament = async () => {
 			>
 				<div className={"flex"}>
 					<Link
-						href={""}
+						href={`${params.tournamentId}/staff`}
 						className={"group mb-4 flex cursor-pointer items-center gap-4 "}
 					>
 						<h2

@@ -1,33 +1,20 @@
 import React from "react";
 
-interface ITextBoxProps {
-	leftText: string;
-	rightText?: string;
-	icon?: React.ReactNode;
+export const TextBox = ({
+	children,
+	size = "md",
+}: {
+	children: React.ReactNode;
 	size?: "sm" | "md" | "lg";
-}
-
-export const TextBox = (props: ITextBoxProps) => {
-	const { leftText, rightText, icon, size = "md" } = props;
-
+}) => {
 	let higthSize;
 	if (size === "sm") {
-		higthSize = "h-10";
+		higthSize = "max-h-10";
 	} else if (size === "md") {
-		higthSize = "h-20";
+		higthSize = "max-h-20";
 	} else if (size === "lg") {
-		higthSize = "h-32";
+		higthSize = "max-h-32";
 	}
-
-	let fontSize;
-	if (size === "sm") {
-		fontSize = "text-xs";
-	} else if (size === "md") {
-		fontSize = "text-md";
-	} else if (size === "lg") {
-		fontSize = "text-lg";
-	}
-
 	let triangleSize;
 	if (size === "sm") {
 		triangleSize = "20px";
@@ -38,17 +25,19 @@ export const TextBox = (props: ITextBoxProps) => {
 	}
 
 	return (
-		<div className={`text-white flex w-full rounded-tr-md ${higthSize}`}>
-			<div className={"flex w-full items-center justify-between gap-1  bg-deepRed pl-3.5 "}>
-				<p className={`${fontSize} font-bold`}>{leftText}</p>
-				<div className={"mr-1 flex items-center"}>
-					<p className={fontSize}>{icon}</p>
-					<p className={`ml-1 ${fontSize}`}>{rightText}</p>
-				</div>
+		<div
+			className={`text-white flex w-full rounded-bl-md rounded-tl-md rounded-tr-md ${higthSize}`}
+		>
+			<div
+				className={
+					" flex w-full items-center justify-between gap-1 rounded-bl-md rounded-tl-md  bg-deepRed pl-3.5 font-bold"
+				}
+			>
+				{children}
 			</div>
 			<div className={"flex flex-col items-center"}>
 				<div
-					className={""}
+					className={"rounded-tr-md"}
 					style={{
 						height: triangleSize,
 						width: triangleSize,
@@ -65,5 +54,3 @@ export const TextBox = (props: ITextBoxProps) => {
 		</div>
 	);
 };
-
-//#CA191B

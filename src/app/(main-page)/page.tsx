@@ -7,42 +7,11 @@ import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiKofi } from "react-icons/si";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
-import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
+import { tournamentSlicesMock } from "@/mocks/mockups";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
 const Main = async () => {
-	const tournamentSlides = [
-		<TournamentCard
-			key={1}
-			date={"05-2025"}
-			status={"Ongoing"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={2}
-			date={"04-2024"}
-			status={"Upcoming"}
-			title={"AimCup 2024"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={3}
-			date={"03-2023"}
-			status={"Finished"}
-			title={"AimCup 2023"}
-			url={`/tournament/1`}
-		/>,
-		<TournamentCard
-			key={4}
-			date={"02-2022"}
-			status={"Finished"}
-			title={"AimCup 2022"}
-			url={`/tournament/1`}
-		/>,
-	];
-
 	return (
 		<main className={"text-white"}>
 			<section className={"relative h-[calc(100vh-64px)] w-full"}>
@@ -106,10 +75,10 @@ const Main = async () => {
 					<div className={"flex flex-col md:w-full"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
 						<div className={"flex md:hidden"}>
-							<Carousel slides={tournamentSlides} options={OPTIONS} />
+							<Carousel slides={tournamentSlicesMock} options={OPTIONS} />
 						</div>
 						<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-							{tournamentSlides.map((slide) => slide)}
+							{tournamentSlicesMock.map((slide) => slide)}
 						</div>
 					</div>
 				</div>
