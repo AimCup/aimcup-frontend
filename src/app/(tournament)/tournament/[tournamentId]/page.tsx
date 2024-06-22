@@ -5,12 +5,12 @@ import { RiBarChartFill } from "react-icons/ri";
 import type { EmblaOptionsType } from "embla-carousel";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
-import { Button } from "@ui/atoms/Button/Button";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
 import { generateTeam, generateUsers, mappoolSlicesMock } from "@/mocks/mockups";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Socials } from "@ui/organisms/Socials/Socials";
+import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
@@ -40,8 +40,10 @@ const SingleTournament = async ({
 				</div>
 				<div className={" flex"}>
 					<div className={"flex items-center gap-4"}>
-						{/* its links btw*/}
-						<Button>Register</Button>
+						<RegisterToTournamentButton
+							tournamentId={params.tournamentId}
+							isRegisteredToTournament={false}
+						/>
 						<span className={"text-md text-flatRed"}>Apply for staff</span>
 					</div>
 				</div>

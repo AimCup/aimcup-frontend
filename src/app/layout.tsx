@@ -17,6 +17,10 @@ const monserrat = Montserrat({
 });
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	if (!process.env.URL || !process.env.API_URL) {
+		throw new Error("URL or API_URL is not defined in .env file");
+	}
+
 	const token = cookies().get("token")?.value;
 
 	OpenAPI.HEADERS = {

@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
 
-interface ButtonProps {
+export interface ButtonProps {
 	children: React.ReactNode;
 	onClick?: () => void;
+	disabled?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
 	href?: string;
@@ -18,6 +19,7 @@ export const Button = ({
 	style,
 	href,
 	type = "button",
+	disabled = false,
 	...props
 }: ButtonProps) => {
 	const buttonClassNames = `text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 ${className}`;
@@ -31,7 +33,14 @@ export const Button = ({
 	}
 
 	return (
-		<button onClick={onClick} className={buttonClassNames} style={style} type={type} {...props}>
+		<button
+			disabled={disabled}
+			onClick={onClick}
+			className={buttonClassNames}
+			style={style}
+			type={type}
+			{...props}
+		>
 			{children}
 		</button>
 	);
