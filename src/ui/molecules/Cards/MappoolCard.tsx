@@ -3,6 +3,7 @@ import Image from "next/image";
 import { IoTime } from "react-icons/io5";
 import { IoIosStar } from "react-icons/io";
 import { PiMetronomeFill } from "react-icons/pi";
+import { type BeatmapModificationResponseDto } from "../../../../generated";
 import { TextBox } from "@ui/atoms/TextBox/TextBox";
 
 export const MappoolCard = ({
@@ -13,14 +14,14 @@ export const MappoolCard = ({
 	author,
 	mapInformation,
 }: {
-	title: string;
-	modification?: "HD" | "HR" | "FM";
+	title?: string;
+	modification?: BeatmapModificationResponseDto["modification"];
 	isCustom?: boolean;
 	img?: string;
 	author?: string;
 	mapInformation: {
 		stars: number;
-		time: string;
+		time: number;
 		bpm: number;
 		ar: number;
 		hp: number;
@@ -65,35 +66,37 @@ export const MappoolCard = ({
 							<span className={"text-white"}>
 								<IoIosStar />
 							</span>
-							<span className={"text-white"}>{mapInformation.stars.toFixed(2)}</span>
+							<span className={"text-white"}>
+								{mapInformation?.stars?.toFixed(2)}
+							</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>
 								<IoTime />
 							</span>
-							<span className={"text-white"}>{mapInformation.time}</span>
+							<span className={"text-white"}>{mapInformation?.time}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>
 								<PiMetronomeFill />
 							</span>
-							<span className={"text-white"}>{mapInformation.bpm.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.bpm?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>AR</span>
-							<span className={"text-white"}>{mapInformation.ar.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.ar?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>HP</span>
-							<span className={"text-white"}>{mapInformation.hp.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.hp?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>OD</span>
-							<span className={"text-white"}>{mapInformation.od.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.od?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>CS</span>
-							<span className={"text-white"}>{mapInformation.cs.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.cs?.toFixed(0)}</span>
 						</div>
 					</div>
 					<TextBox>
@@ -128,35 +131,37 @@ export const MappoolCard = ({
 							<span className={"text-white"}>
 								<IoIosStar />
 							</span>
-							<span className={"text-white"}>{mapInformation.stars.toFixed(2)}</span>
+							<span className={"text-white"}>
+								{mapInformation?.stars?.toFixed(2)}
+							</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>
 								<IoTime />
 							</span>
-							<span className={"text-white"}>{mapInformation.time}</span>
+							<span className={"text-white"}>{mapInformation?.time}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>
 								<PiMetronomeFill />
 							</span>
-							<span className={"text-white"}>{mapInformation.bpm.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.bpm?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>AR</span>
-							<span className={"text-white"}>{mapInformation.ar.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.ar?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>HP</span>
-							<span className={"text-white"}>{mapInformation.hp.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.hp?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>OD</span>
-							<span className={"text-white"}>{mapInformation.od.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.od?.toFixed(0)}</span>
 						</div>
 						<div className={"flex items-center gap-2"}>
 							<span className={"text-white"}>CS</span>
-							<span className={"text-white"}>{mapInformation.cs.toFixed(0)}</span>
+							<span className={"text-white"}>{mapInformation?.cs?.toFixed(0)}</span>
 						</div>
 					</div>
 					{modification && (

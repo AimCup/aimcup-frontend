@@ -1,15 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Link from "next/link";
-import { type EmblaOptionsType } from "embla-carousel";
+
 import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiKofi } from "react-icons/si";
-import { Carousel } from "@ui/organisms/Carousel/Carousel";
-import { tournamentSlicesMock } from "@/mocks/mockups";
-
-const OPTIONS: EmblaOptionsType = { loop: false };
+import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 
 const Main = async () => {
 	return (
@@ -67,22 +64,9 @@ const Main = async () => {
 					/>
 				</div>
 			</section>
-			<section
-				id="tournaments"
-				className={"divide-gray-700 md:px-18 md:py-18 w-full px-8 py-10 lg:px-20 lg:py-20"}
-			>
-				<div className={"container mx-auto flex"}>
-					<div className={"flex flex-col md:w-full"}>
-						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
-						<div className={"flex md:hidden"}>
-							<Carousel slides={tournamentSlicesMock} options={OPTIONS} />
-						</div>
-						<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-							{tournamentSlicesMock.map((slide) => slide)}
-						</div>
-					</div>
-				</div>
-			</section>
+			<Suspense fallback={<div>Loading...</div>}>
+				<TournamentList />
+			</Suspense>
 			<section
 				id="about"
 				className={

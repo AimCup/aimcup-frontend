@@ -2,17 +2,17 @@ import React from "react";
 import { FaPlay, FaUserAlt } from "react-icons/fa";
 import { IoTime } from "react-icons/io5";
 import { RiBarChartFill } from "react-icons/ri";
-import type { EmblaOptionsType } from "embla-carousel";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
-import { Carousel } from "@ui/organisms/Carousel/Carousel";
+import { format } from "date-fns";
+import { StageService, TournamentService } from "../../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
-import { generateTeam, generateUsers, mappoolSlicesMock } from "@/mocks/mockups";
+import { generateTeam, generateUsers } from "@/mocks/mockups";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Socials } from "@ui/organisms/Socials/Socials";
 import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
-
-const OPTIONS: EmblaOptionsType = { loop: false };
+import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
+import { MappoolStages } from "@ui/organisms/MappoolStages/MappoolStages";
 
 const SingleTournament = async ({
 	params,
@@ -21,6 +21,18 @@ const SingleTournament = async ({
 		tournamentId: string;
 	};
 }) => {
+	const [tournamentData, scheduleData] = await Promise.allSettled([
+		TournamentService.getTournamentByAbbreviation(params.tournamentId),
+		StageService.getStages(params.tournamentId),
+	]);
+
+	if (tournamentData.status === "rejected") {
+		throw new Error("Tournament not found"); //todo: change to proper error
+	}
+	if (scheduleData.status === "rejected") {
+		throw new Error("Shedule not found"); //todo: change to proper error
+	}
+
 	return (
 		<main className={"text-white container mx-auto"}>
 			<section
@@ -31,14 +43,18 @@ const SingleTournament = async ({
 			>
 				<div className={"flex"}>
 					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
-						<h2 className={"text-4xl font-bold leading-relaxed "}>Aim Summer 2023</h2>
-						<div className={"flex items-center gap-4 md:justify-start"}>
-							<span className={"h-2 w-2 rounded-full bg-deepRed"} />
-							<span className={"text-xl text-flatRed md:text-2xl"}>Ongoing</span>
-						</div>
+						<h2 className={"text-4xl font-bold leading-relaxed "}>
+							{tournamentData?.value?.name}
+						</h2>
+						{tournamentData?.value?.isOngoing && (
+							<div className={"flex items-center gap-4 md:justify-start"}>
+								<span className={"h-2 w-2 rounded-full bg-deepRed"} />
+								<span className={"text-xl text-flatRed md:text-2xl"}>Ongoing</span>
+							</div>
+						)}
 					</div>
 				</div>
-				<div className={" flex"}>
+				<div className={"flex"}>
 					<div className={"flex items-center gap-4"}>
 						<RegisterToTournamentButton
 							tournamentId={params.tournamentId}
@@ -67,7 +83,9 @@ const SingleTournament = async ({
 						<FaPlay /> Relax
 					</span>
 					<span className={"flex items-center gap-2"}>
-						<IoTime /> 27.07 - 29.07
+						<IoTime />{" "}
+						{format(new Date(tournamentData?.value?.startDate || 0), "MM/dd/yyyy")} -{" "}
+						{format(new Date(tournamentData?.value?.endDate || 0), "MM/dd/yyyy")}
 					</span>
 					<span className={"flex items-center gap-2"}>
 						<RiBarChartFill /> 10-99k
@@ -175,177 +193,12 @@ const SingleTournament = async ({
 						/>
 					</Link>
 				</div>
-				<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
-					<div className={"flex flex-col gap-4"}>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Registration</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Screening</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Qualifier</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Round of 32</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Round of 16</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Quarter-Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Semi-finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Grand-Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-					</div>
-					<div className={"hidden flex-col gap-4 md:flex"}>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Registration</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Screening</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Qualifier</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Round of 32</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Round of 16</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Quarter-Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Semi-finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-						<div className={"flex items-center justify-between gap-4"}>
-							<span className={"font-bold"}>Grand-Finals</span>
-							<span
-								className={
-									" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
-								}
-							/>
-							<span>01.02 - 20.02</span>
-						</div>
-					</div>
+				<div className={"grid grid-cols-1 gap-4 md:grid-cols-2"}>
+					<ScheduleList scheduleList={scheduleData.value} />
 				</div>
 				<div className={"flex"}>
 					<Link
-						href={`${params.tournamentId}/shedule`}
+						href={`${params.tournamentId}/schedule`}
 						className={"text-flatRed hover:underline"}
 					>
 						See match schedule
@@ -360,32 +213,27 @@ const SingleTournament = async ({
 			>
 				<div className={"container mx-auto flex"}>
 					<div className={"flex flex-col md:w-full"}>
-						<Link
-							href={`${params.tournamentId}/mappool`}
-							className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+						<h2
+							className={
+								"mb-4 text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+							}
 						>
-							<h2
-								className={
-									"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
-								}
-							>
-								Mappool
-							</h2>{" "}
-							<LiaLongArrowAltRightSolid
-								size={45}
-								className={
-									"transition-all group-hover:-rotate-45 group-hover:transform"
-								}
-							/>
-						</Link>
-						<div className={"flex md:hidden"}>
-							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-							<Carousel slides={mappoolSlicesMock} options={OPTIONS} />
-						</div>
-						<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */}
-							{mappoolSlicesMock.map((slide) => slide)}
-						</div>
+							Mappool
+						</h2>
+						<MappoolStages
+							stage={scheduleData.value?.map((stage) => {
+								return {
+									id: stage.id,
+									date: {
+										start: stage.startDate,
+										end: stage.endDate,
+									},
+									stageEnum: stage.stageType,
+									shouldDisplay: !!stage.mappool,
+								};
+							})}
+							tournamentAbbreviation={params.tournamentId}
+						/>
 					</div>
 				</div>
 			</section>

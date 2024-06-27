@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useDispatch } from "react-redux";
+import Link from "next/link";
 import { type UserResponseDTO } from "../../../../generated";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Button } from "@ui/atoms/Button/Button";
@@ -31,7 +32,7 @@ export const LoginAvatar = () => {
 				className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow"
 			>
 				<li>
-					<a>Account</a>
+					<Link href={"/account"}>Account</Link>
 				</li>
 				<li>
 					<span

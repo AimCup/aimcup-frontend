@@ -12,8 +12,11 @@ export const TournamentCard = ({
 	url,
 }: {
 	title: string;
-	date: string;
-	status?: string;
+	date?: {
+		start?: string;
+		end?: string;
+	};
+	status?: boolean;
 	img?: string;
 	url?: string;
 }) => {
@@ -41,7 +44,7 @@ export const TournamentCard = ({
 					/>
 					{status && (
 						<div className="absolute left-2 top-2 z-20 md:left-6 md:top-6">
-							<TextBox size={"sm"}>{status}</TextBox>
+							<TextBox size={"sm"}>Ongoing</TextBox>
 						</div>
 					)}
 
@@ -58,7 +61,7 @@ export const TournamentCard = ({
 										"ml-auto flex items-center gap-2 text-base opacity-70"
 									}
 								>
-									<IoTime /> {date}
+									<IoTime /> {date?.start} - {date?.end}
 								</span>
 							</div>
 						</TextBox>
@@ -70,7 +73,7 @@ export const TournamentCard = ({
 					>
 						<h3 className={"text-white text-2xl font-bold"}>{title}</h3>
 						<span className={"flex items-center gap-2"}>
-							<IoTime /> {date}
+							<IoTime /> {date?.start} - {date?.end}
 						</span>
 					</div>
 				</div>

@@ -3,7 +3,7 @@ import { type UserResponseDTO } from "../../../../../generated";
 import { type RootState } from "@/lib/redux/store";
 
 // Define the initial state using that type
-const initialState: UserResponseDTO = {};
+const initialState: UserResponseDTO = {} as UserResponseDTO;
 
 export const userSlice = createSlice({
 	name: "user",
@@ -15,7 +15,7 @@ export const userSlice = createSlice({
 		},
 		logout: () => {
 			window.location.href = "/api/logout";
-			return {};
+			return {} as UserResponseDTO;
 		},
 	},
 });
