@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Montserrat } from "@next/font/google";
 import { OpenAPI, UserService } from "../../generated";
-import StoreProvider from "@/app/StoreProvider";
-import UserProvider from "@/app/UserProvider";
+import StoreProvider from "@/lib/Providers/StoreProvider";
+import UserProvider from "@/lib/Providers/UserProvider";
 
 export const metadata: Metadata = {
 	title: "AimCup",

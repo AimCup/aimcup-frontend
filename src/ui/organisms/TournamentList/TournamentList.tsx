@@ -7,7 +7,11 @@ import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 const OPTIONS: EmblaOptionsType = { loop: false };
 
-export const TournamentList = async () => {
+export const TournamentList = async ({
+	useMobileCarousel = true,
+}: {
+	useMobileCarousel?: boolean;
+}) => {
 	const data = await TournamentService.getTournaments();
 	const tournamentSlices = data.map((tournament) => {
 		return (
@@ -30,21 +34,20 @@ export const TournamentList = async () => {
 	}
 
 	return (
-		<section
-			id="tournaments"
-			className={"divide-gray-700 md:px-18 md:py-18 w-full px-8 py-10 lg:px-20 lg:py-20"}
-		>
-			<div className={"container mx-auto flex"}>
-				<div className={"flex flex-col md:w-full"}>
-					<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
-					<div className={"flex md:hidden"}>
-						<Carousel slides={tournamentSlices} options={OPTIONS} />
-					</div>
-					<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
-						{tournamentSlices.map((slide) => slide)}
-					</div>
+		<>
+			{useMobileCarousel ? (
+				<div className={"flex md:hidden"}>
+					<Carousel slides={tournamentSlices} options={OPTIONS} />
 				</div>
+			) : (
+				<div className={"flex w-full flex-col gap-10 md:hidden"}>
+					{tournamentSlices.map((slide) => slide)}
+				</div>
+			)}
+
+			<div className={"hidden flex-col gap-10 md:flex md:w-full"}>
+				{tournamentSlices.map((slide) => slide)}
 			</div>
-		</section>
+		</>
 	);
 };

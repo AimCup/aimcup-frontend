@@ -1,7 +1,7 @@
 "use client";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { type UserResponseDTO } from "../../generated";
+import { type UserResponseDTO } from "../../../generated";
 import { setUser } from "@/lib/redux/features/user/userSlice";
 
 export default function UserProvider({

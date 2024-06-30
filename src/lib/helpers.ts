@@ -1,4 +1,5 @@
-import { StageResponseDto } from "../../generated";
+import { StageResponseDto, TournamentRequestDto } from "../../generated";
+import tournamentType = TournamentRequestDto.tournamentType;
 
 export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) => {
 	switch (stageType) {
@@ -28,3 +29,8 @@ export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) 
 			return "Unknown";
 	}
 };
+
+export const tournamentTeamShowEnumAvailable = [
+	tournamentType.TEAM_VS,
+	tournamentType.INTERNATIONAL,
+];

@@ -1,10 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
-import { StageService } from "../../../../../generated";
+import { StageService, TournamentRequestDto, TournamentService } from "../../../../../generated";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
+import tournamentType = TournamentRequestDto.tournamentType;
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -20,15 +21,25 @@ const navbarRoutes: INavbarProps[] = [
 		name: "Mappool",
 		href: "",
 	},
-	{ name: "Teams", href: "/teams" },
-	{ name: "Participants", href: "/participants" },
+	// { name: "Teams", href: "/teams" },
+	// { name: "Participants", href: "/participants" },
 	{ name: "Staff", href: "/staff" },
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
-	const getStagesData = await StageService.getStages(params.tournamentId);
+	const [tournamentData, getStagesData] = await Promise.allSettled([
+		TournamentService.getTournamentByAbbreviation(params.tournamentId),
+		StageService.getStages(params.tournamentId),
+	]);
 
-	const getStateTypes = getStagesData
+	if (tournamentData.status === "rejected") {
+		throw new Error("Tournament not found"); //todo: change to proper error
+	}
+	if (getStagesData.status === "rejected") {
+		throw new Error("Shedule not found"); //todo: change to proper error
+	}
+
+	const getStateTypes = getStagesData.value
 		.filter((stage) => !!stage.mappool)
 		.map((stage) => stage.stageType);
 
@@ -47,6 +58,14 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 			href: `/tournament/${params.tournamentId}${item.href}`,
 		};
 	});
+
+	if (tournamentData.value?.tournamentType === tournamentType.TEAM_VS) {
+		tournamentNavbarRoutes.push({ name: "Teams", href: "/teams" });
+	} else if (tournamentData.value?.tournamentType === tournamentType.PARTICIPANT_VS) {
+		tournamentNavbarRoutes.push({ name: "Participants", href: "/participants" });
+	} else if (tournamentData.value?.tournamentType === tournamentType.INTERNATIONAL) {
+		tournamentNavbarRoutes.push({ name: "INTERNATIONAL TODO", href: "" }); //todo
+	}
 
 	return (
 		<>

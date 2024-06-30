@@ -11,7 +11,7 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		setUser: (_state, action: PayloadAction<UserResponseDTO>) => {
-			return action.payload;
+			return { ...action.payload };
 		},
 		logout: () => {
 			window.location.href = "/api/logout";

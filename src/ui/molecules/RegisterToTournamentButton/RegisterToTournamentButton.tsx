@@ -25,7 +25,7 @@ const RegisterToTournamentButton = ({
 		);
 		buttonProps = {
 			href: `${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`,
-			children: "Log in",
+			children: "Register",
 		};
 	}
 
