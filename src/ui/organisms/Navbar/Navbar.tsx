@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ActiveLink } from "@ui/atoms/ActiveLink/ActiveLink";
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
 
@@ -29,9 +30,9 @@ export const Navbar = ({ routes }: { routes: INavbarProps[] }) => {
 		<>
 			<nav className="md:px-18 flex h-16 w-full items-center justify-between bg-deepCharcoal px-8 lg:px-20">
 				<div className="flex-1">
-					<a href={"/#"}>
+					<Link href={"/"}>
 						<Image src="/small-logo.svg" alt="Logo" width={30} height={24} />
-					</a>
+					</Link>
 				</div>
 				<div className={"mr-2 hidden md:flex"}>
 					<ul className="menu menu-horizontal z-40 gap-2 px-1">

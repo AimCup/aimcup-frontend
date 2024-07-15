@@ -4,11 +4,9 @@ import { type TeamResponseDto } from "../../../../generated";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 
 export const TeamCard = ({ team }: { team: TeamResponseDto }) => {
-	console.log(team, "team");
 	if (!team) {
 		return null;
 	}
-
 	return (
 		<div className={"flex w-full flex-col gap-4 rounded-md bg-tuned p-6 text-primary-light"}>
 			<h3 className={"text-2xl font-bold"}>{team?.name}</h3>

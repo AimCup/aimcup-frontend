@@ -5,17 +5,13 @@ import { Button, type ButtonProps } from "@ui/atoms/Button/Button";
 import { useAppSelector } from "@/lib/redux/hooks";
 
 interface RegisterToTournamentButtonProps {
-	isRegisteredToTournament: boolean;
 	tournamentId: string;
 }
 
-const RegisterToTournamentButton = ({
-	isRegisteredToTournament,
-	tournamentId,
-}: RegisterToTournamentButtonProps) => {
+const RegisterToTournamentButton = ({ tournamentId }: RegisterToTournamentButtonProps) => {
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
 	let buttonProps: ButtonProps = {
-		children: "Register",
+		children: "Create team",
 		href: `/tournament/${tournamentId}/registration`,
 	};
 
@@ -25,14 +21,7 @@ const RegisterToTournamentButton = ({
 		);
 		buttonProps = {
 			href: `${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`,
-			children: "Register",
-		};
-	}
-
-	if (isRegisteredToTournament) {
-		buttonProps = {
-			children: "Already registered",
-			disabled: isRegisteredToTournament,
+			children: "Log in to register",
 		};
 	}
 

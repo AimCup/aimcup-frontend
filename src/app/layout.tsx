@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Montserrat } from "@next/font/google";
+import { Toaster } from "sonner";
 import { OpenAPI, UserService } from "../../generated";
 import StoreProvider from "@/lib/Providers/StoreProvider";
 import UserProvider from "@/lib/Providers/UserProvider";
@@ -32,6 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 					className="scroll-smooth bg-primary-dark text-primary-light"
 					style={{ scrollBehavior: "smooth" }}
 				>
+					<Toaster />
 					<body className={monserrat.className}>{children}</body>
 				</html>
 			</UserProvider>

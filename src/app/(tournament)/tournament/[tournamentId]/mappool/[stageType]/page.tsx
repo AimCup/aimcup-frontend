@@ -124,6 +124,12 @@ const SingleTournamentMappool = async ({
 						</li>
 						{modifications?.map((mod, index) => {
 							const isActive = searchParams.modification === mod;
+							const isMappoolEmpty = countModificationBeatmaps[mod] === 0;
+
+							if (isMappoolEmpty) {
+								return null;
+							}
+
 							return (
 								<li
 									className={`${isActive ? "active rounded bg-deepRed" : ""}`}

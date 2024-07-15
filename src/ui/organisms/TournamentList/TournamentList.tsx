@@ -1,19 +1,32 @@
-import "server-only";
+import { isArray } from "node:util";
 import React from "react";
 import { type EmblaOptionsType } from "embla-carousel";
 import { format } from "date-fns";
-import { TournamentService } from "../../../../generated";
+import { type TournamentResponseDto, TournamentService, UserService } from "../../../../generated";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 const OPTIONS: EmblaOptionsType = { loop: false };
 
 export const TournamentList = async ({
 	useMobileCarousel = true,
+	userTournaments = false,
 }: {
 	useMobileCarousel?: boolean;
+	/** Get all tournaments associated with the active user */
+	userTournaments?: boolean;
 }) => {
-	const data = await TournamentService.getTournaments();
-	const tournamentSlices = data.map((tournament) => {
+	let data: TournamentResponseDto[] | undefined;
+	if (userTournaments) {
+		data = await UserService.getUserTournaments();
+	} else {
+		data = await TournamentService.getTournaments();
+	}
+
+	if (data?.length === 0 || !isArray(data)) {
+		return <p>No tournaments</p>;
+	}
+
+	const tournamentSlices = data?.map((tournament) => {
 		return (
 			<TournamentCard
 				key={tournament.id}
@@ -28,10 +41,6 @@ export const TournamentList = async ({
 			/>
 		);
 	});
-
-	if (data?.length === 0) {
-		return null;
-	}
 
 	return (
 		<>

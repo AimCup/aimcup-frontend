@@ -40,7 +40,7 @@ const RegisterPage = () => {
 				}
 				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
-				<SiOsu size={25} /> Register by OSU Account
+				<SiOsu size={25} /> Log in by OSU Account
 			</Button>
 		</section>
 	);

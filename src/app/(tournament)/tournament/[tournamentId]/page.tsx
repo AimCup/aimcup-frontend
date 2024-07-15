@@ -88,10 +88,7 @@ const SingleTournament = async ({
 				</div>
 				<div className={"flex"}>
 					<div className={"flex items-center gap-4"}>
-						<RegisterToTournamentButton
-							tournamentId={params.tournamentId}
-							isRegisteredToTournament={false}
-						/>
+						<RegisterToTournamentButton tournamentId={params.tournamentId} />
 						<span className={"text-md text-flatRed"}>Apply for staff</span>
 					</div>
 				</div>
@@ -309,16 +306,18 @@ const SingleTournament = async ({
 							</Link>
 						</div>
 						<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
-							{teams.map((team) => (
-								<React.Fragment key={team.id}>
-									<div>
-										<TeamCard team={team} />
-									</div>
-									<div className={"hidden md:flex"}>
-										<TeamCard team={team} />
-									</div>
-								</React.Fragment>
-							))}
+							{teams.map((team, index) => {
+								if (index > 1) {
+									return null;
+								}
+								return (
+									<React.Fragment key={team.id}>
+										<div>
+											<TeamCard team={team} />
+										</div>
+									</React.Fragment>
+								);
+							})}
 						</div>
 					</section>
 				)}

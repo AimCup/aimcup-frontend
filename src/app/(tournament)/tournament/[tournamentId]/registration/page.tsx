@@ -1,44 +1,68 @@
+"use client";
 import React from "react";
-import Select from "@ui/molecules/Forms/Select/Select";
 import { Button } from "@ui/atoms/Button/Button";
+import { createTeamAction } from "@/actions/createTeamAction";
+import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
+import { createTeamSchema } from "@/app/(tournament)/tournament/[tournamentId]/registration/createTeamSchema";
 
-const SingleTournamentRegistration = async () => {
+const SingleTournamentRegistration = ({
+	params,
+}: {
+	params: {
+		tournamentId: string;
+	};
+}) => {
+	const formRef = React.useRef<HTMLFormElement>(null);
+	const [value, setValue] = React.useState("");
+	const [state, formAction] = useTypeSafeFormState(createTeamSchema, async (data) => {
+		await createTeamAction(data);
+		// console.log(res);
+		formRef.current?.reset();
+	});
+
+	console.log(state, "state");
+
 	return (
 		<main className={"text-white container mx-auto"}>
-			<section
-				id="registraion"
+			<form
+				id="create-team"
 				className={
 					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
 				}
+				action={formAction}
+				ref={formRef}
 			>
-				<div className={"mb-10 flex"}>
-					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
-						<h2 className={"text-4xl font-bold "}>Registration</h2>
-					</div>
-				</div>
-
 				<div className={"flex flex-col gap-4 "}>
-					<h2 className={"text-3xl "}>Choose your team</h2>
-					<Select
-						options={[
-							{
-								label: "Team 1",
-								value: "team1",
-							},
-							{
-								label: "Team 2",
-								value: "team2",
-							},
-							{
-								label: "Team 3",
-								value: "team3",
-							},
-							{
-								label: "Team 4",
-								value: "team4",
-							},
-						]}
-					/>
+					<div className={"container mx-auto flex"}>
+						<div className={"flex flex-col md:w-full"}>
+							<h2 className={"mb-3  text-4xl font-bold leading-relaxed"}>
+								Create a team
+							</h2>
+							<h2 className={"mb-3  text-2xl font-bold leading-relaxed"}>
+								Enter your team name
+							</h2>
+							<input
+								onChange={(e) => setValue(e.target.value)}
+								value={value}
+								required={true}
+								type="text"
+								name="teamName"
+								placeholder="Type here"
+								className="input input-bordered w-full max-w-xs focus:border-mintGreen focus:ring-mintGreen"
+							/>
+							<input
+								onChange={() => {
+									return;
+								}}
+								value={params.tournamentId}
+								hidden={true}
+								type="text"
+								name="tournamentAbb"
+								placeholder=""
+								className="input input-bordered w-full max-w-xs focus:border-mintGreen focus:ring-mintGreen"
+							/>
+						</div>
+					</div>
 					<h2 className={"mb-6 mt-14 w-2/3 text-3xl lg:w-2/4"}>
 						To play on this tournament, please agree to our Terms and Conditions
 					</h2>
@@ -81,8 +105,9 @@ const SingleTournamentRegistration = async () => {
 						<label className="label flex cursor-pointer justify-start gap-4">
 							<input
 								type="checkbox"
-								defaultChecked
+								required={true}
 								className="checkbox-success checkbox"
+								name="terms"
 							/>
 							<span className="label-text">
 								Me and my team agrees to the Terms and Conditions
@@ -90,8 +115,10 @@ const SingleTournamentRegistration = async () => {
 						</label>
 					</div>
 				</div>
-				<Button className={"md:max-w-min"}>Register</Button>
-			</section>
+				<Button className="mt-4 w-max" type={"submit"}>
+					Create team
+				</Button>
+			</form>
 		</main>
 	);
 };

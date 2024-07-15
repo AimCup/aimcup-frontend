@@ -1,4 +1,6 @@
 import React, { Suspense } from "react";
+import Link from "next/link";
+import { IoMdAdd } from "react-icons/io";
 import { UserInformation } from "@ui/organisms/UserInformation/UserInformation";
 import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 import { Loading } from "@ui/atoms/Loading/Loading";
@@ -21,7 +23,7 @@ const AccountPage = () => {
 							<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>
 								My tournaments
 							</h2>
-							<TournamentList />
+							<TournamentList userTournaments={true} />
 						</div>
 					</div>
 				</section>
@@ -49,7 +51,26 @@ const AccountPage = () => {
 			>
 				<div className={"container mx-auto flex"}>
 					<div className={"flex flex-col md:w-full"}>
-						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>My teams</h2>
+						<div className={"flex"}>
+							<Link
+								href={`/account/create-team`}
+								className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+							>
+								<h2
+									className={
+										"text-3xl font-bold leading-relaxed transition-all group-hover:underline"
+									}
+								>
+									My teams
+								</h2>{" "}
+								<IoMdAdd
+									size={45}
+									className={
+										"transition-all group-hover:-rotate-90 group-hover:transform"
+									}
+								/>
+							</Link>
+						</div>
 						<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
 							<div>
 								<TeamCard team={generateTeam()} />

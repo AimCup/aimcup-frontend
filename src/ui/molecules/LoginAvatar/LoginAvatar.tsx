@@ -19,7 +19,7 @@ export const LoginAvatar = () => {
 			<Button
 				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
-				Register
+				Log in to register
 			</Button>
 		);
 	}
