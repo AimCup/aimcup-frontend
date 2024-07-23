@@ -17,8 +17,10 @@ export const LoginAvatar = () => {
 		const redirectUri = encodeURIComponent(
 			process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",
 		);
-		console.log("URL", process.env["NEXT_PUBLIC_URL"]);
-		console.log("API_URL", process.env["NEXT_PUBLIC_API_URL"]);
+		const url = process.env["NEXT_PUBLIC_URL"];
+		const apiUrl = process.env["NEXT_PUBLIC_API_URL"];
+		console.log("URL", url);
+		console.log("API_URL", apiUrl);
 		return (
 			<Button
 				href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
