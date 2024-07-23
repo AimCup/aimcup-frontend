@@ -8,7 +8,7 @@ ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build:next
 
 FROM node:18-alpine AS runner
 WORKDIR /my-space
