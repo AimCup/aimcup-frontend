@@ -29,9 +29,7 @@ jobs:
             - name: Generate API client
               run: npm run open:generate
             - name: Build and deploy to Next environment
-              run: | 
-                docker-compose -f docker-compose.next.yml up -d --build
-                echo NEXT_PUBLIC_API_URL=${{ secrets.NEXT_API_URL }} >> .env
+              run: docker-compose -f docker-compose.next.yml up -d --build
               env:
                 NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_API_URL }}
                 NEXT_PUBLIC_URL: ${{ secrets.NEXT_URL }}
