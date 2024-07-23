@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { Button } from "@ui/atoms/Button/Button";
-import { createTeamAction } from "@/actions/createTeamAction";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { createTeamSchema } from "@/app/(tournament)/tournament/[tournamentId]/registration/createTeamSchema";
 
@@ -14,13 +13,15 @@ const SingleTournamentRegistration = ({
 }) => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [value, setValue] = React.useState("");
-	const [state, formAction] = useTypeSafeFormState(createTeamSchema, async (data) => {
-		await createTeamAction(data);
-		// console.log(res);
+	const [_state, formAction] = useTypeSafeFormState(createTeamSchema, async (_data) => {
+		//const teamResponseDto = await createTeamAction(data);
+		//const teamResponseDtoAsJson = JSON.parse(teamResponseDto) as TeamResponseDto | ApiError;
+
+		// console.log(teamResponseDtoAsJson);
 		formRef.current?.reset();
 	});
 
-	console.log(state, "state");
+	// console.log(state, "state");
 
 	return (
 		<main className={"text-white container mx-auto"}>

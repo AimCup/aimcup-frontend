@@ -33,6 +33,8 @@ const SingleTournament = async ({
 		StaffMemberService.getStaffMembers(params.tournamentId),
 	]);
 
+	console.log(getTournamentByAbbreviation);
+
 	if (getTournamentByAbbreviation.status === "rejected") {
 		throw new Error("Tournament not found"); //todo: change to proper error
 	}

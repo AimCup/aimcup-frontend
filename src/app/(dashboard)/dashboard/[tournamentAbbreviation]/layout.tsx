@@ -1,15 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import NextTopLoader from "nextjs-toploader";
 import { StageService, TournamentRequestDto, TournamentService } from "../../../../../generated";
-import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
-import { Footer } from "@ui/organisms/Footer/Footer";
+import { type INavbarProps } from "@ui/organisms/Navbar/Navbar";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import tournamentType = TournamentRequestDto.tournamentType;
 
 type ITournamentLayout = {
 	children: React.ReactNode;
-	params: { tournamentId: string };
+	params: { tournamentAbbreviation: string };
 };
 
 // todo: przy tak długiej navbar liscie trzeba poprawić responsywność :-)
@@ -28,8 +26,8 @@ const navbarRoutes: INavbarProps[] = [
 
 export default async function Layout({ children, params }: ITournamentLayout) {
 	const [tournamentData, getStagesData] = await Promise.allSettled([
-		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-		StageService.getStages(params.tournamentId),
+		TournamentService.getTournamentByAbbreviation(params.tournamentAbbreviation),
+		StageService.getStages(params.tournamentAbbreviation),
 	]);
 
 	if (tournamentData.status === "rejected") {
@@ -49,13 +47,13 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 				...item,
 				children: getStateTypes.map((stage) => ({
 					name: stageTypeEnumToString(stage),
-					href: `/tournament/${params.tournamentId}/mappool/${stage}`,
+					href: `/tournament/${params.tournamentAbbreviation}/mappool/${stage}`,
 				})),
 			};
 		}
 		return {
 			...item,
-			href: `/tournament/${params.tournamentId}${item.href}`,
+			href: `/tournament/${params.tournamentAbbreviation}${item.href}`,
 		};
 	});
 
@@ -69,18 +67,15 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 
 	return (
 		<>
-			<NextTopLoader color="#CA191B" height={5} showSpinner={false} />
-			<Navbar routes={tournamentNavbarRoutes} />
 			<section className={"relative h-96 w-full"}>
 				<Image
-					src={`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${params.tournamentId}/banner`}
+					src={`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${params.tournamentAbbreviation}/banner`}
 					alt="aimcup logo"
 					className="h-full w-full object-cover"
 					fill={true}
 				/>
 			</section>
 			<div className={""}>{children}</div>
-			<Footer />
 		</>
 	);
 }

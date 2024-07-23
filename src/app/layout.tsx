@@ -19,15 +19,17 @@ const monserrat = Montserrat({
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const token = cookies().get("token")?.value;
-
-	OpenAPI.HEADERS = {
-		Cookie: `token=${token}`,
-	};
-	const data = await UserService.me();
+	let userData = null;
+	if (token) {
+		OpenAPI.HEADERS = {
+			Cookie: `token=${token}`,
+		};
+		userData = await UserService.me();
+	}
 
 	return (
 		<StoreProvider>
-			<UserProvider userData={data}>
+			<UserProvider userData={userData}>
 				<html
 					lang="en"
 					className="scroll-smooth bg-primary-dark text-primary-light"

@@ -15,7 +15,9 @@ const RegisterPage = () => {
 		return null;
 	}
 
-	const redirectUri = encodeURIComponent(process.env.URL || "https://next.aimcup.xyz");
+	const redirectUri = encodeURIComponent(
+		process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",
+	);
 
 	return (
 		<section className={"relative h-[calc(100vh-64px)] w-full"}>
@@ -38,9 +40,9 @@ const RegisterPage = () => {
 				className={
 					"absolute bottom-1/3 left-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-row items-center gap-4 text-center"
 				}
-				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
+				href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
-				<SiOsu size={25} /> Log in by OSU Account
+				<SiOsu size={25} /> Log in via osu!
 			</Button>
 		</section>
 	);

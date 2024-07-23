@@ -14,12 +14,14 @@ export const LoginAvatar = () => {
 	const dispatch = useDispatch();
 
 	if (!user.id) {
-		const redirectUri = encodeURIComponent(process.env.URL || "https://next.aimcup.xyz");
-		console.log("URL", process.env.URL);
-		console.log("API_URL", process.env.API_URL);
+		const redirectUri = encodeURIComponent(
+			process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",
+		);
+		console.log("URL", process.env.NEXT_PUBLIC_URL);
+		console.log("API_URL", process.env.NEXT_PUBLIC_API_URL);
 		return (
 			<Button
-				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
+				href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
 				Log in
 			</Button>

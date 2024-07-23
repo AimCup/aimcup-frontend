@@ -8,8 +8,8 @@ services:
       dockerfile: ./build.next.Dockerfile
     restart: always
     environment:
-      - API_URL=${API_URL}
-      - URL=${URL}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
     ports:
       - "4000:3000"
     networks:

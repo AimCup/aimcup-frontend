@@ -17,10 +17,10 @@ const RegisterToTournamentButton = ({ tournamentId }: RegisterToTournamentButton
 
 	if (!user.id) {
 		const redirectUri = encodeURIComponent(
-			`${process.env.URL}/tournament/${tournamentId}/registration`,
+			`${process.env.NEXT_PUBLIC_URL}/tournament/${tournamentId}/registration`,
 		);
 		buttonProps = {
-			href: `${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`,
+			href: `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`,
 			children: "Log in to register",
 		};
 	}

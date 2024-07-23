@@ -36,7 +36,7 @@ export const TournamentList = async ({
 					end: format(new Date(tournament.endDate || 0), "MM/dd/yyyy"),
 				}}
 				status={tournament?.isOngoing}
-				img={`${process.env.API_URL}/tournaments/${tournament.abbreviation}/banner`}
+				img={`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner`}
 				url={`/tournament/${tournament.abbreviation}`}
 			/>
 		);

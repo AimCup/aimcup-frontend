@@ -9,12 +9,14 @@ export default function UserProvider({
 	userData,
 }: {
 	children: React.ReactNode;
-	userData: UserResponseDTO;
+	userData: UserResponseDTO | null | undefined;
 }) {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(setUser(userData));
+		if (userData) {
+			dispatch(setUser(userData));
+		}
 	}, [dispatch, userData]);
 
 	return children;
