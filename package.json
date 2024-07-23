@@ -4,8 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build:next": "cross-env NODE_ENV=next next build",
-		"build:production": "cross-env NODE_ENV=production next build",
+		"build": "next build",
 		"start": "node server.js",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix --dir src",
