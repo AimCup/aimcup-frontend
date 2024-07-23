@@ -22,7 +22,7 @@ const DashboardPage = async () => {
 								"flex h-64 w-full gap-2 rounded-md bg-opacity-20 bg-cover bg-center"
 							}
 							style={{
-								backgroundImage: `url(http://localhost:8080/tournaments/${tournament.abbreviation}/banner)`,
+								backgroundImage: `url(http://${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner)`,
 							}}
 						>
 							<p
