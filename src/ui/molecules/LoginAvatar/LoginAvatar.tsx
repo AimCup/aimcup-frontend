@@ -8,19 +8,18 @@ import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Button } from "@ui/atoms/Button/Button";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { logout } from "@/lib/redux/features/user/userSlice";
-
+const url = process.env["NEXT_PUBLIC_URL"];
+const apiUrl = process.env["NEXT_PUBLIC_API_URL"];
 export const LoginAvatar = () => {
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
 	const dispatch = useDispatch();
-
+	console.log("URL", url);
+	console.log("API_URL", apiUrl);
 	if (!user.id) {
 		const redirectUri = encodeURIComponent(
 			process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",
 		);
-		const url = process.env["NEXT_PUBLIC_URL"];
-		const apiUrl = process.env["NEXT_PUBLIC_API_URL"];
-		console.log("URL", url);
-		console.log("API_URL", apiUrl);
+
 		return (
 			<Button
 				href={`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
