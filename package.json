@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build:next": "cross-env NEXT_PUBLIC_API_URL=https://api-next.aimcup.xyz NEXT_PUBLIC_URL=https://next.aimcup.xyz next build",
+		"build:prod": "cross-env NEXT_PUBLIC_API_URL=https://api.aimcup.xyz NEXT_PUBLIC_URL=https://aimcup.xyz next build",
 		"start": "node server.js",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix --dir src",
