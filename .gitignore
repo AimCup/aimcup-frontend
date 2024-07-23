@@ -37,4 +37,4 @@ next-env.d.ts
 openapi.json
 /generated
 .idea
-.env
+#.env
