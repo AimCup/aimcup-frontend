@@ -15,11 +15,13 @@ export const LoginAvatar = () => {
 
 	if (!user.id) {
 		const redirectUri = encodeURIComponent(process.env.URL || "https://next.aimcup.xyz");
+		console.log("URL", process.env.URL);
+		console.log("API_URL", process.env.API_URL);
 		return (
 			<Button
 				href={`${process.env.API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`}
 			>
-				Log in to register
+				Log in
 			</Button>
 		);
 	}
@@ -33,6 +35,10 @@ export const LoginAvatar = () => {
 			>
 				<li>
 					<Link href={"/account"}>Account</Link>
+				</li>
+				{/*Only visible for users that are related to the tournament*/}
+				<li>
+					<Link href={"/dashboard"}>Dashboard</Link>
 				</li>
 				<li>
 					<span
