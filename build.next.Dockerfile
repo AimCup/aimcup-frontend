@@ -8,7 +8,7 @@ ENV URL=$URL
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build:next
 
 FROM node:18-alpine AS runner
 WORKDIR /my-space

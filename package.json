@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build:next": "cross-env NODE_ENV=next next build",
+		"build:production": "cross-env NODE_ENV=production next build",
 		"start": "node server.js",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix --dir src",
@@ -39,6 +40,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.14.0",
 		"@typescript-eslint/parser": "^6.14.0",
 		"autoprefixer": "^10.4.16",
+		"cross-env": "^7.0.3",
 		"daisyui": "^4.6.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-import": "^2.29.1",
