@@ -15,7 +15,7 @@ type ITournamentLayout = {
 	// params: { tournamentId: string };
 };
 
-const navbarRoutes: INavbarProps[] = [{ name: "Home", href: "/" }];
+const navbarRoutes: INavbarProps[] = [];
 
 export default async function Layout({ children }: ITournamentLayout) {
 	return (

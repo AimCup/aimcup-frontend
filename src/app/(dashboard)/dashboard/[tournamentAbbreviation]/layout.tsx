@@ -1,9 +1,8 @@
 import React from "react";
-import Image from "next/image";
 import { StageService, TournamentRequestDto, TournamentService } from "../../../../../generated";
 import { type INavbarProps } from "@ui/organisms/Navbar/Navbar";
-import { stageTypeEnumToString } from "@/lib/helpers";
 import tournamentType = TournamentRequestDto.tournamentType;
+import { Sidebar } from "@ui/organisms/Navbar/Sidebar";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -13,15 +12,19 @@ type ITournamentLayout = {
 // todo: przy tak długiej navbar liscie trzeba poprawić responsywność :-)
 const navbarRoutes: INavbarProps[] = [
 	{ name: "Home", href: "/" },
-	{ name: "Rules", href: "/rules" },
-	{ name: "Schedule", href: "/schedule" },
+	{ name: "Settings", href: "/settings" },
+	{ name: "Staff members", href: "/staff" },
+	{ name: "Stages", href: "/stage" },
 	{
-		name: "Mappool",
-		href: "",
+		name: "Qualification",
+		href: "/qualification-rooms",
+		children: [
+			{ name: "Rooms", href: "/qualification-rooms" },
+			{ name: "Results", href: "/qualification-results" },
+		],
 	},
-	// { name: "Teams", href: "/teams" },
-	// { name: "Participants", href: "/participants" },
-	{ name: "Staff", href: "/staff" },
+	{ name: "Mappool", href: "/mappool" },
+	{ name: "Schedule", href: "/schedule" },
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
@@ -37,45 +40,45 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		throw new Error("Shedule not found"); //todo: change to proper error
 	}
 
-	const getStateTypes = getStagesData.value
-		.filter((stage) => !!stage.mappool)
-		.map((stage) => stage.stageType);
-
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
-		if (item.name === "Mappool") {
+		if (item.children) {
 			return {
 				...item,
-				children: getStateTypes.map((stage) => ({
-					name: stageTypeEnumToString(stage),
-					href: `/tournament/${params.tournamentAbbreviation}/mappool/${stage}`,
-				})),
+				children: item.children.map((child) => {
+					return {
+						...child,
+						href: `/dashboard/${params.tournamentAbbreviation}${child.href}`,
+					};
+				}),
 			};
 		}
 		return {
 			...item,
-			href: `/tournament/${params.tournamentAbbreviation}${item.href}`,
+			href: `/dashboard/${params.tournamentAbbreviation}${item.href}`,
 		};
 	});
 
-	if (tournamentData.value?.tournamentType === tournamentType.TEAM_VS) {
-		tournamentNavbarRoutes.push({ name: "Teams", href: "/teams" });
+	if (
+		tournamentData.value?.tournamentType === tournamentType.TEAM_VS ||
+		tournamentData.value?.tournamentType === tournamentType.INTERNATIONAL
+	) {
+		tournamentNavbarRoutes.push({
+			name: "Teams",
+			href: `/dashboard/${params.tournamentAbbreviation}/teams`,
+		});
 	} else if (tournamentData.value?.tournamentType === tournamentType.PARTICIPANT_VS) {
-		tournamentNavbarRoutes.push({ name: "Participants", href: "/participants" });
-	} else if (tournamentData.value?.tournamentType === tournamentType.INTERNATIONAL) {
-		tournamentNavbarRoutes.push({ name: "INTERNATIONAL TODO", href: "" }); //todo
+		tournamentNavbarRoutes.push({
+			name: "Participants",
+			href: `/dashboard/${params.tournamentAbbreviation}/participants`,
+		});
 	}
 
 	return (
 		<>
-			<section className={"relative h-96 w-full"}>
-				<Image
-					src={`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${params.tournamentAbbreviation}/banner`}
-					alt="aimcup logo"
-					className="h-full w-full object-cover"
-					fill={true}
-				/>
+			<section className={"hidden grid-cols-2 gap-6 md:grid"}>
+				<Sidebar routes={tournamentNavbarRoutes} />
+				<div className={""}>{children}</div>
 			</section>
-			<div className={""}>{children}</div>
 		</>
 	);
 }
