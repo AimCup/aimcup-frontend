@@ -2,31 +2,34 @@
 
 import React, { useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { TournamentRequestDto, type UserResponseDTO } from "../../../../generated";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { TournamentRequestDto, type UserResponseDTO } from "../../../../../generated";
 import { Button } from "@ui/atoms/Button/Button";
 import { useAppSelector } from "@/lib/redux/hooks";
 import Modal from "@ui/organisms/Modal/Modal";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
-import { createTournamentSchema } from "@/app/(dashboard)/dashboard/createTournamentSchema";
+import { createTournamentSchema } from "@/formSchemas/createTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { createTournamentAction } from "@/actions/createTournamentAction";
 
-type IModalProps = {};
-
-const CreateTournamentModal = (_props: IModalProps) => {
+const CreateTournamentModal = () => {
 	const modalRef = useRef<HTMLDialogElement>(null);
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
-	// const router = useRouter();
-	const [state, formAction] = useTypeSafeFormState(createTournamentSchema, async (_data) => {
-		// const tournamentResponseDto = await createTournamentAction(data);
-		// if (tournamentResponseDto.status) {
-		// 	router.push(`/dashboard/${tournamentResponseDto.response.abbreviation}`);
-		// } else {
-		// 	console.error(tournamentResponseDto.errorMessage);
-		// }
-
+	const router = useRouter();
+	const formRef = React.useRef<HTMLFormElement>(null);
+	const [state, formAction] = useTypeSafeFormState(createTournamentSchema, async (data) => {
+		const tournamentResponseDto = await createTournamentAction(data);
+		console.log(tournamentResponseDto, "tournamentResponseDto");
+		if (!tournamentResponseDto.status) {
+			return toast.error(tournamentResponseDto.errorMessage, {
+				duration: 3000,
+			});
+		}
 		modalRef.current?.close();
-		// router.push(`/dashboard/${tournamentResponseDto.}`)
+		formRef.current?.reset();
+		router.push(`/dashboard/${tournamentResponseDto.response.abbreviation}`);
 	});
 	const [tournamentTourType, setTournamentTourType] =
 		React.useState<TournamentRequestDto.tournamentType>(
@@ -55,13 +58,14 @@ const CreateTournamentModal = (_props: IModalProps) => {
 				className={
 					"flex h-64 items-center justify-center border-2 border-dashed bg-transparent transition-all duration-75 hover:border-4"
 				}
+				type={"button"}
 			>
 				<IoMdAdd size={64} />
 			</Button>
 
 			<Modal ref={modalRef}>
 				<h1>Create tournament</h1>
-				<form action={formAction}>
+				<form action={formAction} ref={formRef} id={"create-tournament"}>
 					<div
 						className={
 							"grid w-full max-w-5xl grid-cols-1 gap-4 rounded-lg p-4 md:grid-cols-2"
@@ -71,7 +75,7 @@ const CreateTournamentModal = (_props: IModalProps) => {
 							label={"Tournament name"}
 							name={"name"}
 							errorMessage={state?.errors.name && state.errors.name[0]}
-							showAsterisk={true}
+							required={true}
 						/>
 						<Input
 							name={"abbreviation"}
@@ -81,6 +85,8 @@ const CreateTournamentModal = (_props: IModalProps) => {
 							label={"Abbreviation"}
 						/>
 						<ComboBox
+							required={true}
+							name={"tournamentType"}
 							label={"Select tournament type"}
 							selectOptions={tournamentTourTypeSelectOptions}
 							onSelect={(e) => {
@@ -90,6 +96,7 @@ const CreateTournamentModal = (_props: IModalProps) => {
 							}}
 						/>
 						<ComboBox
+							name={"qualificationType"}
 							label={"Select qualification type"}
 							selectOptions={qualificationTypeSelectOptions}
 						/>
@@ -136,7 +143,7 @@ const CreateTournamentModal = (_props: IModalProps) => {
 						)}
 					</div>
 					<Button className="mt-4 w-max" type={"submit"}>
-						Create team
+						Create tournament
 					</Button>
 				</form>
 			</Modal>

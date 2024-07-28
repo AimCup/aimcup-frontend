@@ -8,7 +8,7 @@ const CreateTeamPage = async ({
 	};
 }) => {
 	return (
-		<main className={"text-white 0 container mx-auto"}>
+		<>
 			<form>
 				<section
 					id="create-team"
@@ -42,7 +42,7 @@ const CreateTeamPage = async ({
 					<Button className="mt-4">Create</Button>
 				</section>
 			</form>
-		</main>
+		</>
 	);
 };
 

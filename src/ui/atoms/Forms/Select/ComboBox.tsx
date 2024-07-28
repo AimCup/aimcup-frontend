@@ -6,12 +6,13 @@ export interface selectOptions {
 }
 
 interface IComboBoxProps
-	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange" | "multiple"> {
+	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange" | "multiple" | "name"> {
 	selectOptions?: selectOptions[];
 	selectedOption?: selectOptions["id"][];
 	onSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 	label: string;
 	errorMessage?: string;
+	name: string;
 }
 
 export const ComboBox = (props: IComboBoxProps) => {

@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@ui/atoms/Button/Button";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { createTeamSchema } from "@/app/(tournament)/tournament/[tournamentId]/registration/createTeamSchema";
+import { createTeamAction } from "@/actions/createTeamAction";
 
 const SingleTournamentRegistration = ({
 	params,
@@ -13,8 +14,9 @@ const SingleTournamentRegistration = ({
 }) => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [value, setValue] = React.useState("");
-	const [_state, formAction] = useTypeSafeFormState(createTeamSchema, async (_data) => {
-		//const teamResponseDto = await createTeamAction(data);
+	const [_state, formAction] = useTypeSafeFormState(createTeamSchema, async (data) => {
+		const teamResponseDto = await createTeamAction(data);
+		console.log(teamResponseDto, "teamResponseDto");
 		//const teamResponseDtoAsJson = JSON.parse(teamResponseDto) as TeamResponseDto | ApiError;
 
 		// console.log(teamResponseDtoAsJson);

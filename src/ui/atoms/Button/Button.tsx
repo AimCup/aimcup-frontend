@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 export interface ButtonProps {
 	children: React.ReactNode;
-	onClick?: () => void;
+	onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
 	disabled?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
@@ -22,7 +23,10 @@ export const Button = ({
 	disabled = false,
 	...props
 }: ButtonProps) => {
-	const buttonClassNames = `text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 ${className}`;
+	const buttonClassNames = twMerge(
+		`text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 flex items-center justify-center`,
+		className,
+	);
 
 	if (href) {
 		return (

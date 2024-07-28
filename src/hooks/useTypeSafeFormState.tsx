@@ -34,6 +34,7 @@ export const useTypeSafeFormState = <FormSchema extends ZodType>(
 				response: data.data as unknown,
 			};
 			await action(data.data as unknown);
+
 			return newState;
 		},
 		null,

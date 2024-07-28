@@ -2,16 +2,13 @@ import React, { Suspense } from "react";
 import Image from "next/image";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Link from "next/link";
-
-import { FaDiscord, FaTwitch } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { SiKofi } from "react-icons/si";
 import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 import { Loading } from "@ui/atoms/Loading/Loading";
+import Section from "@ui/atoms/Section/Section";
 
 const Main = async () => {
 	return (
-		<main className={"text-white"}>
+		<>
 			<section className={"relative h-[calc(100vh-64px)] w-full"}>
 				<Image
 					src="/main-page.png"
@@ -37,13 +34,8 @@ const Main = async () => {
 					<MdKeyboardArrowDown size={"100px"} className={" animate-bounce"} />
 				</Link>
 			</section>
-			<section
-				id="welcome"
-				className={
-					"divide-gray-700 md:px-18 md:py-18 flex w-full px-8 py-10 lg:px-20 lg:py-20"
-				}
-			>
-				<div className={"container mx-auto flex"}>
+			<Section id="welcome">
+				<div className={"flex"}>
 					<div className={"flex flex-col"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>
 							Welcome to Aim Cup!
@@ -64,31 +56,17 @@ const Main = async () => {
 						className={" hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
 					/>
 				</div>
-			</section>
+			</Section>
 			<Suspense fallback={<Loading size={"md"} />}>
-				<section
-					id="tournaments"
-					className={
-						"divide-gray-700 md:px-18 md:py-18 w-full px-8 py-10 lg:px-20 lg:py-20"
-					}
-				>
-					<div className={"container mx-auto flex"}>
-						<div className={"flex flex-col md:w-full"}>
-							<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>
-								Tournaments!
-							</h2>
-							<TournamentList />
-						</div>
+				<Section id="tournaments">
+					<div className={"flex flex-col md:w-full"}>
+						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Tournaments!</h2>
+						<TournamentList />
 					</div>
-				</section>
+				</Section>
 			</Suspense>
-			<section
-				id="about"
-				className={
-					"divide-gray-700 md:px-18 md:py-18 flex w-full px-8 py-10 lg:px-20 lg:py-20"
-				}
-			>
-				<div className={"container mx-auto flex"}>
+			<Section id="about">
+				<div className={"flex"}>
 					<div className={"flex flex-col"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>About us</h2>
 						<p className={"text-lg leading-loose sm:pr-8 "}>
@@ -107,39 +85,8 @@ const Main = async () => {
 						className={"hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
 					/>
 				</div>
-			</section>
-			<section id="socials" className={"flex flex-wrap justify-center gap-14"}>
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<SiKofi size={"32px"} color={"#151120"} />
-				</div>
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<FaTwitch size={"32px"} color={"#151120"} />
-				</div>
-
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<FaDiscord size={"32px"} color={"#151120"} />
-				</div>
-				<div
-					className={
-						"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
-					}
-				>
-					<FaXTwitter size={"32px"} color={"#151120"} />
-				</div>
-			</section>
-		</main>
+			</Section>
+		</>
 	);
 };
 

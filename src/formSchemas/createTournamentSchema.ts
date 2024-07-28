@@ -8,11 +8,10 @@ export const createTournamentSchema = zod.object({
 		.nonempty("Name cannot be empty"),
 	abbreviation: zod
 		.string()
-		.nonempty()
 		.min(3, "Abbreviation must be at most 3 characters long")
 		.max(4, "Abbreviation must be at most 4 characters long"),
-	tournamentType: zod.string().nonempty(),
-	qualificationType: zod.string().nonempty(),
+	tournamentType: zod.string(),
+	qualificationType: zod.string(),
 	minimumRankLimit: zod.string(),
 	maximumRankLimit: zod.string(),
 	minimumTeamSize: zod.string(),

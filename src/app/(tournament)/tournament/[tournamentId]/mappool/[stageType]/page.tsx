@@ -7,6 +7,7 @@ import {
 } from "../../../../../../../generated";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
+import Section from "@ui/atoms/Section/Section";
 
 const SingleTournamentMappool = async ({
 	params,
@@ -20,28 +21,38 @@ const SingleTournamentMappool = async ({
 		modification: BeatmapModificationResponseDto["modification"];
 	};
 }) => {
-	const getMappoolByStageData = await MappoolService.getMappoolByStage(
-		params.tournamentId,
-		params.stageType,
-	);
+	let getMappoolByStageData, mappolStages;
+	try {
+		getMappoolByStageData = await MappoolService.getMappoolByStage(
+			params.tournamentId,
+			params.stageType,
+		);
 
-	const mappolStages = getMappoolByStageData.beatmapsModifications.filter(
-		(stage) => !!stage.beatmaps,
-	);
+		mappolStages = getMappoolByStageData.beatmapsModifications.filter(
+			(stage) => !!stage.beatmaps,
+		);
+	} catch (error) {
+		console.error(error);
+	}
+
+	console.log(getMappoolByStageData, "getMappoolByStageData");
+
 	const selectedMappoolByModification = searchParams.modification
-		? getMappoolByStageData.beatmapsModifications.filter(
+		? getMappoolByStageData?.beatmapsModifications.filter(
 				(m) => m.modification === searchParams.modification,
 			)
-		: getMappoolByStageData.beatmapsModifications;
+		: getMappoolByStageData?.beatmapsModifications;
 
 	const modifications = mappolStages
 		?.filter((m) => !m.isHidden)
 		?.filter((m) => m.beatmaps?.length && m.beatmaps?.length > 0)
 		.map((m) => m.modification);
 
-	const countModificationBeatmaps: {
-		[key: string]: number;
-	} = getMappoolByStageData.beatmapsModifications.reduce(
+	const countModificationBeatmaps:
+		| {
+				[key: string]: number;
+		  }
+		| undefined = getMappoolByStageData?.beatmapsModifications.reduce(
 		(acc, mod) => {
 			acc[mod.modification] = mod.beatmaps?.length || 0;
 			return acc;
@@ -50,32 +61,33 @@ const SingleTournamentMappool = async ({
 	);
 
 	const allModificationsCount =
-		getMappoolByStageData.beatmapsModifications?.flatMap((m) => m.beatmaps).length || 0;
+		getMappoolByStageData?.beatmapsModifications?.flatMap((m) => m.beatmaps).length || 0;
 
 	const mappoollCard: React.ReactNode[] = [];
 
 	if (searchParams.modification) {
-		selectedMappoolByModification[0]?.beatmaps?.forEach((map) => {
-			mappoollCard.push(
-				<MappoolCard
-					key={map.id}
-					title={map.title}
-					modification={searchParams.modification}
-					author={map.creator}
-					isCustom={true} // todo
-					mapInformation={{
-						stars: map.beatmapStatistics.starRating,
-						time: map.beatmapStatistics.length,
-						bpm: map.beatmapStatistics.bpm,
-						ar: map.beatmapStatistics.ar,
-						hp: map.beatmapStatistics.hp,
-						od: map.beatmapStatistics.od,
-						cs: map.beatmapStatistics.cs,
-					}}
-					img={map.cardCover}
-				/>,
-			);
-		});
+		selectedMappoolByModification &&
+			selectedMappoolByModification[0]?.beatmaps?.forEach((map) => {
+				mappoollCard.push(
+					<MappoolCard
+						key={map.id}
+						title={map.title}
+						modification={searchParams.modification}
+						author={map.creator}
+						isCustom={true} // todo
+						mapInformation={{
+							stars: map.beatmapStatistics.starRating,
+							time: map.beatmapStatistics.length,
+							bpm: map.beatmapStatistics.bpm,
+							ar: map.beatmapStatistics.ar,
+							hp: map.beatmapStatistics.hp,
+							od: map.beatmapStatistics.od,
+							cs: map.beatmapStatistics.cs,
+						}}
+						img={map.cardCover}
+					/>,
+				);
+			});
 	} else {
 		selectedMappoolByModification
 			?.flatMap((m) => m.beatmaps)
@@ -109,44 +121,51 @@ const SingleTournamentMappool = async ({
 					<h2 className={"text-2xl font-bold "}>
 						{stageTypeEnumToString(params.stageType)}
 					</h2>
-					<ul className="menu rounded-box bg-base-200 lg:menu-horizontal">
-						<li
-							className={`${
-								!searchParams.modification ? "active rounded bg-deepRed" : ""
-							}`}
-						>
-							<Link
-								href={`/tournament/${params.tournamentId}/mappool/${params.stageType}`}
+					{allModificationsCount > 0 ? (
+						<ul className="menu rounded-box bg-base-200 lg:menu-horizontal">
+							<li
+								className={`${
+									!searchParams.modification ? "active rounded bg-deepRed" : ""
+								}`}
 							>
-								ALL
-								<span className="badge badge-sm">{allModificationsCount}</span>
-							</Link>
-						</li>
-						{modifications?.map((mod, index) => {
-							const isActive = searchParams.modification === mod;
-							const isMappoolEmpty = countModificationBeatmaps[mod] === 0;
-
-							if (isMappoolEmpty) {
-								return null;
-							}
-
-							return (
-								<li
-									className={`${isActive ? "active rounded bg-deepRed" : ""}`}
-									key={index}
+								<Link
+									href={`/tournament/${params.tournamentId}/mappool/${params.stageType}`}
 								>
-									<Link
-										href={`/tournament/${params.tournamentId}/mappool/${params.stageType}?modification=${mod}`}
+									ALL
+									<span className="badge badge-sm">{allModificationsCount}</span>
+								</Link>
+							</li>
+							{modifications?.map((mod, index) => {
+								const isActive = searchParams.modification === mod;
+								if (!countModificationBeatmaps) {
+									return null;
+								}
+								const isMappoolEmpty = countModificationBeatmaps[mod] === 0;
+
+								if (isMappoolEmpty) {
+									return null;
+								}
+
+								return (
+									<li
+										className={`${isActive ? "active rounded bg-deepRed" : ""}`}
+										key={index}
 									>
-										{mod}
-										<span className="badge badge-sm">
-											{countModificationBeatmaps[mod]}
-										</span>
-									</Link>
-								</li>
-							);
-						})}
-					</ul>
+										<Link
+											href={`/tournament/${params.tournamentId}/mappool/${params.stageType}?modification=${mod}`}
+										>
+											{mod}
+											<span className="badge badge-sm">
+												{countModificationBeatmaps[mod]}
+											</span>
+										</Link>
+									</li>
+								);
+							})}
+						</ul>
+					) : (
+						"No mappool beatmaps found."
+					)}
 				</div>
 			</div>
 			<div className={"flex flex-col gap-10 md:w-full"}>{mappoollCard}</div>
@@ -154,21 +173,16 @@ const SingleTournamentMappool = async ({
 	);
 
 	return (
-		<main className={"text-white container mx-auto"}>
-			<section
-				id="mappool"
-				className={
-					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
-				}
-			>
+		<>
+			<Section id="mappool" className={"flex-col"}>
 				<div className={"mb-10 flex"}>
 					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
 						<h2 className={"text-4xl font-bold "}>Mappool</h2>
 					</div>
 				</div>
 				{stageContent}
-			</section>
-		</main>
+			</Section>
+		</>
 	);
 };
 

@@ -29,6 +29,13 @@ export const executeFetch = async <T>(
 		};
 	}
 
+	if (!token) {
+		return {
+			status: false,
+			errorMessage: "No token found",
+		} as ErrorResponse;
+	}
+
 	return fetchRequest
 		.then((res) => {
 			if (revalidatePaths) {
@@ -39,6 +46,9 @@ export const executeFetch = async <T>(
 			return { status: true, response: res } as SuccessfulResponse<T>;
 		})
 		.catch((error) => {
-			return { status: false, errorMessage: (error as ApiError).message } as ErrorResponse;
+			return {
+				status: false,
+				errorMessage: (error as ApiError).body.message,
+			} as ErrorResponse;
 		});
 };

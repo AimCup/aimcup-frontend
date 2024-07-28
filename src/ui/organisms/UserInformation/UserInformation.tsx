@@ -8,16 +8,14 @@ import { RiBarChartFill } from "react-icons/ri";
 import type { UserResponseDTO } from "../../../../generated";
 import { logout } from "@/lib/redux/features/user/userSlice";
 import { useAppSelector } from "@/lib/redux/hooks";
+import Section from "@ui/atoms/Section/Section";
 
 export const UserInformation = () => {
 	const user = useAppSelector<UserResponseDTO>((state) => state.user);
 	const dispatch = useDispatch();
 
 	return (
-		<section
-			id="user-information"
-			className={"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-8 px-8 lg:px-20"}
-		>
+		<Section id="user-information" className={"flex w-full flex-col gap-8"}>
 			<div className={"flex flex-wrap items-end gap-4"}>
 				<h2 className={"text-3xl font-bold"}>Welcome back,</h2>
 				<h2 className={"text-3xl font-bold text-deepRed"}>{user.username}</h2>
@@ -50,6 +48,6 @@ export const UserInformation = () => {
 					</p>
 				</div>
 			</div>
-		</section>
+		</Section>
 	);
 };

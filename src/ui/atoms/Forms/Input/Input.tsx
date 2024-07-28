@@ -1,19 +1,21 @@
 import React from "react";
 
-interface IInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "required"> {
+interface IInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "name"> {
 	errorMessage?: string;
 	label: string;
-	showAsterisk?: boolean;
+	name: string;
 }
 
 export const Input = ({ errorMessage, ...props }: IInputProps) => {
 	return (
 		<div className={"flex flex-col"}>
-			<label className="label" htmlFor={props.name}>
-				<span className="label-text capitalize">
-					{props.label} {props.showAsterisk && "*"} :
-				</span>
-			</label>
+			{props.type !== "hidden" && (
+				<label className="label" htmlFor={props.name}>
+					<span className="label-text capitalize">
+						{props.label} {props.required && "*"} :
+					</span>
+				</label>
+			)}
 			<input
 				{...props}
 				className={`input input-bordered w-full

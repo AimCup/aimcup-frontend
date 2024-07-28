@@ -19,6 +19,7 @@ import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton
 import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
 import { MappoolStages } from "@ui/organisms/MappoolStages/MappoolStages";
 import { tournamentTeamShowEnumAvailable } from "@/lib/helpers";
+import Section from "@ui/atoms/Section/Section";
 
 const SingleTournament = async ({
 	params,
@@ -32,8 +33,6 @@ const SingleTournament = async ({
 		StageService.getStages(params.tournamentId),
 		StaffMemberService.getStaffMembers(params.tournamentId),
 	]);
-
-	console.log(getTournamentByAbbreviation);
 
 	if (getTournamentByAbbreviation.status === "rejected") {
 		throw new Error("Tournament not found"); //todo: change to proper error
@@ -68,33 +67,39 @@ const SingleTournament = async ({
 	const isMappool = getStages.value?.some((stage) => !!stage.mappool);
 
 	return (
-		<main className={"text-white container mx-auto"}>
-			<section
+		<>
+			<Section
 				id="title"
 				className={
 					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
 				}
 			>
-				<div className={"flex"}>
-					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
-						<h2 className={"text-4xl font-bold leading-relaxed "}>
-							{getTournamentByAbbreviation?.value?.name}
-						</h2>
-						{getTournamentByAbbreviation?.value?.isOngoing && (
-							<div className={"flex items-center gap-4 md:justify-start"}>
-								<span className={"h-2 w-2 rounded-full bg-deepRed"} />
-								<span className={"text-xl text-flatRed md:text-2xl"}>Ongoing</span>
-							</div>
-						)}
+				<div className={"flex flex-col"}>
+					<div className={"flex"}>
+						<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
+							<h2 className={"text-4xl font-bold leading-relaxed "}>
+								{getTournamentByAbbreviation?.value?.name}
+							</h2>
+							{getTournamentByAbbreviation?.value?.isOngoing && (
+								<div className={"flex items-center gap-4 md:justify-start"}>
+									<span className={"h-2 w-2 rounded-full bg-deepRed"} />
+									<span className={"text-xl text-flatRed md:text-2xl"}>
+										Ongoing
+									</span>
+								</div>
+							)}
+						</div>
+					</div>
+					<div className={"flex"}>
+						<div className={"flex items-center gap-4"}>
+							{getTournamentByAbbreviation.value.canRegister && (
+								<RegisterToTournamentButton tournamentId={params.tournamentId} />
+							)}
+							<span className={"text-md text-flatRed"}>Apply for staff</span>
+						</div>
 					</div>
 				</div>
-				<div className={"flex"}>
-					<div className={"flex items-center gap-4"}>
-						<RegisterToTournamentButton tournamentId={params.tournamentId} />
-						<span className={"text-md text-flatRed"}>Apply for staff</span>
-					</div>
-				</div>
-			</section>
+			</Section>
 			<section
 				id="general-info"
 				className={
@@ -431,7 +436,7 @@ const SingleTournament = async ({
 				</div>
 				<Socials />
 			</section>
-		</main>
+		</>
 	);
 };
 

@@ -36,7 +36,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 					style={{ scrollBehavior: "smooth" }}
 				>
 					<Toaster />
-					<body className={monserrat.className}>{children}</body>
+					<body className={monserrat.className}>
+						<main className={"text-white"}>{children}</main>
+					</body>
 				</html>
 			</UserProvider>
 		</StoreProvider>

@@ -9,7 +9,7 @@ export default function MainPageLayout({ children }: { children: React.ReactNode
 		<>
 			<NextTopLoader color="#CA191B" height={5} showSpinner={false} />
 			<Navbar routes={navigationList} />
-			<div className={""}>{children}</div>
+			{children}
 			<Footer />
 		</>
 	);
