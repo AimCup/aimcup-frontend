@@ -35,8 +35,6 @@ const SingleTournamentMappool = async ({
 		console.error(error);
 	}
 
-	console.log(getMappoolByStageData, "getMappoolByStageData");
-
 	const selectedMappoolByModification = searchParams.modification
 		? getMappoolByStageData?.beatmapsModifications.filter(
 				(m) => m.modification === searchParams.modification,

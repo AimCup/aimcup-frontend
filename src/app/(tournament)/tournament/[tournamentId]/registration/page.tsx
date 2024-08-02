@@ -1,9 +1,13 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
-import { createTeamSchema } from "@/app/(tournament)/tournament/[tournamentId]/registration/createTeamSchema";
+import { createTeamSchema } from "@/formSchemas/createTeamSchema";
 import { createTeamAction } from "@/actions/createTeamAction";
+import Section from "@ui/atoms/Section/Section";
+import { Input } from "@ui/atoms/Forms/Input/Input";
 
 const SingleTournamentRegistration = ({
 	params,
@@ -13,56 +17,42 @@ const SingleTournamentRegistration = ({
 	};
 }) => {
 	const formRef = React.useRef<HTMLFormElement>(null);
-	const [value, setValue] = React.useState("");
+	const router = useRouter();
 	const [_state, formAction] = useTypeSafeFormState(createTeamSchema, async (data) => {
 		const teamResponseDto = await createTeamAction(data);
-		console.log(teamResponseDto, "teamResponseDto");
-		//const teamResponseDtoAsJson = JSON.parse(teamResponseDto) as TeamResponseDto | ApiError;
-
-		// console.log(teamResponseDtoAsJson);
+		console.log(teamResponseDto);
+		if (!teamResponseDto.status) {
+			return toast.error(teamResponseDto.errorMessage, {
+				duration: 3000,
+			});
+		}
 		formRef.current?.reset();
+		router.push(`/tournament/${params.tournamentId}/registration`);
 	});
 
 	// console.log(state, "state");
 
 	return (
-		<main className={"text-white container mx-auto"}>
-			<form
-				id="create-team"
-				className={
-					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
-				}
-				action={formAction}
-				ref={formRef}
-			>
+		<Section>
+			<form id="create-team" className={"flex-col gap-4"} action={formAction} ref={formRef}>
 				<div className={"flex flex-col gap-4 "}>
-					<div className={"container mx-auto flex"}>
-						<div className={"flex flex-col md:w-full"}>
+					<div className={"flex"}>
+						<div className={"flex flex-col"}>
 							<h2 className={"mb-3  text-4xl font-bold leading-relaxed"}>
 								Create a team
 							</h2>
-							<h2 className={"mb-3  text-2xl font-bold leading-relaxed"}>
-								Enter your team name
-							</h2>
-							<input
-								onChange={(e) => setValue(e.target.value)}
-								value={value}
+							<Input
+								label={"Enter your team name"}
 								required={true}
 								type="text"
 								name="teamName"
 								placeholder="Type here"
-								className="input input-bordered w-full max-w-xs focus:border-mintGreen focus:ring-mintGreen"
 							/>
-							<input
-								onChange={() => {
-									return;
-								}}
+							<Input
 								value={params.tournamentId}
-								hidden={true}
-								type="text"
+								type="hidden"
 								name="tournamentAbb"
-								placeholder=""
-								className="input input-bordered w-full max-w-xs focus:border-mintGreen focus:ring-mintGreen"
+								label={"Tournament Abbreviation"}
 							/>
 						</div>
 					</div>
@@ -122,7 +112,7 @@ const SingleTournamentRegistration = ({
 					Create team
 				</Button>
 			</form>
-		</main>
+		</Section>
 	);
 };
 

@@ -22,16 +22,16 @@ const AccountPage = () => {
 					</div>
 				</Section>
 			</Suspense>
-			<Suspense fallback={<Loading size={"md"} />}>
-				<Section id="upcomming-matches">
-					<div className={"flex flex-col md:w-full"}>
-						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>
-							Upcomming matches
-						</h2>
-						<TournamentList useMobileCarousel={false} />
-					</div>
-				</Section>
-			</Suspense>
+			{/*<Suspense fallback={<Loading size={"md"} />}>*/}
+			{/*	<Section id="upcomming-matches">*/}
+			{/*		<div className={"flex flex-col md:w-full"}>*/}
+			{/*			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>*/}
+			{/*				Upcomming matches*/}
+			{/*			</h2>*/}
+			{/*			<TournamentList useMobileCarousel={false} />*/}
+			{/*		</div>*/}
+			{/*	</Section>*/}
+			{/*</Suspense>*/}
 			<Section
 				id="my-teams"
 				className={"divide-gray-700 md:px-18 md:py-18 w-full px-8 py-10 lg:px-20 lg:py-20"}

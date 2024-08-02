@@ -68,12 +68,7 @@ const SingleTournament = async ({
 
 	return (
 		<>
-			<Section
-				id="title"
-				className={
-					"divide-gray-700 md:px-18 my-12 flex w-full flex-col gap-4 px-8 lg:px-20"
-				}
-			>
+			<Section id="title" className={"flex-col"}>
 				<div className={"flex flex-col"}>
 					<div className={"flex"}>
 						<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
@@ -92,20 +87,20 @@ const SingleTournament = async ({
 					</div>
 					<div className={"flex"}>
 						<div className={"flex items-center gap-4"}>
-							{getTournamentByAbbreviation.value.canRegister && (
-								<RegisterToTournamentButton tournamentId={params.tournamentId} />
-							)}
+							{/*{getTournamentByAbbreviation.value.canRegister && (*/}
+							<RegisterToTournamentButton
+								tournamentId={params.tournamentId}
+								isTeamTournament={tournamentTeamShowEnumAvailable.includes(
+									getTournamentByAbbreviation.value?.tournamentType,
+								)}
+							/>
+							{/*)}*/}
 							<span className={"text-md text-flatRed"}>Apply for staff</span>
 						</div>
 					</div>
 				</div>
 			</Section>
-			<section
-				id="general-info"
-				className={
-					"divide-gray-700 md:px-18  mb-12 flex flex-col gap-3  px-8 md:w-2/3 lg:px-20"
-				}
-			>
+			<Section id="general-info" className={"flex-col"}>
 				<div className={"flex"}>
 					<div className={"flex items-center gap-4"}>
 						<h2 className={"text-4xl font-bold leading-relaxed"}>General Info</h2>
@@ -136,13 +131,8 @@ const SingleTournament = async ({
 						{getTournamentByAbbreviation.value?.maximumRankLimit || 0}
 					</span>
 				</div>
-			</section>
-			<section
-				id="rules"
-				className={
-					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-				}
-			>
+			</Section>
+			<Section id="rules" className={"flex-col"}>
 				<div className={"flex"}>
 					<Link
 						href={`${params.tournamentId}/rules`}
@@ -211,13 +201,8 @@ const SingleTournament = async ({
 						Read full rules
 					</Link>
 				</div>
-			</section>
-			<section
-				id="schedule"
-				className={
-					"divide-gray-700 md:px-18  mb-12  flex w-full flex-col gap-3 px-8 lg:px-20"
-				}
-			>
+			</Section>
+			<Section id="schedule" className={"flex-col"}>
 				<div className={"flex"}>
 					<Link
 						href={`${params.tournamentId}/schedule`}
@@ -249,49 +234,37 @@ const SingleTournament = async ({
 						See match schedule
 					</Link>
 				</div>
-			</section>
+			</Section>
 			{isMappool && (
-				<section
-					id="mappool"
-					className={
-						"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-					}
-				>
-					<div className={"container mx-auto flex"}>
-						<div className={"flex flex-col md:w-full"}>
-							<h2
-								className={
-									"mb-4 text-4xl font-bold leading-relaxed transition-all group-hover:underline"
-								}
-							>
-								Mappool
-							</h2>
-							<MappoolStages
-								stage={getStages.value?.map((stage) => {
-									return {
-										id: stage.id,
-										date: {
-											start: stage.startDate,
-											end: stage.endDate,
-										},
-										stageEnum: stage.stageType,
-										shouldDisplay: !!stage.mappool,
-									};
-								})}
-								tournamentAbbreviation={params.tournamentId}
-							/>
-						</div>
+				<Section id="mappool" className={"flex-col"}>
+					<div className={"flex flex-col md:w-full"}>
+						<h2
+							className={
+								"mb-4 text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+							}
+						>
+							Mappool
+						</h2>
+						<MappoolStages
+							stage={getStages.value?.map((stage) => {
+								return {
+									id: stage.id,
+									date: {
+										start: stage.startDate,
+										end: stage.endDate,
+									},
+									stageEnum: stage.stageType,
+									shouldDisplay: !!stage.mappool,
+								};
+							})}
+							tournamentAbbreviation={params.tournamentId}
+						/>
 					</div>
-				</section>
+				</Section>
 			)}
 			{getTournamentByAbbreviation.value?.tournamentType === "TEAM_VS" &&
 				teams.length > 0 && (
-					<section
-						id="teams"
-						className={
-							"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-						}
-					>
+					<Section id="teams" className={"flex-col"}>
 						<div className={"flex"}>
 							<Link
 								href={`${params.tournamentId}/teams`}
@@ -326,15 +299,10 @@ const SingleTournament = async ({
 								);
 							})}
 						</div>
-					</section>
+					</Section>
 				)}
 
-			<section
-				id="prizes"
-				className={
-					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-				}
-			>
+			<Section id="prizes" className={"flex-col gap-3"}>
 				<div className={"flex"}>
 					<h2 className={"text-4xl font-bold leading-relaxed"}>Prizes</h2>
 				</div>
@@ -365,14 +333,9 @@ const SingleTournament = async ({
 					/>
 					<span>$150</span>
 				</div>
-			</section>
+			</Section>
 			{isStaff && (
-				<section
-					id="staff"
-					className={
-						"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-					}
-				>
+				<Section id="staff" className={"flex-col gap-3"}>
 					<div className={"flex"}>
 						<Link
 							href={`${params.tournamentId}/staff`}
@@ -417,14 +380,9 @@ const SingleTournament = async ({
 							);
 						})}
 					</div>
-				</section>
+				</Section>
 			)}
-			<section
-				id="socials"
-				className={
-					"divide-gray-700   md:px-18 mb-12 flex w-full flex-col gap-3 px-8 lg:px-20"
-				}
-			>
+			<Section id="socials" className={"flex-col gap-3"}>
 				<div className={"flex"}>
 					<h2
 						className={
@@ -435,7 +393,7 @@ const SingleTournament = async ({
 					</h2>
 				</div>
 				<Socials />
-			</section>
+			</Section>
 		</>
 	);
 };

@@ -1,26 +1,25 @@
 "use server";
 
-import { cookies } from "next/headers";
-import { OpenAPI, TeamService } from "../../generated";
-import { type CreateTeamSchemaType } from "@/app/(tournament)/tournament/[tournamentId]/registration/createTeamSchema";
+import { type TeamResponseDto, TeamService } from "../../generated";
+import { type CreateTeamSchemaType } from "@/formSchemas/createTeamSchema";
+import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 
 export async function createTeamAction(data: CreateTeamSchemaType) {
 	"use server";
 
-	const token = cookies().get("token")?.value;
-
-	if (token) {
-		OpenAPI.HEADERS = {
-			Cookie: `token=${token}`,
-		};
-	}
-
-	try {
-		return await TeamService.createTeam(data.tournamentAbb, {
+	return executeFetch(
+		TeamService.createTeam(data.tournamentAbb, {
 			name: data.teamName,
 			logoUrl: "",
-		}).then((res) => JSON.stringify(res));
-	} catch (e) {
-		return JSON.stringify(e);
-	}
+		}),
+		["/", "/dashboard", "account"],
+	)
+		.then((res) => {
+			console.log(res);
+			return res as SuccessfulResponse<TeamResponseDto>;
+		})
+		.catch((error) => {
+			console.log(error);
+			return error as ErrorResponse;
+		});
 }

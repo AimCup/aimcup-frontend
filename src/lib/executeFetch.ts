@@ -14,6 +14,10 @@ export type ErrorResponse = {
 	errorMessage: string;
 };
 
+export type ApiErrorMessages = {
+	errors: string[];
+};
+
 export type Response<T> = SuccessfulResponse<T> | ErrorResponse;
 
 export const executeFetch = async <T>(
@@ -46,9 +50,10 @@ export const executeFetch = async <T>(
 			return { status: true, response: res } as SuccessfulResponse<T>;
 		})
 		.catch((error) => {
+			console.log(error);
 			return {
 				status: false,
-				errorMessage: (error as ApiError).body.message,
+				errorMessage: ((error as ApiError).body as ApiErrorMessages).errors[0],
 			} as ErrorResponse;
 		});
 };
