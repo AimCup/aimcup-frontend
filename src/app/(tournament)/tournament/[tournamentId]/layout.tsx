@@ -6,6 +6,7 @@ import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import tournamentType = TournamentRequestDto.tournamentType;
+import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -70,7 +71,9 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 	return (
 		<>
 			<NextTopLoader color="#CA191B" height={5} showSpinner={false} />
-			<Navbar routes={tournamentNavbarRoutes} />
+			<Navbar routes={tournamentNavbarRoutes}>
+				<LoginAvatar />
+			</Navbar>
 			<section className={"relative h-96 w-full"}>
 				<Image
 					src={`${process.env.NEXT_PUBLIC_API_URL}/tournaments/${params.tournamentId}/banner`}

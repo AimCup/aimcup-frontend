@@ -12,8 +12,8 @@ export const ScheduleList = ({ scheduleList }: { scheduleList: StageResponseDto[
 					className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
 				/>
 				<span>
-					{format(new Date(stage.startDate), "MM/dd/yyyy")} -{" "}
-					{format(new Date(stage.endDate), "MM/dd/yyyy")}
+					{format(new Date(stage.startDate), "dd/MM/yyyy")} -{" "}
+					{format(new Date(stage.endDate), "dd/MM/yyyy")}
 				</span>
 			</div>
 		);

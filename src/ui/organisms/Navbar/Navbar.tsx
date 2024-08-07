@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ActiveLink } from "@ui/atoms/ActiveLink/ActiveLink";
-import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
 
 export type INavbarProps = {
 	name: string;
@@ -11,7 +10,13 @@ export type INavbarProps = {
 	children?: { name: string; href: string }[];
 };
 
-export const Navbar = ({ routes }: { routes: INavbarProps[] }) => {
+export const Navbar = ({
+	children,
+	routes,
+}: {
+	children: React.ReactNode;
+	routes: INavbarProps[];
+}) => {
 	const dropdownRef = React.useRef<HTMLDetailsElement>(null);
 
 	useEffect(() => {
@@ -63,7 +68,7 @@ export const Navbar = ({ routes }: { routes: INavbarProps[] }) => {
 						})}
 					</ul>
 				</div>
-				<LoginAvatar />
+				{children}
 			</nav>
 		</>
 	);

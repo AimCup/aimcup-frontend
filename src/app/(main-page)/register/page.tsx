@@ -2,18 +2,16 @@
 import React from "react";
 import Image from "next/image";
 import { SiOsu } from "react-icons/si";
-import { redirect, RedirectType } from "next/navigation";
-import type { UserResponseDTO } from "../../../../generated";
 import { Button } from "@ui/atoms/Button/Button";
-import { useAppSelector } from "@/lib/redux/hooks";
 
 const RegisterPage = () => {
-	const user = useAppSelector<UserResponseDTO>((state) => state.user);
-
-	if (user.id) {
-		redirect("/", RedirectType.replace);
-		return null;
-	}
+	// const user = useAppSelector<UserResponseDTO>((state) => state.user);
+	//
+	// if (user.id) {
+	// 	redirect("/", RedirectType.replace);
+	// 	return null;
+	// }
+	//todo
 
 	const redirectUri = encodeURIComponent(
 		process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",

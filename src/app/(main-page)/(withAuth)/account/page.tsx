@@ -9,6 +9,7 @@ import { generateTeam } from "@/mocks/mockups";
 import Section from "@ui/atoms/Section/Section";
 
 const AccountPage = () => {
+	console.log("supawdwd");
 	return (
 		<>
 			<UserInformation />

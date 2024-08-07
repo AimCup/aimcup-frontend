@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { deleteSession } from "@/lib/session";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-	const response = NextResponse.redirect(new URL("/", req.url));
-	response.cookies.delete("token");
-	response.cookies.delete("oauth2_auth_request");
-	return response;
+export async function POST(_req: NextRequest): Promise<NextResponse> {
+	deleteSession();
+	return NextResponse.json({ status: true, message: "Session deleted :)" });
 }

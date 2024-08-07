@@ -1,8 +1,8 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { type ApiError, OpenAPI } from "../../generated";
+import { verifySession } from "@/lib/session";
 
 export type SuccessfulResponse<T> = {
 	status: true;
@@ -25,15 +25,14 @@ export const executeFetch = async <T>(
 	revalidatePaths?: string[],
 ): Promise<Response<T>> => {
 	"use server";
-	const token = cookies().get("token")?.value;
+	const JWT = await verifySession();
+	console.log(JWT, "JWT");
 
-	if (token) {
+	if (JWT.isAuth && typeof JWT.token === "string") {
 		OpenAPI.HEADERS = {
-			Cookie: `token=${token}`,
+			Cookie: `token=${JWT.token}`,
 		};
-	}
-
-	if (!token) {
+	} else {
 		return {
 			status: false,
 			errorMessage: "No token found",

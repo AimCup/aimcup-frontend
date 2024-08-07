@@ -1,6 +1,12 @@
 import React from "react";
-import { AuthGuard } from "@/lib/Providers/AuthGuard";
 
 export default function MainPageLayout({ children }: { children: React.ReactNode }) {
-	return <AuthGuard>{children}</AuthGuard>;
+	return (
+		<>
+			<div className={"flex lg:hidden"}>
+				Sorry, but this page is not available on mobile devices.
+			</div>
+			<div className={"hidden lg:flex"}>{children}</div>
+		</>
+	);
 }

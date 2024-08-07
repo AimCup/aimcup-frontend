@@ -2,14 +2,14 @@ import React from "react";
 
 interface IInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "name"> {
 	errorMessage?: string;
-	label: string;
+	label?: string;
 	name: string;
 }
 
 export const Input = ({ errorMessage, ...props }: IInputProps) => {
 	return (
-		<div className={"flex flex-col"}>
-			{props.type !== "hidden" && (
+		<div className={`flex flex-col ${props.type === "hidden" ? "h-0" : ""}`}>
+			{props.type !== "hidden" && props.label && (
 				<label className="label" htmlFor={props.name}>
 					<span className="label-text capitalize">
 						{props.label} {props.required && "*"} :

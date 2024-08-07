@@ -24,7 +24,7 @@ export const Button = ({
 	...props
 }: ButtonProps) => {
 	const buttonClassNames = twMerge(
-		`text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 flex items-center justify-center`,
+		`text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 flex items-center justify-center max-w-max`,
 		className,
 	);
 

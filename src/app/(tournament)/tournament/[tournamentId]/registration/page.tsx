@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { createTeamSchema } from "@/formSchemas/createTeamSchema";
-import { createTeamAction } from "@/actions/createTeamAction";
+import { createTeamAction } from "@/actions/public/createTeamAction";
 import Section from "@ui/atoms/Section/Section";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 

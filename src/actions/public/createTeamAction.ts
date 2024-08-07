@@ -1,6 +1,6 @@
 "use server";
 
-import { type TeamResponseDto, TeamService } from "../../generated";
+import { type TeamResponseDto, TeamService } from "../../../generated";
 import { type CreateTeamSchemaType } from "@/formSchemas/createTeamSchema";
 import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 

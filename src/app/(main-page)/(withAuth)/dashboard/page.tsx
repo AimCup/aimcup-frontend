@@ -3,17 +3,22 @@ import Link from "next/link";
 import { TournamentService } from "../../../../../generated";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
 import Section from "@ui/atoms/Section/Section";
+import { executeFetch } from "@/lib/executeFetch";
 
 const DashboardPage = async () => {
-	const tournaments = await TournamentService.getTournaments();
+	const tournaments = await executeFetch(TournamentService.getTournaments());
+
+	if (!tournaments.status) {
+		return <div>{tournaments.errorMessage}</div>;
+	}
 
 	return (
-		<Section>
+		<Section className={"!p-0"}>
 			<div className={"w-full"}>
 				<h1 className={"my-2 text-lg"}>Select tournament</h1>
 				<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
 					<CreateTournamentModal />
-					{tournaments.map((tournament) => (
+					{tournaments.response.map((tournament) => (
 						<Link
 							href={`/dashboard/${tournament.abbreviation}`}
 							key={tournament.abbreviation}
@@ -23,8 +28,11 @@ const DashboardPage = async () => {
 								className={
 									"flex h-64 w-full gap-2 rounded-md bg-opacity-20 bg-cover bg-center"
 								}
+								// style={{
+								// 	backgroundImage: `url(${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner)`,
+								// }}
 								style={{
-									backgroundImage: `url(${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner)`,
+									backgroundImage: `url(placeholder.png)`,
 								}}
 							>
 								<p

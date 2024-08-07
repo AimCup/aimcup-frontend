@@ -4,19 +4,18 @@ import React, { useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { TournamentRequestDto, type UserResponseDTO } from "../../../../../generated";
+import { TournamentRequestDto } from "../../../../../generated";
 import { Button } from "@ui/atoms/Button/Button";
-import { useAppSelector } from "@/lib/redux/hooks";
 import Modal from "@ui/organisms/Modal/Modal";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { createTournamentSchema } from "@/formSchemas/createTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
-import { createTournamentAction } from "@/actions/createTournamentAction";
+import { createTournamentAction } from "@/actions/public/createTournamentAction";
 
 const CreateTournamentModal = () => {
 	const modalRef = useRef<HTMLDialogElement>(null);
-	const user = useAppSelector<UserResponseDTO>((state) => state.user);
+
 	const router = useRouter();
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [state, formAction] = useTypeSafeFormState(createTournamentSchema, async (data) => {
@@ -46,10 +45,6 @@ const CreateTournamentModal = () => {
 		{ id: TournamentRequestDto.qualificationType.Z_SUM, label: "Z-sum" },
 		{ id: TournamentRequestDto.qualificationType.ZIP_LAW, label: "Zip law" },
 	];
-
-	if (user === null) return null;
-	// TODO: Change to ROLE_ADMIN
-	if (!user.roles.some((role) => role.name === "ROLE_USER")) return null;
 
 	return (
 		<>

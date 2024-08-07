@@ -4,7 +4,7 @@ import {
 	AdminTournamentService,
 	type TournamentRequestDto,
 	type TournamentResponseDto,
-} from "../../generated";
+} from "../../../generated";
 import { type CreateTournamentSchemaType } from "@/formSchemas/createTournamentSchema";
 import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 

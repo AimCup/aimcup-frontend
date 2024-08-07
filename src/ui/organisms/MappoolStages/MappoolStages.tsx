@@ -27,8 +27,8 @@ export const MappoolStages = (props: IMappoolStagesProps) => {
 					key={stage.id}
 					title={stageTypeEnumToString(stage.stageEnum)}
 					date={{
-						start: format(new Date(stage.date?.start || 0), "MM/dd/yyyy"),
-						end: format(new Date(stage.date?.end || 0), "MM/dd/yyyy"),
+						start: format(new Date(stage.date?.start || 0), "dd/MM/yyyy"),
+						end: format(new Date(stage.date?.end || 0), "dd/MM/yyyy"),
 					}}
 					status={false}
 					img={`/placeholder.png`}
