@@ -22,7 +22,6 @@ export const AddBeatMap = ({ tournamentAbb, mappoolId }: IAddStageFormProps) => 
 
 	const [state, formAction] = useTypeSafeFormState(addBeatMapSchema, async (data) => {
 		const addBeatMapResponse = await addBeatMapAction(data);
-		console.log(addBeatMapResponse);
 		if (!addBeatMapResponse.status) {
 			return toast.error(addBeatMapResponse.errorMessage, {
 				duration: 3000,

@@ -16,14 +16,12 @@ export async function createStageAction(data: CreateStageSchemaType) {
 			stageType: data.stageType as StageResponseDto.stageType,
 			startDate: new Date(data.startDate).toISOString(),
 		}),
-		["/", "/dashboard/[tournamentAbbreviation]", "/tournament/[tournamentId]"],
+		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<StageResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }
@@ -39,14 +37,12 @@ export async function editStageAction(data: EditStageSchemaType) {
 				startDate: new Date(data.startDate).toISOString(),
 			},
 		),
-		["/", "/dashboard/[tournamentAbbreviation]", "/tournament/[tournamentId]"],
+		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<StageResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

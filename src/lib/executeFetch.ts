@@ -43,7 +43,6 @@ export const executeFetch = async <T>(
 			return { status: true, response: res } as SuccessfulResponse<T>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return {
 				status: false,
 				errorMessage: ((error as ApiError).body as ApiErrorMessages).errors[0],

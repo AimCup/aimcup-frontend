@@ -20,7 +20,6 @@ const SingleTournamentRegistration = ({
 	const router = useRouter();
 	const [_state, formAction] = useTypeSafeFormState(createTeamSchema, async (data) => {
 		const teamResponseDto = await createTeamAction(data);
-		console.log(teamResponseDto);
 		if (!teamResponseDto.status) {
 			return toast.error(teamResponseDto.errorMessage, {
 				duration: 3000,

@@ -13,14 +13,12 @@ export async function editStaffMemberAction(data: AddStaffMembersSchemaType) {
 			roles: data.roles,
 			permissions: data.permissions,
 		}),
-		["/", "/dashboard/[tournamentAbb]/staff-members"],
+		["/", `/dashboard/${data.tournamentAbbreviation}/staff-members`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<AdminStaffMemberService>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }
@@ -35,14 +33,12 @@ export async function addStaffMemberAction(data: AddStaffMembersSchemaType) {
 			roles: data.roles || [],
 			permissions: data.permissions || [],
 		}),
-		["/", "/dashboard/[tournamentAbb]/staff-members"],
+		["/", `/dashboard/${data.tournamentAbbreviation}/staff-members`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<AdminStaffMemberService>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

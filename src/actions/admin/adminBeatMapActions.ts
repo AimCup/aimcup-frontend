@@ -24,11 +24,9 @@ export async function addBeatMapAction(data: AddBeatMapSchemaType) {
 		["/", "/dashboard/[tournamentAbb]/mappool/[stageType]/[mappoolId]"],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<BeatmapResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

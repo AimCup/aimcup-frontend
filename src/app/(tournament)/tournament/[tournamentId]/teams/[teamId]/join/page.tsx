@@ -6,11 +6,12 @@ import Section from "@ui/atoms/Section/Section";
 import { executeFetch } from "@/lib/executeFetch";
 
 const AcceptInvitationPage = async ({
-	teamId,
-	tournamentAbb,
+	params: { tournamentAbb, teamId },
 }: {
-	teamId: string;
-	tournamentAbb: string;
+	params: {
+		tournamentAbb: string;
+		teamId: string;
+	};
 }) => {
 	const userData = await getUser();
 

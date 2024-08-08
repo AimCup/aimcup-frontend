@@ -20,7 +20,6 @@ const CreateTournamentModal = () => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [state, formAction] = useTypeSafeFormState(createTournamentSchema, async (data) => {
 		const tournamentResponseDto = await createTournamentAction(data);
-		console.log(tournamentResponseDto, "tournamentResponseDto");
 		if (!tournamentResponseDto.status) {
 			return toast.error(tournamentResponseDto.errorMessage, {
 				duration: 3000,

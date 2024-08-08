@@ -41,7 +41,6 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 		createStageSchema,
 		async (data) => {
 			const stageResponse = await createStageAction(data);
-			console.log(stageResponse);
 			if (!stageResponse.status) {
 				return toast.error(stageResponse.errorMessage, {
 					duration: 3000,
@@ -61,7 +60,6 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 		editStageSchema,
 		async (data) => {
 			const stageResponse = await editStageAction(data);
-			console.log(stageResponse);
 			if (!stageResponse.status) {
 				return toast.error(stageResponse.errorMessage, {
 					duration: 3000,

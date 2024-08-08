@@ -21,14 +21,12 @@ export async function createTeamAction(data: CreateTeamSchemaType) {
 			name: data.teamName,
 			logoUrl: "",
 		}),
-		["/", "/tournament/[tournamentId]"],
+		["/", `/tournament/${data.tournamentAbb}`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<TeamResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }
@@ -41,14 +39,16 @@ export async function updateTeam(data: updateTeamSchemaType) {
 			name: data.name,
 			logoUrl: data.logoUrl,
 		}),
-		["/", "/tournament/[tournamentId]/teams/[teamId]", "/tournament/[tournamentId]"],
+		[
+			"/",
+			`/tournament/${data.tournamentAbbreviation}/teams/${data.teamId}`,
+			`/tournament/${data.tournamentAbbreviation}`,
+		],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<TeamResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }
@@ -58,14 +58,16 @@ export async function inviteToTeam(data: inviteToTeamSchemaType) {
 
 	return executeFetch(
 		TeamService.inviteParticipant(data.tournamentAbbreviation, data.teamId, data.osuId),
-		["/", "/tournament/[tournamentId]/teams/[teamId]", "/tournament/[tournamentId]"],
+		[
+			"/",
+			`/tournament/${data.tournamentAbbreviation}/teams/${data.teamId}`,
+			`/tournament/${data.tournamentAbbreviation}`,
+		],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<TeamResponseDto>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

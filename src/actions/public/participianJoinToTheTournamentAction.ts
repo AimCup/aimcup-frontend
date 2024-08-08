@@ -14,11 +14,9 @@ export async function participianJoinToTheTournamentAction(data: FormData) {
 		"/registration",
 	])
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<ParticipantResponseDto[]>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

@@ -21,7 +21,6 @@ export const ChangeTeamNameForm = ({
 		updateTeamSchema,
 		async (data) => {
 			const updateTeamResponse = await updateTeam(data);
-			console.log(updateTeamResponse);
 			if (!updateTeamResponse.status) {
 				return toast.error(updateTeamResponse.errorMessage, {
 					duration: 3000,

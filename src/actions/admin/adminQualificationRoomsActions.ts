@@ -17,11 +17,9 @@ export async function createQualificationRoomsAction(data: CreateQualificationRo
 		["/", "/dashboard/[tournamentAbb]/qualification-rooms"],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<AdminStaffMemberService>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }
@@ -39,14 +37,12 @@ export async function editQualificationRoomsAction(data: EditQualificationRoomsS
 				startDate: data.dataTimeStart,
 			},
 		),
-		["/", "/dashboard/[tournamentAbb]/qualification-rooms"],
+		["/", `/dashboard/${data.tournamentAbbreviation}/qualification-rooms`],
 	)
 		.then((res) => {
-			console.log(res);
 			return res as SuccessfulResponse<AdminStaffMemberService>;
 		})
 		.catch((error) => {
-			console.log(error);
 			return error as ErrorResponse;
 		});
 }

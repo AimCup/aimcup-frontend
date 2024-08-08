@@ -2,9 +2,9 @@ import React from "react";
 import Section from "@ui/atoms/Section/Section";
 
 const DashboardHome = async ({
-	params,
+	_params,
 }: {
-	params: {
+	_params: {
 		tournamentAbbreviation: string;
 	};
 }) => {
@@ -19,8 +19,6 @@ const DashboardHome = async ({
 	// 	StageResponseDto.stageType.REGISTRATION,
 	// 	StageResponseDto.stageType.SCREENING,
 	// ];
-
-	console.log(params);
 
 	return (
 		<Section className={"!py-0"}>

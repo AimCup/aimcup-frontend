@@ -21,7 +21,6 @@ export const InvitePlayerToTeamButton = ({
 		inviteToTeamSchema,
 		async (data) => {
 			const inviteToTeamResponse = await inviteToTeam(data);
-			console.log(inviteToTeamResponse);
 			if (!inviteToTeamResponse.status) {
 				return toast.error(inviteToTeamResponse.errorMessage, {
 					duration: 3000,
