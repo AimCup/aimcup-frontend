@@ -1,42 +1,42 @@
-"use client";
 import React from "react";
-import { Button, type ButtonProps } from "@ui/atoms/Button/Button";
-import { addBeatMapAction } from "@/actions/public/participianJoinToTheTournamentAction";
+import { ParticipantService } from "../../../../generated";
+import { Button } from "@ui/atoms/Button/Button";
+import { executeFetch } from "@/lib/executeFetch";
 
 interface RegisterToTournamentButtonProps {
 	tournamentId: string;
 	isTeamTournament: boolean;
+	shouldDisplay: boolean;
 }
 
 const RegisterToTournamentButton = ({
 	tournamentId,
 	isTeamTournament,
+	shouldDisplay,
 }: RegisterToTournamentButtonProps) => {
-	const buttonProps: ButtonProps = {
-		children: "Create team",
-		href: `/tournament/${tournamentId}/registration`,
-	};
-
-	// if (!user.id) {
-	// 	const redirectUri = encodeURIComponent(
-	// 		`${process.env.NEXT_PUBLIC_URL}/tournament/${tournamentId}/registration`,
-	// 	);
-	// 	buttonProps = {
-	// 		href: `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorize/osu?redirect_uri=${redirectUri}/`,
-	// 		children: "Log in to register",
-	// 	};
-	// }
+	if (!shouldDisplay) {
+		return null;
+	}
 
 	if (!isTeamTournament) {
 		return (
-			<form action={addBeatMapAction}>
-				<input type="hidden" name="tournamentAbb" value={tournamentId} />
+			<form
+				action={async (_e) => {
+					"use server";
+					await executeFetch(ParticipantService.registerParticipant(tournamentId), [
+						"/",
+						"/dashboard",
+						"/tournament/[tournamentId]",
+						"/registration",
+					]);
+				}}
+			>
 				<Button type={"submit"}>Join to the tournament</Button>
 			</form>
 		);
+	} else {
+		return <Button href={`/tournament/${tournamentId}/registration`}>Create team</Button>;
 	}
-
-	return <Button {...buttonProps} />;
 };
 
 export default RegisterToTournamentButton;

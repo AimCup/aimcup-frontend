@@ -1,14 +1,24 @@
 import React from "react";
 import { PiCrownSimpleFill } from "react-icons/pi";
+import Link from "next/link";
 import { type TeamResponseDto } from "../../../../generated";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 
-export const TeamCard = ({ team }: { team: TeamResponseDto }) => {
+export const TeamCard = ({
+	team,
+	tournamentAbb,
+}: {
+	team: TeamResponseDto;
+	tournamentAbb: string;
+}) => {
 	if (!team) {
 		return null;
 	}
 	return (
-		<div className={"flex w-full flex-col gap-4 rounded-md bg-tuned p-6 text-primary-light"}>
+		<Link
+			href={`/tournament/${tournamentAbb}/teams/${team.id}`}
+			className={"flex w-full flex-col gap-4 rounded-md bg-tuned p-6 text-primary-light"}
+		>
 			<h3 className={"text-2xl font-bold"}>{team?.name}</h3>
 			<div className={"grid grid-cols-2 gap-4"}>
 				{team?.participants?.map((participant) => (
@@ -28,6 +38,6 @@ export const TeamCard = ({ team }: { team: TeamResponseDto }) => {
 					</div>
 				))}
 			</div>
-		</div>
+		</Link>
 	);
 };

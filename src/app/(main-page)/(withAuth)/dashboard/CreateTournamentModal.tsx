@@ -38,7 +38,8 @@ const CreateTournamentModal = () => {
 	const tournamentTourTypeSelectOptions: selectOptions[] = [
 		{ id: TournamentRequestDto.tournamentType.TEAM_VS, label: "Team vs" },
 		{ id: TournamentRequestDto.tournamentType.INTERNATIONAL, label: "International" },
-		{ id: TournamentRequestDto.tournamentType.PARTICIPANT_VS, label: "Participant vs" },
+		// todo
+		// { id: TournamentRequestDto.tournamentType.PARTICIPANT_VS, label: "Participant vs" },
 	];
 
 	const qualificationTypeSelectOptions: selectOptions[] = [

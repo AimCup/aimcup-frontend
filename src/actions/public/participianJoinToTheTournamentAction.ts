@@ -3,7 +3,7 @@
 import { type ParticipantResponseDto, ParticipantService } from "../../../generated";
 import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 
-export async function addBeatMapAction(data: FormData) {
+export async function participianJoinToTheTournamentAction(data: FormData) {
 	"use server";
 	const tournamentAbb = data.get("tournamentAbb") as string;
 

@@ -26,17 +26,11 @@ export const executeFetch = async <T>(
 ): Promise<Response<T>> => {
 	"use server";
 	const JWT = await verifySession();
-	console.log(JWT, "JWT");
 
-	if (JWT.isAuth && typeof JWT.token === "string") {
+	if (typeof JWT.token === "string") {
 		OpenAPI.HEADERS = {
 			Cookie: `token=${JWT.token}`,
 		};
-	} else {
-		return {
-			status: false,
-			errorMessage: "No token found",
-		} as ErrorResponse;
 	}
 
 	return fetchRequest

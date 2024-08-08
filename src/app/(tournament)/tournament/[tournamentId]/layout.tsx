@@ -7,6 +7,8 @@ import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import tournamentType = TournamentRequestDto.tournamentType;
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
+import { executeFetch } from "@/lib/executeFetch";
+import Section from "@ui/atoms/Section/Section";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -28,44 +30,54 @@ const navbarRoutes: INavbarProps[] = [
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
-	const [tournamentData, getStagesData] = await Promise.allSettled([
+	const getStagesData = await executeFetch(StageService.getStages(params.tournamentId));
+
+	const tournamentData = await executeFetch(
 		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-		StageService.getStages(params.tournamentId),
-	]);
+	);
 
-	if (tournamentData.status === "rejected") {
-		throw new Error("Tournament not found"); //todo: change to proper error
+	if (!tournamentData.status) {
+		<Section>{tournamentData.errorMessage}</Section>;
 	}
-	if (getStagesData.status === "rejected") {
-		throw new Error("Shedule not found"); //todo: change to proper error
+	if (!getStagesData.status) {
+		<Section>{getStagesData.errorMessage}</Section>;
 	}
 
-	const getStateTypes = getStagesData.value
-		.filter((stage) => !!stage.mappool)
-		.map((stage) => stage.stageType);
+	const getStateTypes =
+		getStagesData.status &&
+		getStagesData.response.filter((stage) => !!stage.mappool).map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
 		if (item.name === "Mappool") {
 			return {
 				...item,
-				children: getStateTypes.map((stage) => ({
-					name: stageTypeEnumToString(stage),
-					href: `/tournament/${params.tournamentId}/mappool/${stage}`,
-				})),
+				children:
+					getStateTypes &&
+					getStateTypes.map((stage) => ({
+						name: stageTypeEnumToString(stage),
+						href: `/tournament/${params.tournamentId}/mappool/${stage}`,
+					})),
 			};
 		}
 		return {
 			...item,
 			href: `/tournament/${params.tournamentId}${item.href}`,
 		};
-	});
+	}) as INavbarProps[];
 
-	if (tournamentData.value?.tournamentType === tournamentType.TEAM_VS) {
-		tournamentNavbarRoutes.push({ name: "Teams", href: "/teams" });
-	} else if (tournamentData.value?.tournamentType === tournamentType.PARTICIPANT_VS) {
-		tournamentNavbarRoutes.push({ name: "Participants", href: "/participants" });
-	} else if (tournamentData.value?.tournamentType === tournamentType.INTERNATIONAL) {
-		tournamentNavbarRoutes.push({ name: "INTERNATIONAL TODO", href: "" }); //todo
+	if (
+		tournamentData.status &&
+		tournamentData.response?.tournamentType !== tournamentType.PARTICIPANT_VS
+	) {
+		tournamentNavbarRoutes.push({
+			name: "Teams",
+			href: `/tournament/${params.tournamentId}/teams`,
+		});
+	} else {
+		tournamentNavbarRoutes.push({
+			name: "Participants",
+			href: `/tournament/${params.tournamentId}/participants`,
+		});
 	}
 
 	return (

@@ -2,7 +2,10 @@
 
 import { AdminStageService, type StageResponseDto } from "../../../generated";
 import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
-import { type CreateStageSchemaType, type EditStageSchemaType } from "@/formSchemas/createStageSchema";
+import {
+	type CreateStageSchemaType,
+	type EditStageSchemaType,
+} from "@/formSchemas/createStageSchema";
 
 export async function createStageAction(data: CreateStageSchemaType) {
 	"use server";
@@ -13,7 +16,7 @@ export async function createStageAction(data: CreateStageSchemaType) {
 			stageType: data.stageType as StageResponseDto.stageType,
 			startDate: new Date(data.startDate).toISOString(),
 		}),
-		["/", "/dashboard/[tournamentAbbreviation]"],
+		["/", "/dashboard/[tournamentAbbreviation]", "/tournament/[tournamentId]"],
 	)
 		.then((res) => {
 			console.log(res);
@@ -36,7 +39,7 @@ export async function editStageAction(data: EditStageSchemaType) {
 				startDate: new Date(data.startDate).toISOString(),
 			},
 		),
-		["/", "/dashboard/[tournamentAbbreviation]"],
+		["/", "/dashboard/[tournamentAbbreviation]", "/tournament/[tournamentId]"],
 	)
 		.then((res) => {
 			console.log(res);

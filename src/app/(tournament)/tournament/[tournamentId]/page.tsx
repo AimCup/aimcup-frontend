@@ -93,6 +93,7 @@ const SingleTournament = async ({
 								isTeamTournament={tournamentTeamShowEnumAvailable.includes(
 									getTournamentByAbbreviation.value?.tournamentType,
 								)}
+								shouldDisplay={getTournamentByAbbreviation.value?.canRegister}
 							/>
 							{/*)}*/}
 							<span className={"text-md text-flatRed"}>Apply for staff</span>
@@ -293,7 +294,10 @@ const SingleTournament = async ({
 								return (
 									<React.Fragment key={team.id}>
 										<div>
-											<TeamCard team={team} />
+											<TeamCard
+												team={team}
+												tournamentAbb={params.tournamentId}
+											/>
 										</div>
 									</React.Fragment>
 								);

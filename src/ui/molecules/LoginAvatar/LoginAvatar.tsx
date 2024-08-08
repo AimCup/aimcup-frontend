@@ -1,9 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { DiscordService } from "../../../../generated";
 import { Button } from "@ui/atoms/Button/Button";
 import { getUser } from "@/actions/public/getUserAction";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
+import { executeFetch } from "@/lib/executeFetch";
 
 export const LoginAvatar = async () => {
 	const userData = await getUser();
@@ -21,6 +24,8 @@ export const LoginAvatar = async () => {
 		);
 	}
 
+	const isUserRoleAdmin = userData.roles.some((role) => role.name === "ROLE_ADMIN");
+
 	return (
 		<div className="m dropdown dropdown-end dropdown-hover">
 			<Avatar src={`https://a.ppy.sh/${userData.osuId}`} notificationCount={0} />
@@ -31,10 +36,27 @@ export const LoginAvatar = async () => {
 				<li>
 					<Link href={"/account"}>Account</Link>
 				</li>
-				{/*Only visible for users that are related to the tournament*/}
-				<li>
-					<Link href={"/dashboard"}>Dashboard</Link>
-				</li>
+				{!userData.discordId && (
+					<li>
+						<form
+							action={async (_e) => {
+								"use server";
+								const data = await executeFetch(DiscordService.verify(), ["/"]);
+								if (data.status) {
+									redirect(data.response.redirectUri);
+								}
+							}}
+						>
+							<button type="submit">Verify discord</button>
+						</form>
+					</li>
+				)}
+				{isUserRoleAdmin && (
+					<li>
+						<Link href={"/dashboard"}>Dashboard</Link>
+					</li>
+				)}
+
 				<li>
 					<LogoutButton />
 				</li>

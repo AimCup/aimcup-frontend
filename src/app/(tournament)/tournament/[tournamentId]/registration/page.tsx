@@ -26,11 +26,11 @@ const SingleTournamentRegistration = ({
 				duration: 3000,
 			});
 		}
-		formRef.current?.reset();
-		router.push(`/tournament/${params.tournamentId}/registration`);
+		if ("response" in teamResponseDto) {
+			formRef.current?.reset();
+			router.push(`/tournament/${params.tournamentId}/teams/${teamResponseDto.response.id}`);
+		}
 	});
-
-	// console.log(state, "state");
 
 	return (
 		<Section>
