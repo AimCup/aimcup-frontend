@@ -6,20 +6,23 @@ import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
+	MappoolService,
 	StaffMemberService,
+	StageResponseDto,
 	StageService,
 	type TeamResponseDto,
 	TeamService,
 	TournamentService,
 } from "../../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
-import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { Socials } from "@ui/organisms/Socials/Socials";
 import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
 import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
 import { MappoolStages } from "@ui/organisms/MappoolStages/MappoolStages";
 import { tournamentTeamShowEnumAvailable } from "@/lib/helpers";
 import Section from "@ui/atoms/Section/Section";
+import { executeFetch } from "@/lib/executeFetch";
+import StaffMember from "@ui/organisms/StaffMember/StaffMember";
 
 const SingleTournament = async ({
 	params,
@@ -64,7 +67,15 @@ const SingleTournament = async ({
 		(staff) => staff.staffMembers && staff.staffMembers.length > 0,
 	);
 
-	const isMappool = getStages.value?.some((stage) => !!stage.mappool);
+	const mappools = await executeFetch(
+		MappoolService.getMappoolsByTournament(params.tournamentId),
+	);
+
+	const getStageByStageType = (stageType: string): StageResponseDto => {
+		return getStages.value.find(
+			(stage: StageResponseDto) => stage.stageType === stageType,
+		) as StageResponseDto;
+	};
 
 	return (
 		<>
@@ -214,7 +225,7 @@ const SingleTournament = async ({
 								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
 							}
 						>
-							Shedule
+							Schedule
 						</h2>{" "}
 						<LiaLongArrowAltRightSolid
 							size={45}
@@ -236,7 +247,7 @@ const SingleTournament = async ({
 					</Link>
 				</div>
 			</Section>
-			{isMappool && (
+			{mappools.status && mappools.response.length !== 0 ? (
 				<Section id="mappool" className={"flex-col"}>
 					<div className={"flex flex-col md:w-full"}>
 						<h2
@@ -246,23 +257,28 @@ const SingleTournament = async ({
 						>
 							Mappool
 						</h2>
-						<MappoolStages
-							stage={getStages.value?.map((stage) => {
-								return {
-									id: stage.id,
-									date: {
-										start: stage.startDate,
-										end: stage.endDate,
-									},
-									stageEnum: stage.stageType,
-									shouldDisplay: !!stage.mappool,
-								};
-							})}
-							tournamentAbbreviation={params.tournamentId}
-						/>
+						{mappools.response.map((mappool) => {
+							const stage = getStageByStageType(mappool.stage);
+							return (
+								<div className={"m-2"} key={mappool.id}>
+									<MappoolStages
+										stage={{
+											id: stage.id,
+											date: {
+												start: stage.startDate,
+												end: stage.endDate,
+											},
+											stageEnum: stage.stageType,
+										}}
+										mappool={mappool}
+										tournamentAbbreviation={params.tournamentId}
+									/>
+								</div>
+							);
+						})}
 					</div>
 				</Section>
-			)}
+			) : undefined}
 			{getTournamentByAbbreviation.value?.tournamentType === "TEAM_VS" &&
 				teams.length > 0 && (
 					<Section id="teams" className={"flex-col"}>
@@ -366,20 +382,7 @@ const SingleTournament = async ({
 
 							return (
 								staff?.staffMembers?.map((member) => (
-									<div key={member.id} className={"flex items-center gap-4"}>
-										<div className={"relative"}>
-											<Avatar src={`https://a.ppy.sh/${member.user.osuId}`} />
-										</div>
-
-										<span
-											className={
-												"flex items-center gap-4 overflow-hidden truncate"
-											}
-										>
-											{member.user.username}{" "}
-											<span className={"text-xs opacity-60"}>{role}</span>
-										</span>
-									</div>
+									<StaffMember key={member.id} staffMember={member} role={role} />
 								)) || null
 							);
 						})}

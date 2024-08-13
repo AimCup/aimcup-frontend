@@ -41,19 +41,19 @@ const Main = async () => {
 							Welcome to Aim Cup!
 						</h2>
 						<p className={"text-lg leading-loose sm:pr-8"}>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet
-							est at enim porta luctus. Nunc suscipit volutpat odio ut posuere. Morbi
-							nec velit justo. Proin ipsum diam, volutpat sed turpis ac, accumsan
-							rhoncus enim. Etiam sollicitudin, lacus at lobortis vestibulum, tortor
-							sapien fermentum dolor, vel pharetra massa libero rhoncus lectus.
+							Welcome to Aim Cup, the biggest osu! Relax tournament since 2021.
+							Attracting hundreds of players in each edition, we distinguish ourselves
+							by consistently evolving our format and mappool meta. Each iteration
+							offers something new and exciting, ensuring a fresh and unique
+							experience every time.
 						</p>
 					</div>
 					<Image
-						src={"/placeholder.png"}
+						src={"/aim_logo.png"}
 						alt={"welcome"}
-						width={350}
-						height={350}
-						className={" hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
+						width={300}
+						height={300}
+						className={" hidden object-cover md:block"}
 					/>
 				</div>
 			</Section>
@@ -70,20 +70,14 @@ const Main = async () => {
 					<div className={"flex flex-col"}>
 						<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>About us</h2>
 						<p className={"text-lg leading-loose sm:pr-8 "}>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet
-							est at enim porta luctus. Nunc suscipit volutpat odio ut posuere. Morbi
-							nec velit justo. Proin ipsum diam, volutpat sed turpis ac, accumsan
-							rhoncus enim. Etiam sollicitudin, lacus at lobortis vestibulum, tortor
-							sapien fermentum dolor, vel pharetra massa libero rhoncus lectus.
+							Aim Cup has been hosted since 2021 by Haruki & Hoaq, focusing on the
+							relax mod in osu!. Over time, we&apos;ve expanded beyond just
+							tournaments to include interviews, bounties, and even a yearly Top 20
+							Player List for the relax scene. Our community has grown significantly
+							over the years, and we are proud to be recognized as one of the pillars
+							of the relax community.
 						</p>
 					</div>
-					<Image
-						src={"/placeholder.png"}
-						alt={"about-us"}
-						width={350}
-						height={350}
-						className={"hidden h-[350px] w-[350px] rounded-md object-cover md:block"}
-					/>
 				</div>
 			</Section>
 		</>

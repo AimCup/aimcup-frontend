@@ -13,12 +13,14 @@ export const MappoolCard = ({
 	img,
 	author,
 	mapInformation,
+	position,
 }: {
 	title?: string;
 	modification?: BeatmapModificationResponseDto["modification"];
-	isCustom?: boolean;
+	isCustom: boolean;
 	img?: string;
 	author?: string;
+	position: number;
 	mapInformation: {
 		stars: number;
 		time: number;
@@ -107,6 +109,7 @@ export const MappoolCard = ({
 									className={"rounded-md bg-primary-light px-2 py-3 text-deepRed"}
 								>
 									{modification}
+									{modification !== "TB" && position}
 								</span>
 							)}
 							<span className={"ml-auto text-xl font-normal opacity-70"}>

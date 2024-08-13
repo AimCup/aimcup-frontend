@@ -18,6 +18,7 @@ export async function addBeatMapAction(data: AddBeatMapSchemaType) {
 			data.modification as BeatmapModificationResponseDto.modification,
 			{
 				url: data.url,
+				position: +data.position,
 				isCustom: data?.isCustom === "on",
 			},
 		),

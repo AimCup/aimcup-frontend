@@ -8,7 +8,6 @@ import { executeFetch } from "@/lib/executeFetch";
 import { getUser } from "@/actions/public/getUserAction";
 import { ChangeTeamNameForm } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/ChangeTeamNameForm";
 import { InvitePlayerToTeamButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/InvitePlayerToTeamButton";
-import { CopyInvitationLinkButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/CopyInvitationLinkButton";
 
 const TeamPage = async ({
 	params: { tournamentId, teamId },
@@ -17,7 +16,6 @@ const TeamPage = async ({
 }) => {
 	const userData = await getUser();
 	const getTeam = await executeFetch(TeamService.getTeamsById(tournamentId, teamId));
-	const getInvitations = await executeFetch(TeamService.getTeamInvitations(tournamentId, teamId));
 
 	if (!getTeam.status) {
 		return <Section>{getTeam.errorMessage}</Section>;
@@ -51,7 +49,7 @@ const TeamPage = async ({
 								const disbandTeamResponse = await executeFetch(
 									TeamService.disbandTeam(tournamentId, teamId),
 									[
-										"/tournament/[tournamentId]/teams",
+										`/tournament/${tournamentId}/teams`,
 										`/tournament/${tournamentId}`,
 										"/",
 									],
@@ -161,82 +159,6 @@ const TeamPage = async ({
 					</tbody>
 				</table>
 			</div>
-			{isCaptain && getInvitations.status && (
-				<>
-					<strong className={"mt-10"}>Invitations:</strong>
-					<div className="overflow-x-auto">
-						<table className="table">
-							{/* head */}
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>
-										<CopyInvitationLinkButton
-											teamId={teamId}
-											tournamentAbb={tournamentId}
-										/>
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{getInvitations.response?.map((invitation) => (
-									<tr key={invitation.id}>
-										<td>
-											<div className="flex items-center gap-3">
-												<div className="avatar">
-													<div className="mask mask-squircle h-12 w-12">
-														<Image
-															src={`https://a.ppy.sh/${invitation.user?.osuId}`}
-															alt="Avatar Tailwind CSS Component"
-															width={100}
-															height={100}
-														/>
-													</div>
-												</div>
-												<div>
-													<div className="font-bold">
-														{invitation.user?.username}
-													</div>
-												</div>
-											</div>
-										</td>
-										<td>
-											<form
-												className={
-													"flex flex-col gap-4 md:flex-row md:items-center"
-												}
-												action={async (_e) => {
-													"use server";
-
-													await executeFetch(
-														TeamService.deleteInvitation(
-															tournamentId,
-															teamId,
-															"" + invitation.user?.osuId,
-														),
-														[
-															"/tournament/[tournamentId]/teams",
-															"/tournament",
-															"/",
-														],
-													);
-												}}
-											>
-												<button
-													className={"btn btn-ghost btn-xs"}
-													type={"submit"}
-												>
-													delete
-												</button>
-											</form>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</>
-			)}
 		</Section>
 	);
 };

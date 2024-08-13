@@ -97,6 +97,12 @@ export const AddBeatMap = ({ tournamentAbb, mappoolId }: IAddStageFormProps) => 
 							label={"Url"}
 							errorMessage={state?.errors.url && state?.errors.url[0]}
 						/>
+						<Input
+							name={"position"}
+							label={"Position"}
+							type={"number"}
+							errorMessage={state?.errors.position && state?.errors.position[0]}
+						/>
 						<label className="label flex max-w-max cursor-pointer">
 							<input type="checkbox" className="checkbox mr-5" name={"isCustom"} />
 							<span className="label-text mr-auto">Is custom?</span>

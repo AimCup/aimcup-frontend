@@ -20,6 +20,10 @@ interface IComboBoxProps
 }
 
 export const ComboBox = (props: IComboBoxProps) => {
+	let height = "";
+	if (props.multiple) {
+		height = "!h-52";
+	}
 	return (
 		<div className={`flex flex-col ${props.type}`}>
 			<label htmlFor="select" className="label">
@@ -30,7 +34,7 @@ export const ComboBox = (props: IComboBoxProps) => {
 			) : (
 				<select
 					{...props}
-					className="select select-bordered w-full focus:border-mintGreen focus:ring-mintGreen"
+					className={`${height} select select-bordered w-full focus:border-mintGreen focus:ring-mintGreen`}
 					onChange={props.onSelect}
 					name={props.multiple ? `${props.name}[]` : props.name}
 				>

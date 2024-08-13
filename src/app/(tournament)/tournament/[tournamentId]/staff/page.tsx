@@ -1,6 +1,6 @@
 import React from "react";
 import { StaffMemberService } from "../../../../../../generated";
-import { Avatar } from "@ui/atoms/Avatar/Avatar";
+import StaffMember from "@ui/organisms/StaffMember/StaffMember";
 
 const SingleTournamentStaff = async ({
 	params,
@@ -31,32 +31,32 @@ const SingleTournamentStaff = async ({
 				{!isStaff && <p>No staff members</p>}
 				<div className={"grid grid-cols-2 gap-4 md:w-3/5"}>
 					{isStaff &&
-						getStaffMembers.map((staff) => {
-							const role = staff.roleName;
+						getStaffMembers
+							.sort((a, b) => {
+								if (a.position < b.position) {
+									return -1;
+								}
+								if (a.position > b.position) {
+									return 1;
+								}
+								return 0;
+							})
+							.map((staff) => {
+								const role = staff.roleName;
 
-							return (
-								<>
-									<h2 className={"mb-10 text-4xl font-bold"}>{role}</h2>
-									{staff?.staffMembers?.map((member) => (
-										<div key={member.id} className={"flex items-center gap-4"}>
-											<div className={"relative"}>
-												<Avatar
-													src={`https://a.ppy.sh/${member.user.osuId}`}
-												/>
-											</div>
-
-											<span
-												className={
-													"flex items-center gap-4 overflow-hidden truncate"
-												}
-											>
-												{member.user.username}
-											</span>
-										</div>
-									)) || null}
-								</>
-							);
-						})}
+								return (
+									<div key={staff.position} className={"flex flex-col gap-2"}>
+										<h2 className={"mb-10 text-4xl font-bold"}>{role}</h2>
+										{staff?.staffMembers?.map((member) => (
+											<StaffMember
+												key={member.id}
+												staffMember={member}
+												role={role}
+											/>
+										)) || null}
+									</div>
+								);
+							})}
 				</div>
 			</section>
 		</main>

@@ -72,7 +72,8 @@ const SingleTournamentMappool = async ({
 						title={map.title}
 						modification={searchParams.modification}
 						author={map.creator}
-						isCustom={true} // todo
+						isCustom={map.isCustom}
+						position={map.position}
 						mapInformation={{
 							stars: map.beatmapStatistics.starRating,
 							time: map.beatmapStatistics.length,
@@ -96,7 +97,8 @@ const SingleTournamentMappool = async ({
 						title={map?.title}
 						modification={map?.modification}
 						author={map?.creator}
-						isCustom={true}
+						isCustom={!!map?.isCustom}
+						position={map?.position || 0}
 						mapInformation={{
 							stars: map?.beatmapStatistics.starRating || 0,
 							time: map?.beatmapStatistics.length || 0,

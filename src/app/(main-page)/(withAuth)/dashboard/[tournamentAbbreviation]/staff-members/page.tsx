@@ -8,6 +8,7 @@ import Section from "@ui/atoms/Section/Section";
 import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
 import { executeFetch } from "@/lib/executeFetch";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
 
 const StaffMembersPage = async ({
 	params: { tournamentAbbreviation },
@@ -49,14 +50,21 @@ const StaffMembersPage = async ({
 	return (
 		<Section className={"flex-col !px-3 !py-2"}>
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Staff members</h2>
-			<StaffMemberModal
-				rolesSelectOptions={rolesSelectOptions}
-				permissionsSelectOptions={permissionsSelectOptions}
-				tournamentAbb={tournamentAbbreviation}
-				modalType={{
-					type: "add",
-				}}
-			/>
+			<div className={"flex items-center gap-3"}>
+				<StaffMemberModal
+					rolesSelectOptions={rolesSelectOptions}
+					permissionsSelectOptions={permissionsSelectOptions}
+					tournamentAbb={tournamentAbbreviation}
+					modalType={{
+						type: "add",
+					}}
+				/>
+				<UserLessStaffMemberModal
+					tournamentAbb={tournamentAbbreviation}
+					rolesSelectOptions={rolesSelectOptions}
+					modalType={{ type: "add" }}
+				/>
+			</div>
 
 			<div className="mt-10 overflow-x-auto">
 				<table className="table">
@@ -74,23 +82,27 @@ const StaffMembersPage = async ({
 					<tbody>
 						{getStaffMembers.response.map((s) => (
 							<tr key={s.id}>
-								<td>{s.user.osuId}</td>
+								<td>{s.user ? s.user.osuId : "-"}</td>
 								<td className={"flex items-center gap-4"}>
 									<div className="avatar">
 										<div className="mask mask-squircle h-12 w-12">
 											<Image
-												src={`https://a.ppy.sh/${s.user.osuId}`}
+												src={
+													(s.user
+														? `https://a.ppy.sh/${s.user.osuId}`
+														: s?.imageUrl) || ""
+												}
 												alt="Avatar Tailwind CSS Component"
 												width={48}
 												height={48}
 											/>
 										</div>
 									</div>
-									{s.user.username}
+									{s.user ? s.user.username : s.username}
 								</td>
-								<td>{s.discordId}</td>
+								<td>{s.user ? s.discordId : "-"}</td>
 								<td>
-									{s.roles.map((role) => (
+									{s.roles?.map((role) => (
 										<span
 											key={role.id}
 											className="badge badge-ghost badge-sm block"
@@ -100,40 +112,44 @@ const StaffMembersPage = async ({
 									))}
 								</td>
 								<td>
-									{s.permissions.map((permission) => (
-										<span
-											key={permission}
-											className="badge badge-ghost badge-sm block"
-										>
-											{permission}
-										</span>
-									))}
+									{s.user
+										? s.permissions?.map((permission) => (
+												<span
+													key={permission}
+													className="badge badge-ghost badge-sm block"
+												>
+													{permission}
+												</span>
+											))
+										: "-"}
 								</td>
 								<td>
-									<StaffMemberModal
-										rolesSelectOptions={rolesSelectOptions}
-										permissionsSelectOptions={permissionsSelectOptions}
-										tournamentAbb={tournamentAbbreviation}
-										modalType={{
-											type: "edit",
-											user: {
-												osuId: "" + s.id,
-												discordId: "" + s.discordId,
-												roles: s.roles.map((role) => {
-													return {
-														id: role.id,
-														label: role.name,
-													};
-												}),
-												permissions: s.permissions.map((permission) => {
-													return {
-														id: permission,
-														label: permission,
-													};
-												}),
-											},
-										}}
-									/>
+									{s.user && (
+										<StaffMemberModal
+											rolesSelectOptions={rolesSelectOptions}
+											permissionsSelectOptions={permissionsSelectOptions}
+											tournamentAbb={tournamentAbbreviation}
+											modalType={{
+												type: "edit",
+												user: {
+													osuId: "" + s.id,
+													discordId: "" + s.discordId,
+													roles: s.roles.map((role) => {
+														return {
+															id: role.id,
+															label: role.name,
+														};
+													}),
+													permissions: s.permissions.map((permission) => {
+														return {
+															id: permission,
+															label: permission,
+														};
+													}),
+												},
+											}}
+										/>
+									)}
 									<form
 										action={async (_e) => {
 											"use server";

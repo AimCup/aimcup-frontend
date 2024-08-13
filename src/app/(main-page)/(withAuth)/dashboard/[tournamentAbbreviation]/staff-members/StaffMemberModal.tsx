@@ -11,6 +11,7 @@ import {
 	addStaffMemberAction,
 	editStaffMemberAction,
 } from "@/actions/admin/adminStaffMembersActions";
+import { resetFormValues } from "@/lib/helpers";
 
 type AddNewStaffMember = {
 	type: "add";
@@ -61,7 +62,11 @@ export const StaffMemberModal = ({
 				});
 			}
 			modalRef.current?.close();
-			resetForm(["tournamentAbbreviation"]);
+			resetFormValues({
+				formRef,
+				resetWithoutInputNames: ["tournamentAbbreviation"],
+				schema: addEditStaffMembersSchema,
+			});
 		},
 	);
 
@@ -75,22 +80,13 @@ export const StaffMemberModal = ({
 				});
 			}
 			modalRef.current?.close();
-			resetForm(["tournamentAbbreviation, osuId"]);
+			resetFormValues({
+				formRef,
+				resetWithoutInputNames: ["osuId", "discordId", "roles", "permissions"],
+				schema: addEditStaffMembersSchema,
+			});
 		},
 	);
-
-	const resetForm = (inputNames: string[]) => {
-		if (formRef.current) {
-			const inputs = formRef.current.querySelectorAll<
-				HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-			>("input, select, textarea");
-			inputs.forEach((input) => {
-				if (!inputNames.includes(input.name)) {
-					input.value = "";
-				}
-			});
-		}
-	};
 
 	return (
 		<>
@@ -157,6 +153,11 @@ export const StaffMemberModal = ({
 							name={"roles"}
 							label={"Roles"}
 							selectOptions={rolesSelectOptions}
+							selectedOption={
+								modalType.type === "edit"
+									? modalType.user.roles.map((role) => role.id)
+									: []
+							}
 							multiple={true}
 							errorMessage={
 								(stateAddNewMemberStaff?.errors.roles &&
@@ -169,6 +170,11 @@ export const StaffMemberModal = ({
 							name={"permissions"}
 							label={"Select permissions"}
 							selectOptions={permissionsSelectOptions}
+							selectedOption={
+								modalType.type === "edit"
+									? modalType.user.permissions.map((permission) => permission.id)
+									: []
+							}
 							multiple={true}
 							errorMessage={
 								(stateAddNewMemberStaff?.errors.permissions &&

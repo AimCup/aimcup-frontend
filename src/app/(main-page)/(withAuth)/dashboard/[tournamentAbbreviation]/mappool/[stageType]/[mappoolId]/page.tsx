@@ -77,7 +77,7 @@ const StageTypePage = async ({
 										<td>
 											<span className="badge badge-ghost badge-sm block">
 												{mappool.modification}
-												{beatmap.position + 1}
+												{beatmap.position}
 											</span>
 										</td>
 										<td className={"relative"}>

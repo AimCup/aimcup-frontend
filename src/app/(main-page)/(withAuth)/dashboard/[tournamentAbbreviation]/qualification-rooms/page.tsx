@@ -90,12 +90,12 @@ const QRoomsPage = async ({
 		return <div>{getTournament.errorMessage}</div>;
 	}
 
-	const staffMemberSelectOptions: selectOptions[] = getStaffMembers.response.map(
-		(staffMember) => ({
+	const staffMemberSelectOptions: selectOptions[] = getStaffMembers.response
+		.filter((s) => s.user)
+		.map((staffMember) => ({
 			id: staffMember.id,
-			label: staffMember.user.username,
-		}),
-	);
+			label: staffMember.user ? staffMember.user.username : staffMember.username,
+		}));
 
 	let rostersSelectOptions: selectOptions[] = [];
 	if (
@@ -125,12 +125,12 @@ const QRoomsPage = async ({
 	}
 
 	const canSignIn =
-		getStaffForATournamentUser.response.roles.some((role) =>
+		getStaffForATournamentUser.response.roles?.some((role) =>
 			role.permissions.some(
 				(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
 			),
 		) ||
-		getStaffForATournamentUser.response.permissions.some(
+		getStaffForATournamentUser.response.permissions?.some(
 			(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
 		);
 
