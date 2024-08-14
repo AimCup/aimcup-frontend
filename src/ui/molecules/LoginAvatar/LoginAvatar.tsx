@@ -11,9 +11,7 @@ import { executeFetch } from "@/lib/executeFetch";
 export const LoginAvatar = async () => {
 	const userData = await getUser();
 	if (!userData?.id) {
-		const redirectUri = encodeURIComponent(
-			process.env.NEXT_PUBLIC_URL || "https://next.aimcup.xyz",
-		);
+		const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_URL || "https://aimcup.xyz");
 
 		return (
 			<Button
