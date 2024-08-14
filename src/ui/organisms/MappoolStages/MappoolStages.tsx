@@ -1,5 +1,4 @@
 import React from "react";
-import type { EmblaOptionsType } from "embla-carousel";
 import { format } from "date-fns";
 import type { MappoolResponseDto, StageResponseDto } from "../../../../generated";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";

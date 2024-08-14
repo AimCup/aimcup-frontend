@@ -3,7 +3,6 @@ import { UserInformation } from "@ui/organisms/UserInformation/UserInformation";
 import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 import { Loading } from "@ui/atoms/Loading/Loading";
 import Section from "@ui/atoms/Section/Section";
-import { UserService } from "../../../../../generated";
 import UserTeams from "@ui/organisms/UserInformation/UserTeams";
 
 const AccountPage = async () => {

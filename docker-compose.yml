@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  next:
+    container_name: aimcup-next
+    build:
+      context: .
+      dockerfile: ./build.Dockerfile
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
+      - SECRET_LOGIN_KEY=${SECRET_LOGIN_KEY}
+    ports:
+      - "3000:3000"
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: aimcup-network

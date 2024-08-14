@@ -1,7 +1,7 @@
 import React from "react";
-import { StaffMemberResponseDto } from "../../../../generated";
-import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import Link from "next/link";
+import { type StaffMemberResponseDto } from "../../../../generated";
+import { Avatar } from "@ui/atoms/Avatar/Avatar";
 
 type StaffMemberProps = {
 	staffMember: StaffMemberResponseDto;

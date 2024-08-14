@@ -94,7 +94,7 @@ const QRoomsPage = async ({
 		.filter((s) => s.user)
 		.map((staffMember) => ({
 			id: staffMember.id,
-			label: staffMember.user ? staffMember.user.username : staffMember.username,
+			label: staffMember.user ? staffMember.user.username : staffMember.username || "",
 		}));
 
 	let rostersSelectOptions: selectOptions[] = [];
@@ -187,21 +187,21 @@ const QRoomsPage = async ({
 								</td>
 								<td>
 									{room.staffMember ? (
-										userData?.id === room.staffMember.user.id ? (
+										userData?.id === room.staffMember.user?.id ? (
 											<div>Sign out:todo</div>
 										) : (
 											<div className={"flex items-center gap-2"}>
 												<div className="avatar">
 													<div className="mask mask-squircle h-5 w-5">
 														<Image
-															src={`https://a.ppy.sh/${room.staffMember.user.osuId}`}
+															src={`https://a.ppy.sh/${room.staffMember.user?.osuId}`}
 															alt="Avatar Tailwind CSS Component"
 															width={20}
 															height={20}
 														/>
 													</div>
 												</div>
-												{room.staffMember.user.username}
+												{room.staffMember.user?.username}
 											</div>
 										)
 									) : canSignIn ? (
@@ -239,7 +239,8 @@ const QRoomsPage = async ({
 												selectedStaffMemberOption: [
 													{
 														id: room.staffMember?.id,
-														label: room.staffMember?.user?.username,
+														label:
+															room.staffMember?.user?.username || "",
 													},
 												],
 												roomId: room.id,

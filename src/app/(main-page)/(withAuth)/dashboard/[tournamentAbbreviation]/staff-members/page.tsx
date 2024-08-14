@@ -134,18 +134,20 @@ const StaffMembersPage = async ({
 												user: {
 													osuId: "" + s.id,
 													discordId: "" + s.discordId,
-													roles: s.roles.map((role) => {
-														return {
-															id: role.id,
-															label: role.name,
-														};
-													}),
-													permissions: s.permissions.map((permission) => {
-														return {
-															id: permission,
-															label: permission,
-														};
-													}),
+													roles:
+														s.roles?.map((role) => {
+															return {
+																id: role.id,
+																label: role.name,
+															};
+														}) || [],
+													permissions:
+														s.permissions?.map((permission) => {
+															return {
+																id: permission,
+																label: permission,
+															};
+														}) || [],
 												},
 											}}
 										/>
@@ -158,7 +160,10 @@ const StaffMembersPage = async ({
 													tournamentAbbreviation,
 													s.id,
 												),
-												["/", "/dashboard/[tournamentAbb]/staff-members"],
+												[
+													"/",
+													`/dashboard/${tournamentAbbreviation}/staff-members`,
+												],
 											);
 										}}
 									>

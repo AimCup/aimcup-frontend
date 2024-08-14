@@ -1,4 +1,3 @@
-import React from "react";
 import { UserService } from "../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
 import { executeFetch } from "@/lib/executeFetch";

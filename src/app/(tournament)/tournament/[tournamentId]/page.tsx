@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import {
 	MappoolService,
 	StaffMemberService,
-	StageResponseDto,
+	type StageResponseDto,
 	StageService,
 	type TeamResponseDto,
 	TeamService,
@@ -107,7 +107,7 @@ const SingleTournament = async ({
 								shouldDisplay={getTournamentByAbbreviation.value?.canRegister}
 							/>
 							{/*)}*/}
-							<span className={"text-md text-flatRed"}>Apply for staff</span>
+							{/*<span className={"text-md text-flatRed"}>Apply for staff</span>*/}
 						</div>
 					</div>
 				</div>
@@ -165,44 +165,12 @@ const SingleTournament = async ({
 						/>
 					</Link>
 				</div>
-				<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
+				<div className={"grid grid-cols-1 gap-10"}>
 					<span>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec pellentesque
-						consectetur justo ut venenatis. Ut in ultricies lorem, vel blandit ante. Sed
-						lacinia lectus mauris, sed venenatis ex sollicitudin at. Cras sagittis sem
-						sit amet massa suscipit, non lobortis nisi dignissim. Aenean lacinia pretium
-						diam, sit amet sagittis orci maximus id. Nam facilisis eu odio nec accumsan.
-						Nam in lobortis metus. Integer rhoncus tempor odio, ut faucibus magna
-						pellentesque ullamcorper. Nam dictum purus non sapien lacinia dictum.
-						Suspendisse potenti. Ut nec lacinia elit. Donec auctor nibh nibh, eget
-						dapibus nunc aliquet quis. Maecenas massa ex, hendrerit non porttitor et,
-						gravida at ligula. In ac dictum turpis, vel consectetur lacus. Suspendisse
-						sagittis faucibus quam sed faucibus. Donec hendrerit, magna nec mattis
-						porttitor, lectus purus pharetra quam, eu imperdiet augue lorem nec leo.
-						Curabitur id ipsum auctor tellus posuere aliquam vel aliquet libero. Mauris
-						lacinia pellentesque lacus, vel finibus lacus sagittis quis. Sed fermentum
-						elit magna, eget luctus est mattis quis. Nulla feugiat blandit ante. Nulla
-						laoreet ipsum quis justo volutpat, eget porta augue cursus. Cras dapibus ac
-						turpis quis mollis.
-					</span>
-					<span className={"hidden md:block"}>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec pellentesque
-						consectetur justo ut venenatis. Ut in ultricies lorem, vel blandit ante. Sed
-						lacinia lectus mauris, sed venenatis ex sollicitudin at. Cras sagittis sem
-						sit amet massa suscipit, non lobortis nisi dignissim. Aenean lacinia pretium
-						diam, sit amet sagittis orci maximus id. Nam facilisis eu odio nec accumsan.
-						Nam in lobortis metus. Integer rhoncus tempor odio, ut faucibus magna
-						pellentesque ullamcorper. Nam dictum purus non sapien lacinia dictum.
-						Suspendisse potenti. Ut nec lacinia elit. Donec auctor nibh nibh, eget
-						dapibus nunc aliquet quis. Maecenas massa ex, hendrerit non porttitor et,
-						gravida at ligula. In ac dictum turpis, vel consectetur lacus. Suspendisse
-						sagittis faucibus quam sed faucibus. Donec hendrerit, magna nec mattis
-						porttitor, lectus purus pharetra quam, eu imperdiet augue lorem nec leo.
-						Curabitur id ipsum auctor tellus posuere aliquam vel aliquet libero. Mauris
-						lacinia pellentesque lacus, vel finibus lacus sagittis quis. Sed fermentum
-						elit magna, eget luctus est mattis quis. Nulla feugiat blandit ante. Nulla
-						laoreet ipsum quis justo volutpat, eget porta augue cursus. Cras dapibus ac
-						turpis quis mollis.
+						Please read the tournament rules provided in the <b>link below</b>. By
+						registering and participating in the tournament, you agree to comply with
+						these rules throughout the event. Any violation of the rules may result in{" "}
+						<b>disqualification or other penalties</b> as outlined in the regulations.
 					</span>
 				</div>
 				<div className={"flex"}>
@@ -326,33 +294,22 @@ const SingleTournament = async ({
 				<div className={"flex"}>
 					<h2 className={"text-4xl font-bold leading-relaxed"}>Prizes</h2>
 				</div>
-				<div
-					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
-				>
-					<span className={"font-bold"}>1st place</span>
-					<span
-						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
-					/>
-					<span>$150</span>
-				</div>
-				<div
-					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
-				>
-					<span className={"font-bold"}>2nd place</span>
-					<span
-						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
-					/>
-					<span>$150</span>
-				</div>
-				<div
-					className={"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/4"}
-				>
-					<span className={"font-bold"}>3rd place</span>
-					<span
-						className={" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"}
-					/>
-					<span>$150</span>
-				</div>
+				{getTournamentByAbbreviation.value.prizePool?.map((prize) => (
+					<div
+						key={prize.type}
+						className={
+							"flex items-center justify-between gap-4 md:w-1/2 lg:w-1/3 xl:w-1/2"
+						}
+					>
+						<span className={"font-bold"}>Place No.{prize.type + 1}</span>
+						<span
+							className={
+								" h-4 flex-1 border-b-2 border-dotted border-deepRed opacity-30"
+							}
+						/>
+						<span>{prize.prize}</span>
+					</div>
+				))}
 			</Section>
 			{isStaff && (
 				<Section id="staff" className={"flex-col gap-3"}>

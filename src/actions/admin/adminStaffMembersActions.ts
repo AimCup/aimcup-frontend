@@ -3,7 +3,7 @@
 import { AdminStaffMemberService } from "../../../generated";
 import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 import { type AddStaffMembersSchemaType } from "@/formSchemas/addEditStaffMembersSchema";
-import { AddUserLessStaffMembersSchemaType } from "@/formSchemas/addEditUserLessStaffMembersSchema";
+import { type AddUserLessStaffMembersSchemaType } from "@/formSchemas/addEditUserLessStaffMembersSchema";
 
 export async function editStaffMemberAction(data: AddStaffMembersSchemaType) {
 	"use server";
