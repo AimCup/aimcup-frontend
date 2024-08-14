@@ -5,27 +5,24 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on:
       group: Default
     steps:
       - uses: actions/checkout@v3
-      - name: Run microservice db (if needed)
-        run: |
-          docker-compose -f docker/prd/prd-run-database-job.yml up -d --build
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Install dependencies
+        run: npm install
+      - name: Fetch OpenAPI schema
+        run: npm run open:api
+      - name: Generate API client
+        run: npm run open:generate
+      - name: Build and deploy to Next environment
+        run: docker-compose -f docker-compose.next.yml up -d --build
         env:
-          DB_PRD_USER: ${{ secrets.DB_PRD_USER }}
-          DB_PRD_PASSWORD: ${{ secrets.DB_PRD_PASSWORD }}
-      - name: Build and deploy the Docker image
-        run: |
-          docker-compose -f docker/prd/prd-build-deploy-job.yml up -d --build
-        env:
-          DB_PRD_ADDRESS: ${{ secrets.DB_PRD_ADDRESS }}
-          DB_PRD_USER: ${{ secrets.DB_PRD_USER }}
-          DB_PRD_PASSWORD: ${{ secrets.DB_PRD_PASSWORD }}
-          EUREKA_PRD: ${{ secrets.EUREKA_PRD }}
-          PRD_KEYCLOAK_ISSUER_ID: ${{ secrets.PRD_KEYCLOAK_ISSUER_ID }}
-          PRD_KEYCLOAK_CLIENT_NAME: ${{ secrets.PRD_KEYCLOAK_CLIENT_NAME }}
-          PRD_KEYCLOAK_CLIENT_ID: ${{ secrets.PRD_KEYCLOAK_CLIENT_ID }}
-          PRD_KEYCLOAK_CLIENT_SECRET: ${{ secrets.PRD_KEYCLOAK_CLIENT_SECRET }}
-          PRD_KEYCLOAK_JWK_SET_URI: ${{ secrets.PRD_KEYCLOAK_JWK_SET_URI }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
+          NEXT_PUBLIC_URL: ${{ secrets.URL }}
+          SECRET_LOGIN_KEY: ${{ secrets.LOGIN_KEY }}
