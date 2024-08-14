@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   next:
-    container_name: aimcup-next
+    container_name: aimcup
     build:
       context: .
       dockerfile: ./build.Dockerfile
