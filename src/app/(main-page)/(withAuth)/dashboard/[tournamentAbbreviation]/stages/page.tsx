@@ -7,7 +7,6 @@ import {
 	StageService,
 	TournamentService,
 } from "../../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { StageForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageForm";
 import { executeFetch } from "@/lib/executeFetch";
 import { stageTypeEnumToString } from "@/lib/helpers";
@@ -38,7 +37,7 @@ const StagePage = async ({
 	}
 
 	return (
-		<Section className={"flex-col !px-3 !py-2"}>
+		<div className={"flex w-full flex-col !px-3 !py-2"}>
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Stages</h2>
 			<StageForm
 				modalType={{
@@ -126,7 +125,7 @@ const StagePage = async ({
 					</tbody>
 				</table>
 			</div>
-		</Section>
+		</div>
 	);
 };
 

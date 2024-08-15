@@ -26,11 +26,8 @@ const DashboardPage = async () => {
 							className={
 								"flex h-64 w-full gap-2 rounded-md bg-opacity-20 bg-cover bg-center"
 							}
-							// style={{
-							// 	backgroundImage: `url(${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner)`,
-							// }}
 							style={{
-								backgroundImage: `url(placeholder.png)`,
+								backgroundImage: `url(${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournament.abbreviation}/banner)`,
 							}}
 						>
 							<p

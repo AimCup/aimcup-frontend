@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import { AdminMappoolService, type StageResponseDto } from "../../../../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { Button } from "@ui/atoms/Button/Button";
 import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
@@ -25,7 +24,7 @@ const StageTypePage = async ({
 	}
 
 	return (
-		<Section className={"flex-col !px-3 !py-2"}>
+		<div className={"flex w-full flex-col !px-3 !py-2"}>
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>
 				{stageTypeEnumToString(stageType)}
 			</h2>
@@ -140,7 +139,7 @@ const StageTypePage = async ({
 					</tbody>
 				</table>
 			</div>
-		</Section>
+		</div>
 	);
 };
 

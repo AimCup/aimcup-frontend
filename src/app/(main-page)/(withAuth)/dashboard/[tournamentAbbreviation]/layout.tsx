@@ -1,6 +1,5 @@
 import React from "react";
 import { TournamentRequestDto, TournamentService } from "../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { executeFetch } from "@/lib/executeFetch";
 import tournamentType = TournamentRequestDto.tournamentType;
 
@@ -22,12 +21,11 @@ export default async function Layout({
 	}
 
 	return (
-		<Section>
+		<>
 			<nav className="">
 				<ul className="menu menu-vertical">
 					<li>
 						<a href={`/dashboard/${tournamentAbbreviation}`}>Home</a>
-						{/*    todo dashboard/[abb]*/}
 					</li>
 					<li>
 						<a href={`/dashboard/${tournamentAbbreviation}/staff-members`}>
@@ -68,6 +66,6 @@ export default async function Layout({
 				</ul>
 			</nav>
 			{children}
-		</Section>
+		</>
 	);
 }

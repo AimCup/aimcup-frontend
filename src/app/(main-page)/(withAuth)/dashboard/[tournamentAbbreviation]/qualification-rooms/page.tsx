@@ -15,7 +15,6 @@ import {
 	TournamentService,
 	UserService,
 } from "../../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { QualificationRoomModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomModal";
 import { executeFetch } from "@/lib/executeFetch";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
@@ -135,7 +134,7 @@ const QRoomsPage = async ({
 		);
 
 	return (
-		<Section className={"flex-col !px-3 !py-2"}>
+		<div className={"flex w-full flex-col !px-3 !py-2"}>
 			{`
                brakujue sign out :) 
             `}
@@ -292,7 +291,7 @@ const QRoomsPage = async ({
 					</tbody>
 				</table>
 			</div>
-		</Section>
+		</div>
 	);
 };
 

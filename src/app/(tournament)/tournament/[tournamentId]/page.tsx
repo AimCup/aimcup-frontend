@@ -6,8 +6,8 @@ import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
+	AdminStaffMemberService,
 	MappoolService,
-	StaffMemberService,
 	type StageResponseDto,
 	StageService,
 	type TeamResponseDto,
@@ -34,7 +34,7 @@ const SingleTournament = async ({
 	const [getTournamentByAbbreviation, getStages, getStaffMembers] = await Promise.allSettled([
 		TournamentService.getTournamentByAbbreviation(params.tournamentId),
 		StageService.getStages(params.tournamentId),
-		StaffMemberService.getStaffMembers(params.tournamentId),
+		AdminStaffMemberService.getStaffMembers1(params.tournamentId),
 	]);
 
 	if (getTournamentByAbbreviation.status === "rejected") {
@@ -63,9 +63,7 @@ const SingleTournament = async ({
 		}
 	}
 
-	const isStaff = getStaffMembers.value.some(
-		(staff) => staff.staffMembers && staff.staffMembers.length > 0,
-	);
+	const isStaff = getStaffMembers && getStaffMembers.value.length > 0;
 
 	const mappools = await executeFetch(
 		MappoolService.getMappoolsByTournament(params.tournamentId),
@@ -129,12 +127,12 @@ const SingleTournament = async ({
 						<IoTime />{" "}
 						{format(
 							new Date(getTournamentByAbbreviation?.value?.startDate || 0),
-							"MM/dd/yyyy",
+							"dd/MM/yyyy",
 						)}{" "}
 						-{" "}
 						{format(
 							new Date(getTournamentByAbbreviation?.value?.endDate || 0),
-							"MM/dd/yyyy",
+							"dd/MM/yyyy",
 						)}
 					</span>
 					<span className={"flex items-center gap-2"}>
@@ -333,16 +331,10 @@ const SingleTournament = async ({
 							/>
 						</Link>
 					</div>
-					<div className={"grid grid-cols-2 gap-4 md:w-3/5"}>
-						{getStaffMembers.value.map((staff) => {
-							const role = staff.roleName;
-
-							return (
-								staff?.staffMembers?.map((member) => (
-									<StaffMember key={member.id} staffMember={member} role={role} />
-								)) || null
-							);
-						})}
+					<div className={"grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4"}>
+						{getStaffMembers.value.map((member) => (
+							<StaffMember key={member.id} staffMember={member} />
+						))}
 					</div>
 				</Section>
 			)}
