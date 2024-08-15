@@ -10,28 +10,28 @@ export const Socials = () => {
 			<SocialItem
 				socialItem={{
 					name: "Kofi",
-					link: "",
+					link: "https://ko-fi.com/aimcup",
 					icon: <SiKofi size={"32px"} color={"#151120"} />,
 				}}
 			/>
 			<SocialItem
 				socialItem={{
 					name: "Twitch",
-					link: "",
+					link: "https://www.twitch.tv/aimcup",
 					icon: <FaTwitch size={"32px"} color={"#151120"} />,
 				}}
 			/>
 			<SocialItem
 				socialItem={{
 					name: "Discord",
-					link: "",
+					link: "https://discord.gg/u2sMXwCtB9",
 					icon: <FaDiscord size={"32px"} color={"#151120"} />,
 				}}
 			/>
 			<SocialItem
 				socialItem={{
 					name: "Twitter",
-					link: "",
+					link: "https://twitter.com/aim_cup",
 					icon: <FaXTwitter size={"32px"} color={"#151120"} />,
 				}}
 			/>
