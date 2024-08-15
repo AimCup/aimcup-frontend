@@ -39,7 +39,10 @@ const TeamPage = async ({
 							</div>
 						</div>
 					)}
-					<h2 className={"text-4xl font-bold"}>{getTeam.response.name}</h2>
+					<div>
+						<h2 className={"text-4xl font-bold"}>{getTeam.response.name}</h2>
+						<p>Status: {getTeam.response.status}</p>
+					</div>
 					{isCaptain && (
 						<form
 							className={"flex flex-col gap-4 md:flex-row md:items-center"}
@@ -67,6 +70,13 @@ const TeamPage = async ({
 			</div>
 			{isCaptain && (
 				<>
+					<div className={"mb-2"}>
+						<p>
+							Once you finish adding your team roster and setting team image, ping
+							Host of the tournament to change your team status to ACCEPTED. Any
+							changes in the team will change its status to PENDING.
+						</p>
+					</div>
 					<div className={"mb-10 flex"}>
 						<ChangeTeamNameForm
 							team={{
