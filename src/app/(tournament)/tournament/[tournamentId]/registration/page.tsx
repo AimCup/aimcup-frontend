@@ -64,7 +64,7 @@ const SingleTournamentRegistration = ({
 						}
 					>
 						<div className={"flex w-full flex-col gap-2"}>
-							<h3 className={"text-xl font-bold"}>Topic 1</h3>
+							<h3 className={"text-xl font-bold"}>Disclaimer</h3>
 							<p className={"text-base"}>
 								By registering for this tournament, you confirm that you meet the
 								eligibility requirements and agree to abide by all rules set by the
