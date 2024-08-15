@@ -43,9 +43,6 @@ const SingleTournament = async ({
 	if (getStages.status === "rejected") {
 		throw new Error("Schedule not found"); //todo: change to proper error
 	}
-	if (getStaffMembers.status === "rejected") {
-		throw new Error("Staff not found"); //todo: change to proper error
-	}
 
 	let teams: TeamResponseDto[] = [];
 	let teamSize = "1vs1"; // 1vs1 for participants
@@ -54,16 +51,11 @@ const SingleTournament = async ({
 	) {
 		teamSize = `${getTournamentByAbbreviation.value?.minimumTeamSize}vs${getTournamentByAbbreviation.value?.minimumTeamSize}`;
 		try {
-			const getTeamsByTournament = await TeamService.getTeamsByTournament(
-				params.tournamentId,
-			);
-			teams = getTeamsByTournament;
+			teams = await TeamService.getTeamsByTournament(params.tournamentId);
 		} catch (error) {
 			throw new Error("Teams not found"); //todo: change to proper error
 		}
 	}
-
-	const isStaff = getStaffMembers && getStaffMembers.value.length > 0;
 
 	const mappools = await executeFetch(
 		MappoolService.getMappoolsByTournament(params.tournamentId),
@@ -309,35 +301,35 @@ const SingleTournament = async ({
 					</div>
 				))}
 			</Section>
-			{isStaff && (
-				<Section id="staff" className={"flex-col gap-3"}>
-					<div className={"flex"}>
-						<Link
-							href={`${params.tournamentId}/staff`}
-							className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+			<Section id="staff" className={"flex-col gap-3"}>
+				<div className={"flex"}>
+					<Link
+						href={`${params.tournamentId}/staff`}
+						className={"group mb-4 flex cursor-pointer items-center gap-4 "}
+					>
+						<h2
+							className={
+								"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+							}
 						>
-							<h2
-								className={
-									"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
-								}
-							>
-								Staff
-							</h2>{" "}
-							<LiaLongArrowAltRightSolid
-								size={45}
-								className={
-									"transition-all group-hover:-rotate-45 group-hover:transform"
-								}
-							/>
-						</Link>
-					</div>
-					<div className={"grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4"}>
-						{getStaffMembers.value.map((member) => (
-							<StaffMember key={member.id} staffMember={member} />
-						))}
-					</div>
-				</Section>
-			)}
+							Staff
+						</h2>{" "}
+						<LiaLongArrowAltRightSolid
+							size={45}
+							className={
+								"transition-all group-hover:-rotate-45 group-hover:transform"
+							}
+						/>
+					</Link>
+				</div>
+				<div className={"grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4"}>
+					{getStaffMembers.status === "fulfilled"
+						? getStaffMembers.value.map((member) => (
+								<StaffMember key={member.id} staffMember={member} />
+							))
+						: "Staff could not be loaded"}
+				</div>
+			</Section>
 			<Section id="socials" className={"flex-col gap-3"}>
 				<div className={"flex"}>
 					<h2
