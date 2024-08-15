@@ -66,29 +66,16 @@ const SingleTournamentRegistration = ({
 						<div className={"flex w-full flex-col gap-2"}>
 							<h3 className={"text-xl font-bold"}>Topic 1</h3>
 							<p className={"text-base"}>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-								malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper
-								nunc, nec interdum turpis libero a libero. Integer quis ex nec purus
-								lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,
-								purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.
-								Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel
-								ultricies condimentum, purus nunc lacinia purus, nec ullamcorper
-								libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper
-								libero.
-							</p>
-						</div>
-						<div className={"flex w-full flex-col gap-2"}>
-							<h3 className={"text-xl font-bold"}>Topic 2</h3>
-							<p className={"text-base"}>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-								malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper
-								nunc, nec interdum turpis libero a libero. Integer quis ex nec purus
-								lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,
-								purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.
-								Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel
-								ultricies condimentum, purus nunc lacinia purus, nec ullamcorper
-								libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper
-								libero.
+								By registering for this tournament, you confirm that you meet the
+								eligibility requirements and agree to abide by all rules set by the
+								organizers. Participants are expected to behave respectfully and
+								fairly; any misconduct, including cheating or harassment, may result
+								in disqualification. You are responsible for attending matches at
+								the scheduled times, and failure to do so may lead to forfeiture.
+								Prizes, if offered, will be awarded as stated, but the organizers
+								reserve the right to make changes. The organizers are not liable for
+								any technical issues during the event. By registering, you accept
+								these terms and conditions.
 							</p>
 						</div>
 					</div>
