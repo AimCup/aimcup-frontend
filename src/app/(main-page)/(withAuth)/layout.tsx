@@ -7,7 +7,9 @@ export default function MainPageLayout({ children }: { children: React.ReactNode
 			<div className={"flex lg:hidden"}>
 				Sorry, but this page is not available on mobile devices.
 			</div>
-			<Section className={"hidden lg:flex"}>{children}</Section>
+			<div className={"hidden lg:flex"}>
+				<Section>{children}</Section>
+			</div>
 		</>
 	);
 }

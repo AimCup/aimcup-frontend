@@ -4,7 +4,6 @@ import {
 	AdminStaffMemberService,
 	AdminTournamentRolesService,
 } from "../../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
 import { executeFetch } from "@/lib/executeFetch";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
@@ -48,7 +47,7 @@ const StaffMembersPage = async ({
 		})) || [];
 
 	return (
-		<Section className={"flex-col !px-3 !py-2"}>
+		<div className={"flex w-full flex-col !px-3 !py-2"}>
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Staff members</h2>
 			<div className={"flex items-center gap-3"}>
 				<StaffMemberModal
@@ -177,7 +176,7 @@ const StaffMembersPage = async ({
 					</tbody>
 				</table>
 			</div>
-		</Section>
+		</div>
 	);
 };
 

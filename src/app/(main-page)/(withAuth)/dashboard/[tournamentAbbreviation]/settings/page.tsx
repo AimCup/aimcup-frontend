@@ -4,17 +4,20 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import ReactQuill from "react-quill";
 import { type TournamentResponseDto, TournamentService } from "../../../../../../../generated";
-import Section from "@ui/atoms/Section/Section";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editTournamentSchema } from "@/formSchemas/editTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { Button } from "@ui/atoms/Button/Button";
 import "react-quill/dist/quill.snow.css";
 import { editTournamentAction } from "@/actions/admin/editTournamentAction";
+import { editTournamentImageAction } from "@/actions/admin/editTournamentImageAction";
 
 const SettingsPage = () => {
 	const [tournamentData, setTournamentData] = React.useState<TournamentResponseDto | null>(null);
 	const { tournamentAbbreviation } = useParams<{ tournamentAbbreviation: string }>();
+	const [image, setImage] = React.useState<string | number | readonly string[] | undefined>(
+		undefined,
+	);
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [rulesError, setRulesError] = React.useState<string | null>(null);
 	const router = useRouter();
@@ -61,7 +64,7 @@ const SettingsPage = () => {
 	}, [tournamentAbbreviation]);
 
 	return (
-		<Section className={"flex-col !py-0"}>
+		<div className={"flex w-full flex-col !px-3 !py-2"}>
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Settings</h2>
 			<form action={editTournamentFormAction} ref={formRef} id={"tournament-settings-form"}>
 				<div className={"grid w-full max-w-5xl grid-cols-1 gap-4 rounded-lg p-4"}>
@@ -151,7 +154,43 @@ const SettingsPage = () => {
 					Edit tournament data
 				</Button>
 			</form>
-		</Section>
+			<form
+				action={async (formData) => {
+					const data = await editTournamentImageAction(formData);
+					if (!data.status) {
+						return toast.error("Failed to update tournament imag", {
+							duration: 3000,
+						});
+					} else {
+						toast.success("Tournament image updated successfully", {
+							duration: 3000,
+						});
+					}
+				}}
+			>
+				<Input
+					name={"abbreviation"}
+					label={"abbreviation"}
+					value={tournamentAbbreviation}
+					type={"hidden"}
+					required
+				/>
+				<Input
+					name={"image"}
+					label={"image"}
+					value={image}
+					onChange={(e) => {
+						setImage(e.target.value);
+					}}
+					className={"mt-10"}
+					type={"file"}
+					required={true}
+				/>
+				<Button className="mt-10 w-max" type={"submit"}>
+					Edit tournament image
+				</Button>
+			</form>
+		</div>
 	);
 };
 
