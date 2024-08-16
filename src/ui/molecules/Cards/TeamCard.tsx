@@ -23,7 +23,9 @@ export const TeamCard = ({
 				<img src={team?.logoUrl} className={"h-10 w-10 rounded-md"} />
 				<h3 className={"text-2xl font-bold"}>{team?.name}</h3>
 			</div>
-			<h3 className={"gap-2 text-lg"}>x̄ PP: {team?.averagePerformancePoints}</h3>
+			<h3 className={"gap-2 text-lg"}>
+				Avg. PP: {team?.averagePerformancePoints?.toFixed(2)}
+			</h3>
 			<div className={"grid grid-cols-2 gap-4"}>
 				{team?.participants?.map((participant) => (
 					<div key={participant.id} className={"flex items-center gap-4"}>

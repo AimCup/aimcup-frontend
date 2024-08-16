@@ -54,9 +54,17 @@ const SingleTournamentTeams = async ({
 					</div>
 				</div>
 				<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
-					{getTeams?.map((team) => (
-						<TeamCard tournamentAbb={tournamentId} team={team} key={team.id} />
-					))}
+					{getTeams
+						?.sort((a, b) => {
+							// sort array by averagePerformancePoints, descending
+							return (
+								(b?.averagePerformancePoints || 0) -
+								(a?.averagePerformancePoints || 0)
+							);
+						})
+						.map((team) => (
+							<TeamCard tournamentAbb={tournamentId} team={team} key={team.id} />
+						))}
 				</div>
 			</Section>
 		</>

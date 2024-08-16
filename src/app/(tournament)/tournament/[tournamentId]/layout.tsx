@@ -57,7 +57,11 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 
 	const getStateTypes =
 		getStagesData &&
-		getStagesData.filter((stage) => !!stage.mappool).map((stage) => stage.stageType);
+		getStagesData
+			.filter((stage) => !!stage.mappool)
+			.filter((stage) => stage.stageType !== "REGISTRATION")
+			.filter((stage) => stage.stageType !== "SCREENING")
+			.map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
 		if (item.name === "Mappool") {
