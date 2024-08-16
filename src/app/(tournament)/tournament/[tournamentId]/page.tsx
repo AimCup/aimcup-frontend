@@ -5,6 +5,20 @@ import { RiBarChartFill } from "react-icons/ri";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
 import { format } from "date-fns";
+import { cookies } from "next/headers";
+import {
+	client,
+	getMappoolsByTournament,
+	getStaffMembers1,
+	getStages,
+	getTeamsByTournament,
+	getTournamentByAbbreviation,
+	type StageResponseDto,
+	type stageType,
+	type TeamResponseDto,
+	type tournamentType,
+} from "../../../../../client";
+import type { MappoolResponseDto } from "../../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
 import { Socials } from "@ui/organisms/Socials/Socials";
 import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
@@ -13,16 +27,6 @@ import { MappoolStages } from "@ui/organisms/MappoolStages/MappoolStages";
 import { tournamentTeamShowEnumAvailable } from "@/lib/helpers";
 import Section from "@ui/atoms/Section/Section";
 import StaffMember from "@ui/organisms/StaffMember/StaffMember";
-import {
-	getMappoolsByTournament,
-	getStaffMembers1,
-	getStages,
-	getTeamsByTournament,
-	getTournamentByAbbreviation,
-	StageResponseDto,
-	TeamResponseDto,
-	tournamentType,
-} from "../../../../../client";
 
 const SingleTournament = async ({
 	params,
@@ -31,6 +35,16 @@ const SingleTournament = async ({
 		tournamentId: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data: getTournamentByAbbreviationData } = await getTournamentByAbbreviation({
 		path: {
 			abbreviation: params.tournamentId,
@@ -236,9 +250,9 @@ const SingleTournament = async ({
 												start: stage.startDate,
 												end: stage.endDate,
 											},
-											stageEnum: stage.stageType,
+											stageEnum: stage.stageType as stageType,
 										}}
-										mappool={mappool}
+										mappool={mappool as MappoolResponseDto}
 										tournamentAbbreviation={params.tournamentId}
 									/>
 								</div>

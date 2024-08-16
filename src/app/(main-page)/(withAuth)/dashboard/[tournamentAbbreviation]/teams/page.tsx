@@ -1,7 +1,8 @@
 import React from "react";
 import Image from "next/image";
-import { changeTeamStatus, getTeams } from "../../../../../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { cookies } from "next/headers";
+import { changeTeamStatus, client, deleteTeam, getTeams } from "../../../../../../../client";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const TeamsPage = async ({
 	params: { tournamentAbbreviation },
@@ -10,6 +11,16 @@ const TeamsPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data, error } = await getTeams({
 		path: {
 			abbreviation: tournamentAbbreviation,
@@ -91,6 +102,16 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
 												await changeTeamStatus({
 													path: {
 														abbreviation: tournamentAbbreviation,
@@ -100,7 +121,7 @@ const TeamsPage = async ({
 														status: "ACCEPTED",
 													},
 												});
-												multipleRevalidatePaths([
+												await multipleRevalidatePaths([
 													"/",
 													`/dashboard/${tournamentAbbreviation}/teams`,
 													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
@@ -118,6 +139,16 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
 												await changeTeamStatus({
 													path: {
 														abbreviation: tournamentAbbreviation,
@@ -127,7 +158,7 @@ const TeamsPage = async ({
 														status: "REJECTED",
 													},
 												});
-												multipleRevalidatePaths([
+												await multipleRevalidatePaths([
 													"/",
 													`/dashboard/${tournamentAbbreviation}/teams`,
 													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
@@ -140,6 +171,40 @@ const TeamsPage = async ({
 												type={"submit"}
 											>
 												REJECT
+											</button>
+										</form>
+										<form
+											action={async (_e) => {
+												"use server";
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
+												await deleteTeam({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+												});
+												await multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
+											}}
+										>
+											<button
+												className="btn btn-ghost btn-xs"
+												type={"submit"}
+											>
+												DELETE
 											</button>
 										</form>
 									</td>

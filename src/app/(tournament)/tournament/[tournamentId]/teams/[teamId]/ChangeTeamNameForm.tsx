@@ -5,7 +5,7 @@ import { Input } from "@ui/atoms/Forms/Input/Input";
 import { Button } from "@ui/atoms/Button/Button";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { updateTeamSchema } from "@/formSchemas/updateTeamSchema";
-import { updateTeam } from "@/actions/public/createTeamAction";
+import { updateTeamAction } from "@/actions/public/createTeamAction";
 
 export const ChangeTeamNameForm = ({
 	team: { teamId, teamName, logoUrl, tournamentAbbreviation },
@@ -20,7 +20,7 @@ export const ChangeTeamNameForm = ({
 	const [stateChangeTeamProperties, changeTeamPropertiesFormAction] = useTypeSafeFormState(
 		updateTeamSchema,
 		async (data) => {
-			const updateTeamResponse = await updateTeam(data);
+			const updateTeamResponse = await updateTeamAction(data);
 			if (!updateTeamResponse.status) {
 				return toast.error(updateTeamResponse.errorMessage, {
 					duration: 3000,

@@ -1,11 +1,21 @@
 "use server";
 
-import { updateTournamentImage } from "../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { cookies } from "next/headers";
+import { client, updateTournamentImage } from "../../../client";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 export async function editTournamentImageAction(formData: FormData) {
 	"use server";
-
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const image = formData.get("image");
 	if (!image) {
 		return {
@@ -40,7 +50,7 @@ export async function editTournamentImageAction(formData: FormData) {
 		};
 	}
 
-	multipleRevalidatePaths([
+	await multipleRevalidatePaths([
 		"/",
 		`/dashboard/${abbreviation as string}`,
 		`/tournament/${abbreviation as string}`,

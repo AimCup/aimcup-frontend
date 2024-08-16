@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import ReactQuill from "react-quill";
+import { getTournamentByAbbreviation, type TournamentResponseDto } from "../../../../../../../client";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editTournamentSchema } from "@/formSchemas/editTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -10,7 +11,6 @@ import { Button } from "@ui/atoms/Button/Button";
 import "react-quill/dist/quill.snow.css";
 import { editTournamentAction } from "@/actions/admin/editTournamentAction";
 import { editTournamentImageAction } from "@/actions/admin/editTournamentImageAction";
-import { getTournamentByAbbreviation, TournamentResponseDto } from "../../../../../../../client";
 
 const SettingsPage = () => {
 	const [tournamentData, setTournamentData] = React.useState<TournamentResponseDto | null>(null);

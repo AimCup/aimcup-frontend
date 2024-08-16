@@ -1,7 +1,6 @@
 import { type MutableRefObject } from "react";
 import { type z, type ZodObject, type ZodRawShape } from "zod";
 import { type StageResponseDto, tournamentType } from "../../client";
-import { revalidatePath } from "next/cache";
 
 export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) => {
 	switch (stageType) {
@@ -61,12 +60,5 @@ export const resetFormValues = <T extends ZodObject<ZodRawShape>>({
 		) {
 			input.value = "";
 		}
-	});
-};
-
-export const multipleRevalidatePaths = (paths: string[]) => {
-	"use server";
-	paths.forEach((path) => {
-		revalidatePath(path);
 	});
 };

@@ -1,15 +1,17 @@
 import React from "react";
 import Image from "next/image";
-import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
-import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
-import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
+import { cookies } from "next/headers";
 import {
+	client,
 	deleteStaffMembers,
 	getStaffMembers1,
 	getTournamentPermissions,
 	getTournamentRoles,
 } from "../../../../../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
+import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const StaffMembersPage = async ({
 	params: { tournamentAbbreviation },
@@ -18,6 +20,16 @@ const StaffMembersPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data: getRoles } = await getTournamentRoles({
 		path: {
 			abbreviation: tournamentAbbreviation,
@@ -155,13 +167,23 @@ const StaffMembersPage = async ({
 									<form
 										action={async (_e) => {
 											"use server";
+											const cookie = cookies().get("JWT")?.value;
+											// configure internal service client
+											client.setConfig({
+												// set default base url for requests
+												baseUrl: process.env.NEXT_PUBLIC_API_URL,
+												// set default headers for requests
+												headers: {
+													Cookie: `token=${cookie}`,
+												},
+											});
 											await deleteStaffMembers({
 												path: {
 													abbreviation: tournamentAbbreviation,
 													staffMemberId: s.id,
 												},
 											});
-											multipleRevalidatePaths([
+											await multipleRevalidatePaths([
 												"/",
 												`/dashboard/${tournamentAbbreviation}/staff-members`,
 											]);

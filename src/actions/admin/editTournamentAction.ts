@@ -1,12 +1,22 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { client, updateTournament } from "../../../client";
 import { type EditTournamentSchemaType } from "@/formSchemas/editTournamentSchema";
-import { updateTournament } from "../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 export async function editTournamentAction(formData: EditTournamentSchemaType, formRules: string) {
 	"use server";
-
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data, error } = await updateTournament({
 		path: {
 			abbreviation: formData.oldAbbreviation,
@@ -30,7 +40,7 @@ export async function editTournamentAction(formData: EditTournamentSchemaType, f
 		};
 	}
 
-	multipleRevalidatePaths([
+	await multipleRevalidatePaths([
 		"/",
 		`/dashboard/${formData.abbreviation}`,
 		`/dashboard/${formData.abbreviation}/settings`,

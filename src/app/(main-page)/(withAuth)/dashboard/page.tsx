@@ -1,11 +1,21 @@
 import React from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { client, getTournaments } from "../../../../../client";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
-import { getTournaments } from '../../../../../client'
 
 const DashboardPage = async () => {
-	const { data:tournaments } = await getTournaments();
-
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: tournaments } = await getTournaments();
 
 	return (
 		<div className={"w-full"}>

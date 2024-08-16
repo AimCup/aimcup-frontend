@@ -3,11 +3,23 @@ import { ImEarth } from "react-icons/im";
 import { FaDiscord } from "react-icons/fa";
 import { RiBarChartFill } from "react-icons/ri";
 import Image from "next/image";
+import { cookies } from "next/headers";
+import { client } from "../../../../client";
 import Section from "@ui/atoms/Section/Section";
 import { getUser } from "@/actions/public/getUserAction";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
 
 export const UserInformation = async () => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const userData = await getUser();
 
 	return (

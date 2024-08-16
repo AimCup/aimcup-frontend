@@ -1,14 +1,17 @@
 import React from "react";
 import Image from "next/image";
-import { multipleRevalidatePaths, stageTypeEnumToString } from "@/lib/helpers";
-import { Button } from "@ui/atoms/Button/Button";
-import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
+import { cookies } from "next/headers";
 import {
+	client,
 	deleteBeatmap,
 	getMappool,
 	releaseMappool,
-	stageType,
+	type stageType,
 } from "../../../../../../../../../client";
+import { stageTypeEnumToString } from "@/lib/helpers";
+import { Button } from "@ui/atoms/Button/Button";
+import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const StageTypePage = async ({
 	params: { tournamentAbbreviation, stageType, mappoolId },
@@ -39,6 +42,16 @@ const StageTypePage = async ({
 				className={"mb-3"}
 				action={async (_e) => {
 					"use server";
+					const cookie = cookies().get("JWT")?.value;
+					// configure internal service client
+					client.setConfig({
+						// set default base url for requests
+						baseUrl: process.env.NEXT_PUBLIC_API_URL,
+						// set default headers for requests
+						headers: {
+							Cookie: `token=${cookie}`,
+						},
+					});
 					await releaseMappool({
 						path: {
 							stageType,
@@ -49,7 +62,7 @@ const StageTypePage = async ({
 						},
 					});
 
-					multipleRevalidatePaths([
+					await multipleRevalidatePaths([
 						"/",
 						`/dashboard/${tournamentAbbreviation}/mappool/${stageType}/${mappoolId}`,
 					]);
@@ -132,7 +145,7 @@ const StageTypePage = async ({
 															beatmapId: beatmap.id,
 														},
 													});
-													multipleRevalidatePaths([
+													await multipleRevalidatePaths([
 														"/",
 														`/dashboard/${tournamentAbbreviation}/mappool/${stageType}/${mappoolId}`,
 													]);

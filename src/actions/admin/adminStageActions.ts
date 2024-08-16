@@ -1,15 +1,25 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { client, createStage, type stageType, updateStage } from "../../../client";
 import {
 	type CreateStageSchemaType,
 	type EditStageSchemaType,
 } from "@/formSchemas/createStageSchema";
-import { createStage, stageType, updateStage } from "../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 export async function createStageAction(formData: CreateStageSchemaType) {
 	"use server";
-
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data, error } = await createStage({
 		path: {
 			abbreviation: formData.tournamentAbb,
@@ -28,7 +38,7 @@ export async function createStageAction(formData: CreateStageSchemaType) {
 		};
 	}
 
-	multipleRevalidatePaths([
+	await multipleRevalidatePaths([
 		"/",
 		`/dashboard/${formData.tournamentAbb}`,
 		`/tournament/${formData.tournamentAbb}`,
@@ -41,7 +51,16 @@ export async function createStageAction(formData: CreateStageSchemaType) {
 }
 export async function editStageAction(formData: EditStageSchemaType) {
 	"use server";
-
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data, error } = await updateStage({
 		path: {
 			abbreviation: formData.tournamentAbb,
@@ -60,7 +79,7 @@ export async function editStageAction(formData: EditStageSchemaType) {
 		};
 	}
 
-	multipleRevalidatePaths([
+	await multipleRevalidatePaths([
 		"/",
 		`/dashboard/${formData.tournamentAbb}`,
 		`/tournament/${formData.tournamentAbb}`,

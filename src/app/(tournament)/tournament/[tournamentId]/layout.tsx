@@ -1,11 +1,17 @@
 import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
+import { cookies } from "next/headers";
+import {
+	client,
+	getStages,
+	getTournamentByAbbreviation,
+	tournamentType,
+} from "../../../../../client";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
-import { getStages, getTournamentByAbbreviation, tournamentType } from '../../../../../client'
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -27,16 +33,26 @@ const navbarRoutes: INavbarProps[] = [
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
-	const { data:getStagesData } = await getStages({
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getStagesData } = await getStages({
 		path: {
 			abbreviation: params.tournamentId,
 		},
 	});
 
-	const { data:tournamentData } = await getTournamentByAbbreviation({
+	const { data: tournamentData } = await getTournamentByAbbreviation({
 		path: {
-			abbreviation:params.tournamentId
-		}
+			abbreviation: params.tournamentId,
+		},
 	});
 
 	const getStateTypes =
@@ -61,10 +77,7 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		};
 	}) as INavbarProps[];
 
-	if (
-		tournamentData &&
-		tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS
-	) {
+	if (tournamentData && tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS) {
 		tournamentNavbarRoutes.push({
 			name: "Teams",
 			href: `/tournament/${params.tournamentId}/teams`,

@@ -1,5 +1,6 @@
 import React from "react";
-import { getTournamentByAbbreviation, tournamentType } from '../../../../../../client'
+import { cookies } from "next/headers";
+import { client, getTournamentByAbbreviation, tournamentType } from "../../../../../../client";
 
 export default async function Layout({
 	children,
@@ -10,7 +11,17 @@ export default async function Layout({
 		tournamentAbbreviation: string;
 	};
 }) {
-	const { data:tournamentData } = await getTournamentByAbbreviation({
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: tournamentData } = await getTournamentByAbbreviation({
 		path: {
 			abbreviation: tournamentAbbreviation,
 		},

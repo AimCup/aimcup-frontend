@@ -1,7 +1,8 @@
 import React from "react";
+import { cookies } from "next/headers";
+import { client, getStaffMembers } from "../../../../../../client";
 import StaffMember from "@ui/organisms/StaffMember/StaffMember";
 import Section from "@ui/atoms/Section/Section";
-import { getStaffMembers } from '../../../../../../client'
 
 const SingleTournamentStaff = async ({
 	params,
@@ -10,7 +11,17 @@ const SingleTournamentStaff = async ({
 		tournamentId: string;
 	};
 }) => {
-	const { data:getStaffMembers1 } = await getStaffMembers({
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getStaffMembers1 } = await getStaffMembers({
 		path: {
 			abbreviation: params.tournamentId,
 		},

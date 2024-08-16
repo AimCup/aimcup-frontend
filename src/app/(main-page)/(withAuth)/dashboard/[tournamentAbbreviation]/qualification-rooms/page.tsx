@@ -1,10 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { QualificationRoomModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomModal";
-import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
-import { getUser } from "@/actions/public/getUserAction";
+import { cookies } from "next/headers";
 import {
+	client,
 	deleteQualificationRoom,
 	getParticipants,
 	getQualificationRooms,
@@ -12,14 +11,17 @@ import {
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
 	getTournamentStaffMember,
-	ParticipantResponseDto,
-	QualificationRoomResponseDto,
+	type ParticipantResponseDto,
+	type QualificationRoomResponseDto,
 	signInQualificationRoom,
-	StaffMemberResponseDto,
-	TeamResponseDto,
+	type StaffMemberResponseDto,
+	type TeamResponseDto,
 	tournamentType,
 } from "../../../../../../../client";
-import { multipleRevalidatePaths } from "@/lib/helpers";
+import { QualificationRoomModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomModal";
+import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { getUser } from "@/actions/public/getUserAction";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 interface QualificationRoom extends QualificationRoomResponseDto {
 	id: string;
@@ -58,6 +60,16 @@ const QRoomsPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const userData = await getUser();
 	const { data: getStaffForATournamentUser } = await getTournamentStaffMember({
 		path: {
@@ -197,13 +209,23 @@ const QRoomsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
 												await signInQualificationRoom({
 													path: {
 														abbreviation: tournamentAbbreviation,
 														roomId: room.id,
 													},
 												});
-												multipleRevalidatePaths([
+												await multipleRevalidatePaths([
 													"/",
 													`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
 												]);
@@ -258,13 +280,23 @@ const QRoomsPage = async ({
 									<form
 										action={async (_e) => {
 											"use server";
+											const cookie = cookies().get("JWT")?.value;
+											// configure internal service client
+											client.setConfig({
+												// set default base url for requests
+												baseUrl: process.env.NEXT_PUBLIC_API_URL,
+												// set default headers for requests
+												headers: {
+													Cookie: `token=${cookie}`,
+												},
+											});
 											await deleteQualificationRoom({
 												path: {
 													abbreviation: tournamentAbbreviation,
 													roomId: room.id,
 												},
 											});
-											multipleRevalidatePaths([
+											await multipleRevalidatePaths([
 												"/",
 												`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
 											]);

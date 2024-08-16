@@ -1,6 +1,7 @@
 import React from "react";
+import { cookies } from "next/headers";
+import { client, getStages } from "../../../../../../client";
 import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
-import { getStages } from '../../../../../../client'
 
 const SingleTournamentSchedule = async ({
 	params,
@@ -9,10 +10,20 @@ const SingleTournamentSchedule = async ({
 		tournamentId: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data } = await getStages({
 		path: {
-			abbreviation:params.tournamentId
-		}
+			abbreviation: params.tournamentId,
+		},
 	});
 	return (
 		<main className={"text-white container mx-auto"}>

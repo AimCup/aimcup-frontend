@@ -1,7 +1,13 @@
 import React from "react";
 import { type EmblaOptionsType } from "embla-carousel";
 import { format } from "date-fns";
-import { getTournaments, getUserTournaments, type TournamentResponseDto } from "../../../../client";
+import { cookies } from "next/headers";
+import {
+	client,
+	getTournaments,
+	getUserTournaments,
+	type TournamentResponseDto,
+} from "../../../../client";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 
@@ -15,6 +21,16 @@ export const TournamentList = async ({
 	/** Get all tournaments associated with the active user */
 	userTournaments?: boolean;
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	let tournamentData: TournamentResponseDto[] | undefined;
 
 	if (userTournaments) {

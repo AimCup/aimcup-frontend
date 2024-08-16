@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { qualificationType, tournamentType } from '../../../../../client'
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
@@ -11,7 +12,6 @@ import { createTournamentSchema } from "@/formSchemas/createTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { createTournamentAction } from "@/actions/public/createTournamentAction";
-import { qualificationType, tournamentType } from '../../../../../client'
 
 const CreateTournamentModal = () => {
 	const modalRef = useRef<HTMLDialogElement>(null);

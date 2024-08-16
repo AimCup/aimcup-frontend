@@ -1,9 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import {
+	type BeatmapModificationResponseDto,
+	client,
+	getMappoolByStage,
+	type modification,
+	type StageResponseDto,
+} from "../../../../../../../client";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
 import Section from "@ui/atoms/Section/Section";
-import { BeatmapModificationResponseDto, getMappoolByStage, StageResponseDto } from '../../../../../../../client'
 
 const SingleTournamentMappool = async ({
 	params,
@@ -17,21 +24,28 @@ const SingleTournamentMappool = async ({
 		modification: BeatmapModificationResponseDto["modification"];
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	let getMappoolByStageData, mappolStages;
 	try {
-		const { data: getMappoolByStageData1 } = await getMappoolByStage(
-			{
-				path: {
-					abbreviation: params.tournamentId,
-					stageType: params.stageType,
-				}
-			}
-		);
+		const { data: getMappoolByStageData1 } = await getMappoolByStage({
+			path: {
+				abbreviation: params.tournamentId,
+				stageType: params.stageType,
+			},
+		});
 		getMappoolByStageData = getMappoolByStageData1;
 		mappolStages = getMappoolByStageData?.beatmapsModifications.filter(
 			(stage) => !!stage.beatmaps,
 		);
-
 	} catch (error) {
 		console.error(error);
 	}
@@ -71,7 +85,7 @@ const SingleTournamentMappool = async ({
 					<MappoolCard
 						key={map.id}
 						title={map.title}
-						modification={searchParams.modification}
+						modification={searchParams.modification as modification}
 						author={map.creator}
 						isCustom={map.isCustom}
 						position={map.position}
@@ -96,7 +110,7 @@ const SingleTournamentMappool = async ({
 					<MappoolCard
 						key={map?.id}
 						title={map?.title}
-						modification={map?.modification}
+						modification={map?.modification as modification}
 						author={map?.creator}
 						isCustom={!!map?.isCustom}
 						position={map?.position || 0}

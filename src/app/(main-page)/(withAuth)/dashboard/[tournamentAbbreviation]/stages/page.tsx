@@ -1,14 +1,11 @@
 import React from "react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { client, deleteStage, getStages, stageType } from "../../../../../../../client";
 import { StageForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageForm";
-import { multipleRevalidatePaths, stageTypeEnumToString } from "@/lib/helpers";
-import {
-	deleteStage,
-	getStages,
-	getTournamentByAbbreviation,
-	stageType,
-} from "../../../../../../../client";
+import { stageTypeEnumToString } from "@/lib/helpers";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const StagePage = async ({
 	params: { tournamentAbbreviation },
@@ -17,6 +14,16 @@ const StagePage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const { data: getStagesData } = await getStages({
 		path: {
 			abbreviation: tournamentAbbreviation,
@@ -80,13 +87,23 @@ const StagePage = async ({
 											<form
 												action={async (_e) => {
 													"use server";
+													const cookie = cookies().get("JWT")?.value;
+													// configure internal service client
+													client.setConfig({
+														// set default base url for requests
+														baseUrl: process.env.NEXT_PUBLIC_API_URL,
+														// set default headers for requests
+														headers: {
+															Cookie: `token=${cookie}`,
+														},
+													});
 													await deleteStage({
 														path: {
 															abbreviation: tournamentAbbreviation,
 															stageType: stage.stageType,
 														},
 													});
-													multipleRevalidatePaths([
+													await multipleRevalidatePaths([
 														"/",
 														`/dashboard/${tournamentAbbreviation}/stages`,
 													]);

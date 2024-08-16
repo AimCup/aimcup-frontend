@@ -1,7 +1,8 @@
 import React from "react";
 import "react-quill/dist/quill.snow.css";
+import { cookies } from "next/headers";
+import { client, getTournamentByAbbreviation } from "../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
-import { getTournamentByAbbreviation } from '../../../../../../client'
 
 const styles =
 	"[&_h1]:text-4xl " +
@@ -22,12 +23,21 @@ const SingleTournamentRules = async ({
 		tournamentId: string;
 	};
 }) => {
-	const { data:tournament } = await getTournamentByAbbreviation({
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: tournament } = await getTournamentByAbbreviation({
 		path: {
 			abbreviation: params.tournamentId,
 		},
 	});
-
 
 	return (
 		<Section id="rules" className={"flex-col"}>
