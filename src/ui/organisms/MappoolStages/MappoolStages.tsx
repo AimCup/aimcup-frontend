@@ -1,7 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import type { MappoolResponseDto, StageResponseDto } from "../../../../generated";
-import { type stageType } from "../../../../client";
+import { MappoolResponseDto, StageResponseDto, type stageType } from "../../../../client";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
 import { stageTypeEnumToString } from "@/lib/helpers";
 

@@ -19,7 +19,7 @@ jobs:
       - name: Fetch OpenAPI schema
         run: npm run open:api
       - name: Generate API client
-        run: npm run open:generate
+        run: npm run openapi-ts
       - name: Build and deploy to Next environment
         run: docker-compose -f docker-compose.yml up -d --build
         env:

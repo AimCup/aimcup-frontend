@@ -13,12 +13,12 @@ import {
 	getStages,
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
+	MappoolResponseDto,
 	type StageResponseDto,
 	type stageType,
 	type TeamResponseDto,
 	type tournamentType,
 } from "../../../../../client";
-import type { MappoolResponseDto } from "../../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
 import { Socials } from "@ui/organisms/Socials/Socials";
 import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
