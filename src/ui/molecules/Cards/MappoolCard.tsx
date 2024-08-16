@@ -3,8 +3,8 @@ import Image from "next/image";
 import { IoTime } from "react-icons/io5";
 import { IoIosStar } from "react-icons/io";
 import { PiMetronomeFill } from "react-icons/pi";
+import { type BeatmapModificationResponseDto } from "../../../../client";
 import { TextBox } from "@ui/atoms/TextBox/TextBox";
-import { BeatmapModificationResponseDto } from "../../../../client";
 
 export const MappoolCard = ({
 	title,

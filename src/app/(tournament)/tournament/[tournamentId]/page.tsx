@@ -13,7 +13,6 @@ import {
 	getStages,
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
-	MappoolResponseDto,
 	type StageResponseDto,
 	type stageType,
 	type TeamResponseDto,
@@ -252,7 +251,7 @@ const SingleTournament = async ({
 											},
 											stageEnum: stage.stageType as stageType,
 										}}
-										mappool={mappool as MappoolResponseDto}
+										mappool={mappool}
 										tournamentAbbreviation={params.tournamentId}
 									/>
 								</div>

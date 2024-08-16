@@ -1,8 +1,8 @@
 import React from "react";
 import { PiCrownSimpleFill } from "react-icons/pi";
 import Link from "next/link";
+import { type TeamResponseDto } from "../../../../client";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
-import { TeamResponseDto } from "../../../../client";
 
 export const TeamCard = ({
 	team,
