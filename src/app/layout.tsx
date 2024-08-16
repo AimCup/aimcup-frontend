@@ -25,7 +25,6 @@ client.setConfig({
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	client.interceptors.request.use((req) => {
 		const cookie = cookies().get("JWT")?.value;
-		console.log(cookie, "cookiecookiecookiecookiecookiecookiecookiecookiecookiecookie");
 		if (cookie) {
 			req.headers.set("Cookie", `token=${cookie}`);
 		}

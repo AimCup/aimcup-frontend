@@ -181,7 +181,7 @@ const TeamPage = async ({
 													await deleteParticipantFromTeam({
 														path: {
 															teamId: getTeam?.id || "",
-															osuId: "" + participant.user.osuId,
+															participantId: "" + participant.id,
 															abbreviation: tournamentId,
 														},
 													});
