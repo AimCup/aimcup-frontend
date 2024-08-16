@@ -1,48 +1,73 @@
 "use server";
 
-import { AdminStageService, type StageResponseDto } from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 import {
 	type CreateStageSchemaType,
 	type EditStageSchemaType,
 } from "@/formSchemas/createStageSchema";
+import { createStage, stageType, updateStage } from "../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
-export async function createStageAction(data: CreateStageSchemaType) {
+export async function createStageAction(formData: CreateStageSchemaType) {
 	"use server";
 
-	return executeFetch(
-		AdminStageService.createStage(data.tournamentAbb, {
-			endDate: new Date(data.endDate).toISOString(),
-			stageType: data.stageType as StageResponseDto.stageType,
-			startDate: new Date(data.startDate).toISOString(),
-		}),
-		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<StageResponseDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	const { data, error } = await createStage({
+		path: {
+			abbreviation: formData.tournamentAbb,
+		},
+		body: {
+			startDate: new Date(formData.startDate).toISOString(),
+			endDate: new Date(formData.endDate).toISOString(),
+			stageType: formData.stageType as stageType,
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbb}`,
+		`/tournament/${formData.tournamentAbb}`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }
-export async function editStageAction(data: EditStageSchemaType) {
+export async function editStageAction(formData: EditStageSchemaType) {
 	"use server";
 
-	return executeFetch(
-		AdminStageService.updateStage(
-			data.tournamentAbb,
-			data.stageType as StageResponseDto.stageType,
-			{
-				endDate: new Date(data.endDate).toISOString(),
-				startDate: new Date(data.startDate).toISOString(),
-			},
-		),
-		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<StageResponseDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	const { data, error } = await updateStage({
+		path: {
+			abbreviation: formData.tournamentAbb,
+			stageType: formData.stageType as stageType,
+		},
+		body: {
+			startDate: new Date(formData.startDate).toISOString(),
+			endDate: new Date(formData.endDate).toISOString(),
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbb}`,
+		`/tournament/${formData.tournamentAbb}`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

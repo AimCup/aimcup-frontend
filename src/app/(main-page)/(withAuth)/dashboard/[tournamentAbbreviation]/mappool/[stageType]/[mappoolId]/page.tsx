@@ -1,26 +1,33 @@
 import React from "react";
 import Image from "next/image";
-import { AdminMappoolService, type StageResponseDto } from "../../../../../../../../../generated";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { multipleRevalidatePaths, stageTypeEnumToString } from "@/lib/helpers";
 import { Button } from "@ui/atoms/Button/Button";
 import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
-import { executeFetch } from "@/lib/executeFetch";
+import {
+	deleteBeatmap,
+	getMappool,
+	releaseMappool,
+	stageType,
+} from "../../../../../../../../../client";
 
 const StageTypePage = async ({
 	params: { tournamentAbbreviation, stageType, mappoolId },
 }: {
 	params: {
 		tournamentAbbreviation: string;
-		stageType: StageResponseDto.stageType;
+		stageType: stageType;
 		mappoolId: string;
 	};
 }) => {
-	const getMappoolData = await executeFetch(
-		AdminMappoolService.getMappool(tournamentAbbreviation, stageType),
-	);
+	const { data: getMappoolData, error } = await getMappool({
+		path: {
+			stageType,
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	if (!getMappoolData.status) {
-		return <div>{getMappoolData.errorMessage}</div>;
+	if (error) {
+		return <div>{error.errors?.map((e) => e)}</div>;
 	}
 
 	return (
@@ -32,18 +39,24 @@ const StageTypePage = async ({
 				className={"mb-3"}
 				action={async (_e) => {
 					"use server";
-					await executeFetch(
-						AdminMappoolService.releaseMappool(
-							tournamentAbbreviation,
+					await releaseMappool({
+						path: {
 							stageType,
-							!getMappoolData.response.isReleased,
-						),
-						["/", "/dashboard/[tournamentAbb]/mappool/[stageType]/[mappoolId]"],
-					);
+							abbreviation: tournamentAbbreviation,
+						},
+						query: {
+							release: !getMappoolData.isReleased,
+						},
+					});
+
+					multipleRevalidatePaths([
+						"/",
+						`/dashboard/${tournamentAbbreviation}/mappool/${stageType}/${mappoolId}`,
+					]);
 				}}
 			>
 				<Button className={"max-w-max"} type={"submit"}>
-					{getMappoolData.response.isReleased ? "Unrelease" : "Release"} mappool
+					{getMappoolData.isReleased ? "Unrelease" : "Release"} mappool
 				</Button>
 			</form>
 			<AddBeatMap tournamentAbb={tournamentAbbreviation} mappoolId={mappoolId} />
@@ -69,7 +82,7 @@ const StageTypePage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getMappoolData.response.beatmapsModifications.map(
+						{getMappoolData.beatmapsModifications.map(
 							(mappool) =>
 								mappool.beatmaps?.map((beatmap) => (
 									<tr key={beatmap.id}>
@@ -111,18 +124,18 @@ const StageTypePage = async ({
 											<form
 												action={async (_e) => {
 													"use server";
-													await executeFetch(
-														AdminMappoolService.deleteBeatmap(
-															tournamentAbbreviation,
+													await deleteBeatmap({
+														path: {
+															abbreviation: tournamentAbbreviation,
 															mappoolId,
-															mappool.modification,
-															beatmap.id,
-														),
-														[
-															"/",
-															"/dashboard/[tournamentAbb]/mappool/[stageType]/[mappoolId]",
-														],
-													);
+															modification: mappool.modification,
+															beatmapId: beatmap.id,
+														},
+													});
+													multipleRevalidatePaths([
+														"/",
+														`/dashboard/${tournamentAbbreviation}/mappool/${stageType}/${mappoolId}`,
+													]);
 												}}
 											>
 												<button

@@ -1,15 +1,14 @@
 import React from "react";
 import { format } from "date-fns";
 import Link from "next/link";
-import {
-	AdminStageService,
-	StageResponseDto,
-	StageService,
-	TournamentService,
-} from "../../../../../../../generated";
 import { StageForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageForm";
-import { executeFetch } from "@/lib/executeFetch";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { multipleRevalidatePaths, stageTypeEnumToString } from "@/lib/helpers";
+import {
+	deleteStage,
+	getStages,
+	getTournamentByAbbreviation,
+	stageType,
+} from "../../../../../../../client";
 
 const StagePage = async ({
 	params: { tournamentAbbreviation },
@@ -18,23 +17,13 @@ const StagePage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const tournamentData = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(tournamentAbbreviation),
-	);
-	const getStagesData = await executeFetch(StageService.getStages(tournamentAbbreviation));
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	const stageWithoutMappool = [
-		StageResponseDto.stageType.REGISTRATION,
-		StageResponseDto.stageType.SCREENING,
-	];
-
-	if (!tournamentData.status) {
-		return <>{tournamentData.errorMessage}</>;
-	}
-
-	if (!getStagesData.status) {
-		return <div>Failed to fetch stages</div>;
-	}
+	const stageWithoutMappool = [stageType.REGISTRATION, stageType.SCREENING];
 
 	return (
 		<div className={"flex w-full flex-col !px-3 !py-2"}>
@@ -44,9 +33,11 @@ const StagePage = async ({
 					type: "add",
 				}}
 				tournamentAbb={tournamentAbbreviation}
-				alreadyAddedStages={getStagesData.response.map((stage) => {
-					return stage.stageType;
-				})}
+				alreadyAddedStages={
+					getStagesData?.map((stage) => {
+						return stage.stageType as stageType;
+					}) || []
+				}
 			/>
 
 			<div className="mt-10 overflow-x-auto">
@@ -61,8 +52,8 @@ const StagePage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getStagesData.response
-							.sort((a, b) => {
+						{getStagesData
+							?.sort((a, b) => {
 								return (
 									new Date(a.startDate).getTime() -
 									new Date(b.startDate).getTime()
@@ -89,13 +80,16 @@ const StagePage = async ({
 											<form
 												action={async (_e) => {
 													"use server";
-													await executeFetch(
-														AdminStageService.deleteStage(
-															tournamentAbbreviation,
-															stage.stageType,
-														),
-														["/", "/dashboard/[tournamentAbb]/stages"],
-													);
+													await deleteStage({
+														path: {
+															abbreviation: tournamentAbbreviation,
+															stageType: stage.stageType,
+														},
+													});
+													multipleRevalidatePaths([
+														"/",
+														`/dashboard/${tournamentAbbreviation}/stages`,
+													]);
 												}}
 											>
 												<button
@@ -106,7 +100,7 @@ const StagePage = async ({
 												</button>
 											</form>
 											{stageWithoutMappool.includes(
-												stage.stageType,
+												stage?.stageType as stageType,
 											) ? null : (
 												<button className="btn btn-ghost btn-xs">
 													<Link

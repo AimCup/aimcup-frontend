@@ -4,10 +4,10 @@ import { SiKofi } from "react-icons/si";
 import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Link from "next/link";
-import { TournamentService } from "../../../../generated";
+import { getTournaments } from "../../../../client";
 
 export const Footer = async () => {
-	const tournaments = await TournamentService.getTournaments();
+	const { data } = await getTournaments();
 
 	return (
 		<footer className={"md:px-18 md:py-18 px-8 py-10 lg:px-20 lg:py-20"}>
@@ -32,7 +32,7 @@ export const Footer = async () => {
 						<p>My profile</p> {/*TODO: Ukryte gdy użytkownik niezalogowany*/}
 					</div>
 					<div className={"flex-grow flex-col space-y-3 max-sm:hidden sm:hidden md:flex"}>
-						{tournaments.map((tournament) => (
+						{data?.map((tournament) => (
 							<Link
 								key={tournament.id}
 								href={`/tournament/${tournament.abbreviation?.toLowerCase()}`}

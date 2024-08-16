@@ -1,34 +1,44 @@
 "use server";
 
-import { AdminTournamentService, type UpdateTournamentDataRequestDto } from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 import { type EditTournamentSchemaType } from "@/formSchemas/editTournamentSchema";
+import { updateTournament } from "../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
-export async function editTournamentAction(data: EditTournamentSchemaType, rules: string) {
+export async function editTournamentAction(formData: EditTournamentSchemaType, formRules: string) {
 	"use server";
 
-	return executeFetch(
-		AdminTournamentService.updateTournament(data.oldAbbreviation, {
+	const { data, error } = await updateTournament({
+		path: {
+			abbreviation: formData.oldAbbreviation,
+		},
+		body: {
+			rules: formRules,
+			name: formData.name,
+			abbreviation: formData.abbreviation,
 			prizePool: [
-				{ type: 0, prize: data.prize0 },
-				{ type: 1, prize: data.prize1 },
-				{ type: 2, prize: data.prize2 },
+				{ type: 0, prize: formData.prize0 },
+				{ type: 1, prize: formData.prize1 },
+				{ type: 2, prize: formData.prize2 },
 			],
-			abbreviation: data.abbreviation,
-			name: data.name,
-			rules: rules,
-		}),
-		[
-			"/",
-			`/dashboard/${data.abbreviation}`,
-			`/dashboard/${data.abbreviation}/settings`,
-			`/tournament/${data.abbreviation}`,
-		],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<UpdateTournamentDataRequestDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.abbreviation}`,
+		`/dashboard/${formData.abbreviation}/settings`,
+		`/tournament/${formData.abbreviation}`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

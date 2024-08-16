@@ -1,12 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DiscordService } from "../../../../generated";
+import { verify } from "../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import { getUser } from "@/actions/public/getUserAction";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
-import { executeFetch } from "@/lib/executeFetch";
 
 export const LoginAvatar = async () => {
 	const userData = await getUser();
@@ -39,9 +38,9 @@ export const LoginAvatar = async () => {
 						<form
 							action={async (_e) => {
 								"use server";
-								const data = await executeFetch(DiscordService.verify(), ["/"]);
-								if (data.status) {
-									redirect(data.response.redirectUri);
+								const { data } = await verify();
+								if (data?.redirectUri) {
+									redirect(data.redirectUri);
 								}
 							}}
 						>

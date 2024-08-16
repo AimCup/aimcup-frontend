@@ -1,24 +1,25 @@
 import React from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import {
-	AdminQualificationService,
-	AdminStaffMemberService,
-	type ParticipantResponseDto,
-	ParticipantService,
-	type QualificationRoomResponseDto,
-	QualificationService,
-	type StaffMemberResponseDto,
-	type TeamResponseDto,
-	TeamService,
-	TournamentRequestDto,
-	TournamentService,
-	UserService,
-} from "../../../../../../../generated";
 import { QualificationRoomModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomModal";
-import { executeFetch } from "@/lib/executeFetch";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
+import {
+	deleteQualificationRoom,
+	getParticipants,
+	getQualificationRooms,
+	getStaffMembers1,
+	getTeamsByTournament,
+	getTournamentByAbbreviation,
+	getTournamentStaffMember,
+	ParticipantResponseDto,
+	QualificationRoomResponseDto,
+	signInQualificationRoom,
+	StaffMemberResponseDto,
+	TeamResponseDto,
+	tournamentType,
+} from "../../../../../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
 interface QualificationRoom extends QualificationRoomResponseDto {
 	id: string;
@@ -42,7 +43,7 @@ const qualificationRooms = (
 	rooms: QualificationRoomResponseDto[],
 ): (TeamBasedQualificationRoom | ParticipantBasedQualificationRoom)[] => {
 	return rooms.map((room) => {
-		if (room.tournamentType !== TournamentRequestDto.tournamentType.PARTICIPANT_VS) {
+		if (room.tournamentType !== tournamentType.PARTICIPANT_VS) {
 			return room as TeamBasedQualificationRoom;
 		} else {
 			return room as ParticipantBasedQualificationRoom;
@@ -58,78 +59,68 @@ const QRoomsPage = async ({
 	};
 }) => {
 	const userData = await getUser();
-	const getStaffForATournamentUser = await executeFetch(
-		UserService.getTournamentStaffMember(tournamentAbbreviation),
-	);
+	const { data: getStaffForATournamentUser } = await getTournamentStaffMember({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	const getQualificationRooms = await executeFetch(
-		QualificationService.getQualificationRooms(tournamentAbbreviation),
-	);
-	const getStaffMembers = await executeFetch(
-		AdminStaffMemberService.getStaffMembers1(tournamentAbbreviation),
-	);
+	const { data: getQualificationRoomsData } = await getQualificationRooms({
+		path: { abbreviation: tournamentAbbreviation },
+	});
 
-	const getTournament = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(tournamentAbbreviation),
-	);
+	const { data: getStaffMembers } = await getStaffMembers1({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	if (!getStaffForATournamentUser.status) {
-		return <div>{getStaffForATournamentUser.errorMessage}</div>;
-	}
+	const { data: getTournament } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	if (!getStaffMembers.status) {
-		return <div>{getStaffMembers.errorMessage}</div>;
-	}
-
-	if (!getQualificationRooms.status) {
-		return <div>{getQualificationRooms.errorMessage}</div>;
-	}
-
-	if (!getTournament.status) {
-		return <div>{getTournament.errorMessage}</div>;
-	}
-
-	const staffMemberSelectOptions: selectOptions[] = getStaffMembers.response
-		.filter((s) => s.user)
-		.map((staffMember) => ({
-			id: staffMember.id,
-			label: staffMember.user ? staffMember.user.username : staffMember.username || "",
-		}));
+	const staffMemberSelectOptions: selectOptions[] =
+		getStaffMembers
+			?.filter((s) => s.user)
+			?.map((staffMember) => ({
+				id: staffMember.id,
+				label: staffMember.user ? staffMember.user.username : staffMember.username || "",
+			})) || [];
 
 	let rostersSelectOptions: selectOptions[] = [];
-	if (
-		getTournament.response.tournamentType !== TournamentRequestDto.tournamentType.PARTICIPANT_VS
-	) {
-		const getTeams = await executeFetch(
-			TeamService.getTeamsByTournament(tournamentAbbreviation),
-		);
-		if (!getTeams.status) {
-			return <div>{getTeams.errorMessage}</div>;
-		}
-		rostersSelectOptions = getTeams.response.map((team) => ({
-			id: team.id,
-			label: team.name,
-		}));
+	if (getTournament?.tournamentType !== tournamentType.PARTICIPANT_VS) {
+		const { data: getTeams } = await getTeamsByTournament({
+			path: {
+				abbreviation: tournamentAbbreviation,
+			},
+		});
+		rostersSelectOptions =
+			getTeams?.map((team) => ({
+				id: team.id,
+				label: team.name,
+			})) || [];
 	} else {
-		const getParticipants = await executeFetch(
-			ParticipantService.getParticipants(tournamentAbbreviation),
-		);
-		if (!getParticipants.status) {
-			return <div>{getParticipants.errorMessage}</div>;
-		}
-		rostersSelectOptions = getParticipants.response.map((participant) => ({
-			id: participant.id,
-			label: participant.user.username,
-		}));
+		const { data: getParticipantsData } = await getParticipants({
+			path: {
+				abbreviation: tournamentAbbreviation,
+			},
+		});
+		rostersSelectOptions =
+			getParticipantsData?.map((participant) => ({
+				id: participant.id,
+				label: participant.user.username,
+			})) || [];
 	}
 
 	const canSignIn =
-		getStaffForATournamentUser.response.roles?.some((role) =>
+		getStaffForATournamentUser?.roles?.some((role) =>
 			role.permissions.some(
 				(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
 			),
 		) ||
-		getStaffForATournamentUser.response.permissions?.some(
+		getStaffForATournamentUser?.permissions?.some(
 			(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
 		);
 
@@ -158,13 +149,12 @@ const QRoomsPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{qualificationRooms(getQualificationRooms.response).map((room) => (
+						{qualificationRooms(getQualificationRoomsData || []).map((room) => (
 							<tr key={room.id}>
 								<td>{room.number}</td>
 								<td>{format(new Date(room.startDate), "dd/MM/yyyy hh:mm")}</td>
 								<td>
-									{room.tournamentType ===
-									TournamentRequestDto.tournamentType.PARTICIPANT_VS
+									{room.tournamentType === tournamentType.PARTICIPANT_VS
 										? (
 												room as ParticipantBasedQualificationRoom
 											).participants.map((participant) => (
@@ -207,16 +197,16 @@ const QRoomsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminQualificationService.signInQualificationRoom(
-														tournamentAbbreviation,
-														room.id,
-													),
-													[
-														"/",
-														"/dashboard/[tournamentAbb]/qualification-rooms",
-													],
-												);
+												await signInQualificationRoom({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														roomId: room.id,
+													},
+												});
+												multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
+												]);
 											}}
 										>
 											<button
@@ -246,8 +236,7 @@ const QRoomsPage = async ({
 												dataTimeStart: room.startDate,
 												selectedRosterIds:
 													room.tournamentType ===
-													TournamentRequestDto.tournamentType
-														.PARTICIPANT_VS
+													tournamentType.PARTICIPANT_VS
 														? (
 																room as ParticipantBasedQualificationRoom
 															).participants.map((participant) => ({
@@ -269,16 +258,16 @@ const QRoomsPage = async ({
 									<form
 										action={async (_e) => {
 											"use server";
-											await executeFetch(
-												AdminQualificationService.deleteQualificationRoom(
-													tournamentAbbreviation,
-													room.id,
-												),
-												[
-													"/",
-													"/dashboard/[tournamentAbb]/qualification-rooms",
-												],
-											);
+											await deleteQualificationRoom({
+												path: {
+													abbreviation: tournamentAbbreviation,
+													roomId: room.id,
+												},
+											});
+											multipleRevalidatePaths([
+												"/",
+												`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
+											]);
 										}}
 									>
 										<button className="btn btn-ghost btn-xs" type={"submit"}>

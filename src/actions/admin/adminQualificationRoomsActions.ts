@@ -1,48 +1,71 @@
 "use server";
 
-import { AdminQualificationService, type AdminStaffMemberService } from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
 import { type CreateQualificationRoomsSchemaType } from "@/formSchemas/createQualificationRoomsSchema";
 import { type EditQualificationRoomsSchemaType } from "@/formSchemas/editQualificationRoomSchema";
+import { createQualificationRooms, updateQualificationRoom } from "../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
-export async function createQualificationRoomsAction(data: CreateQualificationRoomsSchemaType) {
+export async function createQualificationRoomsAction(formData: CreateQualificationRoomsSchemaType) {
 	"use server";
 
-	return executeFetch(
-		AdminQualificationService.createQualificationRooms(data.tournamentAbbreviation, {
-			amount: +data.amount,
-			timeOffset: +data.offset,
-			startDateTime: data.dataTimeStart,
-		}),
-		["/", "/dashboard/[tournamentAbb]/qualification-rooms"],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<AdminStaffMemberService>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	const { data, error } = await createQualificationRooms({
+		path: {
+			abbreviation: formData.tournamentAbbreviation,
+		},
+		body: {
+			amount: +formData.amount,
+			timeOffset: +formData.offset,
+			startDateTime: formData.dataTimeStart,
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbbreviation}/qualification-rooms`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }
 
-export async function editQualificationRoomsAction(data: EditQualificationRoomsSchemaType) {
+export async function editQualificationRoomsAction(formData: EditQualificationRoomsSchemaType) {
 	"use server";
 
-	return executeFetch(
-		AdminQualificationService.updateQualificationRoom(
-			data.tournamentAbbreviation,
-			data.roomId,
-			{
-				rosterIds: data.rosterIds,
-				staffMemberId: data.staffMemberId,
-				startDate: data.dataTimeStart,
-			},
-		),
-		["/", `/dashboard/${data.tournamentAbbreviation}/qualification-rooms`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<AdminStaffMemberService>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	const { data, error } = await updateQualificationRoom({
+		path: {
+			abbreviation: formData.tournamentAbbreviation,
+			roomId: formData.roomId,
+		},
+		body: {
+			rosterIds: formData.rosterIds?.map((roster) => roster),
+			staffMemberId: formData.staffMemberId,
+			startDate: formData.dataTimeStart,
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbbreviation}/qualification-rooms`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

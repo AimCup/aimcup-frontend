@@ -1,7 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
-import { type StageResponseDto } from "../../../../generated";
 import { stageTypeEnumToString } from "@/lib/helpers";
+import { StageResponseDto } from '../../../../client'
 
 export const ScheduleList = ({ scheduleList }: { scheduleList: StageResponseDto[] }) => {
 	const scheduleListContent = scheduleList?.map((stage) => {

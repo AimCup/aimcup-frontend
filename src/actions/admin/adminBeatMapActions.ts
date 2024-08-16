@@ -1,33 +1,34 @@
 "use server";
-
-import {
-	AdminMappoolService,
-	type BeatmapModificationResponseDto,
-	type BeatmapResponseDto,
-} from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
+import { addBeatmap, type modification } from "../../../client";
 import { type AddBeatMapSchemaType } from "@/formSchemas/addBeatMapSchema";
 
-export async function addBeatMapAction(data: AddBeatMapSchemaType) {
+export async function addBeatMapAction(formData: AddBeatMapSchemaType) {
 	"use server";
 
-	return executeFetch(
-		AdminMappoolService.addBeatmap(
-			data.tournamentAbb,
-			data.mappoolId,
-			data.modification as BeatmapModificationResponseDto.modification,
-			{
-				url: data.url,
-				position: +data.position,
-				isCustom: data?.isCustom === "on",
-			},
-		),
-		["/", "/dashboard/[tournamentAbb]/mappool/[stageType]/[mappoolId]"],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<BeatmapResponseDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	const { data, error } = await addBeatmap({
+		path: {
+			abbreviation: formData.tournamentAbb,
+			modification: formData.modification as modification,
+			mappoolId: formData.mappoolId,
+		},
+		body: {
+			url: formData.url,
+			position: +formData.position,
+			isCustom: formData?.isCustom === "on",
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	// todo: ADD REVALIDATE_PATHS
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

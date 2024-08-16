@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import { AdminTeamService } from "../../../../../../../generated";
-import { executeFetch } from "@/lib/executeFetch";
+import { changeTeamStatus, getTeams } from "../../../../../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
 const TeamsPage = async ({
 	params: { tournamentAbbreviation },
@@ -10,8 +10,12 @@ const TeamsPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const teams = await executeFetch(AdminTeamService.getTeams(tournamentAbbreviation));
-	if (!teams.status) {
+	const { data, error } = await getTeams({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
+	if (error) {
 		return <div>Failed to fetch teams</div>;
 	}
 	return (
@@ -30,7 +34,7 @@ const TeamsPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{teams.response.map((team) => {
+						{data?.map((team) => {
 							return (
 								<tr key={team.id}>
 									<td>
@@ -87,19 +91,21 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminTeamService.changeTeamStatus(
-														tournamentAbbreviation,
-														team.id,
-														"ACCEPTED",
-													),
-													[
-														"/",
-														`/dashboard/${tournamentAbbreviation}/teams`,
-														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
-														`/account/`,
-													],
-												);
+												await changeTeamStatus({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+													query: {
+														status: "ACCEPTED",
+													},
+												});
+												multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
 											}}
 										>
 											<button
@@ -112,19 +118,21 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminTeamService.changeTeamStatus(
-														tournamentAbbreviation,
-														team.id,
-														"REJECTED",
-													),
-													[
-														"/",
-														`/dashboard/${tournamentAbbreviation}/teams`,
-														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
-														`/account/`,
-													],
-												);
+												await changeTeamStatus({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+													query: {
+														status: "REJECTED",
+													},
+												});
+												multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
 											}}
 										>
 											<button

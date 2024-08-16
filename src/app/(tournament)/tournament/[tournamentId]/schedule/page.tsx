@@ -1,6 +1,6 @@
 import React from "react";
-import { StageService } from "../../../../../../generated";
 import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
+import { getStages } from '../../../../../../client'
 
 const SingleTournamentSchedule = async ({
 	params,
@@ -9,7 +9,11 @@ const SingleTournamentSchedule = async ({
 		tournamentId: string;
 	};
 }) => {
-	const data = await StageService.getStages(params.tournamentId);
+	const { data } = await getStages({
+		path: {
+			abbreviation:params.tournamentId
+		}
+	});
 	return (
 		<main className={"text-white container mx-auto"}>
 			<section
@@ -23,7 +27,7 @@ const SingleTournamentSchedule = async ({
 						<h2 className={"text-4xl font-bold "}>Schedule</h2>
 					</div>
 				</div>
-				<ScheduleList scheduleList={data} />
+				<ScheduleList scheduleList={data || []} />
 			</section>
 		</main>
 	);

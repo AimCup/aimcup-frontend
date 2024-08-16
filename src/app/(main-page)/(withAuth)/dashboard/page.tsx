@@ -1,22 +1,18 @@
 import React from "react";
 import Link from "next/link";
-import { TournamentService } from "../../../../../generated";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
-import { executeFetch } from "@/lib/executeFetch";
+import { getTournaments } from '../../../../../client'
 
 const DashboardPage = async () => {
-	const tournaments = await executeFetch(TournamentService.getTournaments());
+	const { data:tournaments } = await getTournaments();
 
-	if (!tournaments.status) {
-		return <div>{tournaments.errorMessage}</div>;
-	}
 
 	return (
 		<div className={"w-full"}>
 			<h1 className={"my-2 text-lg"}>Select tournament</h1>
 			<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
 				<CreateTournamentModal />
-				{tournaments.response.map((tournament) => (
+				{tournaments?.map((tournament) => (
 					<Link
 						href={`/dashboard/${tournament.abbreviation}`}
 						key={tournament.abbreviation}

@@ -5,15 +5,6 @@ import { RiBarChartFill } from "react-icons/ri";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
 import { format } from "date-fns";
-import {
-	AdminStaffMemberService,
-	MappoolService,
-	type StageResponseDto,
-	StageService,
-	type TeamResponseDto,
-	TeamService,
-	TournamentService,
-} from "../../../../../generated";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
 import { Socials } from "@ui/organisms/Socials/Socials";
 import RegisterToTournamentButton from "@ui/molecules/RegisterToTournamentButton/RegisterToTournamentButton";
@@ -21,8 +12,17 @@ import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
 import { MappoolStages } from "@ui/organisms/MappoolStages/MappoolStages";
 import { tournamentTeamShowEnumAvailable } from "@/lib/helpers";
 import Section from "@ui/atoms/Section/Section";
-import { executeFetch } from "@/lib/executeFetch";
 import StaffMember from "@ui/organisms/StaffMember/StaffMember";
+import {
+	getMappoolsByTournament,
+	getStaffMembers1,
+	getStages,
+	getTeamsByTournament,
+	getTournamentByAbbreviation,
+	StageResponseDto,
+	TeamResponseDto,
+	tournamentType,
+} from "../../../../../client";
 
 const SingleTournament = async ({
 	params,
@@ -31,38 +31,47 @@ const SingleTournament = async ({
 		tournamentId: string;
 	};
 }) => {
-	const [getTournamentByAbbreviation, getStages, getStaffMembers] = await Promise.allSettled([
-		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-		StageService.getStages(params.tournamentId),
-		AdminStaffMemberService.getStaffMembers1(params.tournamentId),
-	]);
-
-	if (getTournamentByAbbreviation.status === "rejected") {
-		throw new Error("Tournament not found"); //todo: change to proper error
-	}
-	if (getStages.status === "rejected") {
-		throw new Error("Schedule not found"); //todo: change to proper error
-	}
+	const { data: getTournamentByAbbreviationData } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
+	const { data: getStaffMembers } = await getStaffMembers1({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
 	let teams: TeamResponseDto[] = [];
 	let teamSize = "1vs1"; // 1vs1 for participants
 	if (
-		tournamentTeamShowEnumAvailable.includes(getTournamentByAbbreviation.value?.tournamentType)
+		tournamentTeamShowEnumAvailable.includes(
+			getTournamentByAbbreviationData?.tournamentType as tournamentType,
+		)
 	) {
-		teamSize = `${getTournamentByAbbreviation.value?.minimumTeamSize}vs${getTournamentByAbbreviation.value?.minimumTeamSize}`;
-		try {
-			teams = await TeamService.getTeamsByTournament(params.tournamentId);
-		} catch (error) {
-			throw new Error("Teams not found"); //todo: change to proper error
-		}
+		teamSize = `${getTournamentByAbbreviationData?.minimumTeamSize}vs${getTournamentByAbbreviationData?.minimumTeamSize}`;
+
+		const { data: teamsData } = await getTeamsByTournament({
+			path: {
+				abbreviation: params.tournamentId,
+			},
+		});
+		teams = teamsData || [];
 	}
 
-	const mappools = await executeFetch(
-		MappoolService.getMappoolsByTournament(params.tournamentId),
-	);
+	const { data: mappools } = await getMappoolsByTournament({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
 	const getStageByStageType = (stageType: string): StageResponseDto => {
-		return getStages.value.find(
+		return getStagesData?.find(
 			(stage: StageResponseDto) => stage.stageType === stageType,
 		) as StageResponseDto;
 	};
@@ -74,9 +83,9 @@ const SingleTournament = async ({
 					<div className={"flex"}>
 						<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
 							<h2 className={"text-4xl font-bold leading-relaxed "}>
-								{getTournamentByAbbreviation?.value?.name}
+								{getTournamentByAbbreviationData?.name}
 							</h2>
-							{getTournamentByAbbreviation?.value?.isOngoing && (
+							{getTournamentByAbbreviationData?.isOngoing && (
 								<div className={"flex items-center gap-4 md:justify-start"}>
 									<span className={"h-2 w-2 rounded-full bg-deepRed"} />
 									<span className={"text-xl text-flatRed md:text-2xl"}>
@@ -92,9 +101,11 @@ const SingleTournament = async ({
 							<RegisterToTournamentButton
 								tournamentId={params.tournamentId}
 								isTeamTournament={tournamentTeamShowEnumAvailable.includes(
-									getTournamentByAbbreviation.value?.tournamentType,
+									getTournamentByAbbreviationData?.tournamentType as tournamentType,
 								)}
-								shouldDisplay={getTournamentByAbbreviation.value?.canRegister}
+								shouldDisplay={
+									getTournamentByAbbreviationData?.canRegister || false
+								}
 							/>
 							{/*)}*/}
 							{/*<span className={"text-md text-flatRed"}>Apply for staff</span>*/}
@@ -118,19 +129,18 @@ const SingleTournament = async ({
 					<span className={"flex items-center gap-2"}>
 						<IoTime />{" "}
 						{format(
-							new Date(getTournamentByAbbreviation?.value?.startDate || 0),
+							new Date(getTournamentByAbbreviationData?.startDate || 0),
 							"dd/MM/yyyy",
 						)}{" "}
 						-{" "}
 						{format(
-							new Date(getTournamentByAbbreviation?.value?.endDate || 0),
+							new Date(getTournamentByAbbreviationData?.endDate || 0),
 							"dd/MM/yyyy",
 						)}
 					</span>
 					<span className={"flex items-center gap-2"}>
-						<RiBarChartFill />{" "}
-						{getTournamentByAbbreviation.value?.minimumRankLimit || 0} -{" "}
-						{getTournamentByAbbreviation.value?.maximumRankLimit || 0}
+						<RiBarChartFill /> {getTournamentByAbbreviationData?.minimumRankLimit || 0}{" "}
+						- {getTournamentByAbbreviationData?.maximumRankLimit || 0}
 					</span>
 				</div>
 			</Section>
@@ -194,7 +204,7 @@ const SingleTournament = async ({
 					</Link>
 				</div>
 				<div className={"grid grid-cols-1 gap-4 md:grid-cols-2"}>
-					<ScheduleList scheduleList={getStages.value} />
+					<ScheduleList scheduleList={getStagesData || []} />
 				</div>
 				<div className={"flex"}>
 					<Link
@@ -205,7 +215,7 @@ const SingleTournament = async ({
 					</Link>
 				</div>
 			</Section>
-			{mappools.status && mappools.response.length !== 0 ? (
+			{mappools && mappools.length !== 0 ? (
 				<Section id="mappool" className={"flex-col"}>
 					<div className={"flex flex-col md:w-full"}>
 						<h2
@@ -215,7 +225,7 @@ const SingleTournament = async ({
 						>
 							Mappool
 						</h2>
-						{mappools.response.map((mappool) => {
+						{mappools?.map((mappool) => {
 							const stage = getStageByStageType(mappool.stage);
 							return (
 								<div className={"m-2"} key={mappool.id}>
@@ -237,54 +247,50 @@ const SingleTournament = async ({
 					</div>
 				</Section>
 			) : undefined}
-			{getTournamentByAbbreviation.value?.tournamentType === "TEAM_VS" &&
-				teams.length > 0 && (
-					<Section id="teams" className={"flex-col"}>
-						<div className={"flex"}>
-							<Link
-								href={`${params.tournamentId}/teams`}
-								className={"group flex cursor-pointer items-center gap-4 "}
-							>
-								<h2
-									className={
-										"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
-									}
-								>
-									Teams
-								</h2>{" "}
-								<LiaLongArrowAltRightSolid
-									size={45}
-									className={
-										"transition-all group-hover:-rotate-45 group-hover:transform"
-									}
-								/>
-							</Link>
-						</div>
-						<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
-							{teams.map((team, index) => {
-								if (index > 1) {
-									return null;
+			{getTournamentByAbbreviationData?.tournamentType === "TEAM_VS" && teams.length > 0 && (
+				<Section id="teams" className={"flex-col"}>
+					<div className={"flex"}>
+						<Link
+							href={`${params.tournamentId}/teams`}
+							className={"group flex cursor-pointer items-center gap-4 "}
+						>
+							<h2
+								className={
+									"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
 								}
-								return (
-									<React.Fragment key={team.id}>
-										<div>
-											<TeamCard
-												team={team}
-												tournamentAbb={params.tournamentId}
-											/>
-										</div>
-									</React.Fragment>
-								);
-							})}
-						</div>
-					</Section>
-				)}
+							>
+								Teams
+							</h2>{" "}
+							<LiaLongArrowAltRightSolid
+								size={45}
+								className={
+									"transition-all group-hover:-rotate-45 group-hover:transform"
+								}
+							/>
+						</Link>
+					</div>
+					<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
+						{teams.map((team, index) => {
+							if (index > 1) {
+								return null;
+							}
+							return (
+								<React.Fragment key={team.id}>
+									<div>
+										<TeamCard team={team} tournamentAbb={params.tournamentId} />
+									</div>
+								</React.Fragment>
+							);
+						})}
+					</div>
+				</Section>
+			)}
 
 			<Section id="prizes" className={"flex-col gap-3"}>
 				<div className={"flex"}>
 					<h2 className={"text-4xl font-bold leading-relaxed"}>Prizes</h2>
 				</div>
-				{getTournamentByAbbreviation.value.prizePool?.map((prize) => (
+				{getTournamentByAbbreviationData?.prizePool?.map((prize) => (
 					<div
 						key={prize.type}
 						className={
@@ -323,11 +329,9 @@ const SingleTournament = async ({
 					</Link>
 				</div>
 				<div className={"grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4"}>
-					{getStaffMembers.status === "fulfilled"
-						? getStaffMembers.value.map((member) => (
-								<StaffMember key={member.id} staffMember={member} />
-							))
-						: "Staff could not be loaded"}
+					{getStaffMembers?.map((member) => (
+						<StaffMember key={member.id} staffMember={member} />
+					))}
 				</div>
 			</Section>
 			<Section id="socials" className={"flex-col gap-3"}>

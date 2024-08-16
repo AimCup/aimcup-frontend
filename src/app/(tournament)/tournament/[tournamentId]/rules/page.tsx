@@ -1,8 +1,7 @@
 import React from "react";
-import { TournamentService } from "../../../../../../generated";
-import { executeFetch } from "@/lib/executeFetch";
 import "react-quill/dist/quill.snow.css";
 import Section from "@ui/atoms/Section/Section";
+import { getTournamentByAbbreviation } from '../../../../../../client'
 
 const styles =
 	"[&_h1]:text-4xl " +
@@ -23,13 +22,12 @@ const SingleTournamentRules = async ({
 		tournamentId: string;
 	};
 }) => {
-	const tournament = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-	);
+	const { data:tournament } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
-	if (!tournament.status) {
-		return <div>{tournament.errorMessage}</div>;
-	}
 
 	return (
 		<Section id="rules" className={"flex-col"}>
@@ -42,65 +40,9 @@ const SingleTournamentRules = async ({
 				<div
 					className={`flex w-full flex-col rounded-xl bg-tuned p-8 ${styles}`}
 					dangerouslySetInnerHTML={{
-						__html: tournament.response.rules || "No rules",
+						__html: tournament?.rules || "No rules",
 					}}
 				/>
-				{/*<div className={"flex w-full flex-col gap-2"}>*/}
-				{/*	<h3 className={"text-xl font-bold"}>Topic 1</h3>*/}
-				{/*	<p className={"text-base"}>*/}
-				{/*		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed*/}
-				{/*		malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper*/}
-				{/*		nunc, nec interdum turpis libero a libero. Integer quis ex nec purus*/}
-				{/*		lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,*/}
-				{/*		purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.*/}
-				{/*		Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel*/}
-				{/*		ultricies condimentum, purus nunc lacinia purus, nec ullamcorper*/}
-				{/*		libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper*/}
-				{/*		libero.*/}
-				{/*	</p>*/}
-				{/*</div>*/}
-				{/*<div className={"flex w-full flex-col gap-2"}>*/}
-				{/*	<h3 className={"text-xl font-bold"}>Topic 2</h3>*/}
-				{/*	<p className={"text-base"}>*/}
-				{/*		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed*/}
-				{/*		malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper*/}
-				{/*		nunc, nec interdum turpis libero a libero. Integer quis ex nec purus*/}
-				{/*		lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,*/}
-				{/*		purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.*/}
-				{/*		Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel*/}
-				{/*		ultricies condimentum, purus nunc lacinia purus, nec ullamcorper*/}
-				{/*		libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper*/}
-				{/*		libero.*/}
-				{/*	</p>*/}
-				{/*</div>*/}
-				{/*<div className={"flex w-full flex-col gap-2"}>*/}
-				{/*	<h3 className={"text-xl font-bold"}>Topic 3</h3>*/}
-				{/*	<p className={"text-base"}>*/}
-				{/*		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed*/}
-				{/*		malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper*/}
-				{/*		nunc, nec interdum turpis libero a libero. Integer quis ex nec purus*/}
-				{/*		lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,*/}
-				{/*		purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.*/}
-				{/*		Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel*/}
-				{/*		ultricies condimentum, purus nunc lacinia purus, nec ullamcorper*/}
-				{/*		libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper*/}
-				{/*		libero.*/}
-				{/*	</p>*/}
-				{/*</div>*/}
-				{/*<div className={"flex w-full flex-col gap-2"}>*/}
-				{/*	<h3 className={"text-xl font-bold"}>Topic 4</h3>*/}
-				{/*	<p className={"text-base"}>*/}
-				{/*		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed*/}
-				{/*		malesuada, tortor nec tincidunt tincidunt, libero nunc ullamcorper*/}
-				{/*		nunc, nec interdum turpis libero a libero. Integer quis ex nec purus*/}
-				{/*		lacinia ultricies. Nullam auctor, nisl vel ultricies condimentum,*/}
-				{/*		purus nunc lacinia purus, nec ullamcorper libero ligula nec sapien.*/}
-				{/*		Nunc id semper nunc, nec ullamcorper libero. Nullam auctor, nisl vel*/}
-				{/*		ultricies condimentum, purus nunc lacinia purus, nec ullamcorper*/}
-				{/*		libero ligula nec sapien. Nunc id semper nunc, nec ullamcorper*/}
-				{/*		libero.*/}
-				{/*	</p>*/}
-				{/*</div>*/}
 			</div>
 		</Section>
 	);

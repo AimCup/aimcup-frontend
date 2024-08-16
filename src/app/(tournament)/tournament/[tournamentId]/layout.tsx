@@ -1,14 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
-import { StageService, TournamentRequestDto, TournamentService } from "../../../../../generated";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
-import tournamentType = TournamentRequestDto.tournamentType;
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
-import { executeFetch } from "@/lib/executeFetch";
-import Section from "@ui/atoms/Section/Section";
+import { getStages, getTournamentByAbbreviation, tournamentType } from '../../../../../client'
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -30,22 +27,21 @@ const navbarRoutes: INavbarProps[] = [
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
-	const getStagesData = await executeFetch(StageService.getStages(params.tournamentId));
+	const { data:getStagesData } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
-	const tournamentData = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-	);
-
-	if (!tournamentData.status) {
-		<Section>{tournamentData.errorMessage}</Section>;
-	}
-	if (!getStagesData.status) {
-		<Section>{getStagesData.errorMessage}</Section>;
-	}
+	const { data:tournamentData } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation:params.tournamentId
+		}
+	});
 
 	const getStateTypes =
-		getStagesData.status &&
-		getStagesData.response.filter((stage) => !!stage.mappool).map((stage) => stage.stageType);
+		getStagesData &&
+		getStagesData.filter((stage) => !!stage.mappool).map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
 		if (item.name === "Mappool") {
@@ -66,8 +62,8 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 	}) as INavbarProps[];
 
 	if (
-		tournamentData.status &&
-		tournamentData.response?.tournamentType !== tournamentType.PARTICIPANT_VS
+		tournamentData &&
+		tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS
 	) {
 		tournamentNavbarRoutes.push({
 			name: "Teams",

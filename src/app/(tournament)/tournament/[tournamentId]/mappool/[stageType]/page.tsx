@@ -1,13 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import {
-	type BeatmapModificationResponseDto,
-	MappoolService,
-	type StageResponseDto,
-} from "../../../../../../../generated";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
 import Section from "@ui/atoms/Section/Section";
+import { BeatmapModificationResponseDto, getMappoolByStage, StageResponseDto } from '../../../../../../../client'
 
 const SingleTournamentMappool = async ({
 	params,
@@ -23,14 +19,19 @@ const SingleTournamentMappool = async ({
 }) => {
 	let getMappoolByStageData, mappolStages;
 	try {
-		getMappoolByStageData = await MappoolService.getMappoolByStage(
-			params.tournamentId,
-			params.stageType,
+		const { data: getMappoolByStageData1 } = await getMappoolByStage(
+			{
+				path: {
+					abbreviation: params.tournamentId,
+					stageType: params.stageType,
+				}
+			}
 		);
-
-		mappolStages = getMappoolByStageData.beatmapsModifications.filter(
+		getMappoolByStageData = getMappoolByStageData1;
+		mappolStages = getMappoolByStageData?.beatmapsModifications.filter(
 			(stage) => !!stage.beatmaps,
 		);
+
 	} catch (error) {
 		console.error(error);
 	}

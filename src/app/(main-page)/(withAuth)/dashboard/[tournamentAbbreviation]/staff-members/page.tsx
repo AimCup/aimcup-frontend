@@ -1,13 +1,15 @@
 import React from "react";
 import Image from "next/image";
-import {
-	AdminStaffMemberService,
-	AdminTournamentRolesService,
-} from "../../../../../../../generated";
 import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
-import { executeFetch } from "@/lib/executeFetch";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
+import {
+	deleteStaffMembers,
+	getStaffMembers1,
+	getTournamentPermissions,
+	getTournamentRoles,
+} from "../../../../../../../client";
+import { multipleRevalidatePaths } from "@/lib/helpers";
 
 const StaffMembersPage = async ({
 	params: { tournamentAbbreviation },
@@ -16,32 +18,31 @@ const StaffMembersPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const getRoles = await executeFetch(
-		AdminTournamentRolesService.getTournamentRoles(tournamentAbbreviation),
-	);
-	const getPermissions = await executeFetch(
-		AdminTournamentRolesService.getTournamentPermissions(tournamentAbbreviation),
-	);
+	const { data: getRoles } = await getTournamentRoles({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
+	const { data: getPermissions } = await getTournamentPermissions({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	const getStaffMembers = await executeFetch(
-		AdminStaffMemberService.getStaffMembers1(tournamentAbbreviation),
-	);
+	const { data: getStaffMembers } = await getStaffMembers1({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	if (!getRoles.status || !getPermissions.status) {
-		return <div>Failed to fetch roles or permissions</div>;
-	}
-
-	if (!getStaffMembers.status) {
-		return <div>Failed to fetch staff members</div>;
-	}
-
-	const rolesSelectOptions: selectOptions[] = getRoles.response?.map((role) => ({
-		id: role.id,
-		label: role.name,
-	}));
+	const rolesSelectOptions: selectOptions[] =
+		getRoles?.map((role) => ({
+			id: role.id,
+			label: role.name,
+		})) || [];
 
 	const permissionsSelectOptions: selectOptions[] =
-		getPermissions.response.permissions?.map((permission) => ({
+		getPermissions?.permissions?.map((permission) => ({
 			id: permission,
 			label: permission,
 		})) || [];
@@ -79,7 +80,7 @@ const StaffMembersPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getStaffMembers.response.map((s) => (
+						{getStaffMembers?.map((s) => (
 							<tr key={s.id}>
 								<td>{s.user ? s.user.osuId : "-"}</td>
 								<td className={"flex items-center gap-4"}>
@@ -154,16 +155,16 @@ const StaffMembersPage = async ({
 									<form
 										action={async (_e) => {
 											"use server";
-											await executeFetch(
-												AdminStaffMemberService.deleteStaffMembers(
-													tournamentAbbreviation,
-													s.id,
-												),
-												[
-													"/",
-													`/dashboard/${tournamentAbbreviation}/staff-members`,
-												],
-											);
+											await deleteStaffMembers({
+												path: {
+													abbreviation: tournamentAbbreviation,
+													staffMemberId: s.id,
+												},
+											});
+											multipleRevalidatePaths([
+												"/",
+												`/dashboard/${tournamentAbbreviation}/staff-members`,
+											]);
 										}}
 									>
 										<button className="btn btn-ghost btn-xs" type={"submit"}>
