@@ -1,31 +1,30 @@
 import { type MutableRefObject } from "react";
 import { type z, type ZodObject, type ZodRawShape } from "zod";
-import { StageResponseDto, TournamentRequestDto } from "../../generated";
-import tournamentType = TournamentRequestDto.tournamentType;
+import { type StageResponseDto, tournamentType } from "../../client";
 
 export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) => {
 	switch (stageType) {
-		case StageResponseDto.stageType.REGISTRATION:
+		case "REGISTRATION":
 			return "Registration";
-		case StageResponseDto.stageType.QUALIFICATION:
+		case "QUALIFICATION":
 			return "Qualification";
-		case StageResponseDto.stageType.FINAL:
+		case "FINAL":
 			return "Final";
-		case StageResponseDto.stageType.RO16:
+		case "RO16":
 			return "Round of 16";
-		case StageResponseDto.stageType.RO64:
+		case "RO64":
 			return "Round of 64";
-		case StageResponseDto.stageType.GRAND_FINAL:
+		case "GRAND_FINAL":
 			return "Grand Final";
-		case StageResponseDto.stageType.QUARTER_FINAL:
+		case "QUARTER_FINAL":
 			return "Quarter Final";
-		case StageResponseDto.stageType.RO32:
+		case "RO32":
 			return "Round of 32";
-		case StageResponseDto.stageType.RO128:
+		case "RO128":
 			return "Round of 128";
-		case StageResponseDto.stageType.SEMI_FINAL:
+		case "SEMI_FINAL":
 			return "Semi Final";
-		case StageResponseDto.stageType.SCREENING:
+		case "SCREENING":
 			return "Screening";
 		default:
 			return "Unknown";

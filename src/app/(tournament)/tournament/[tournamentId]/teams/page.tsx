@@ -1,7 +1,7 @@
 import React from "react";
-import { TeamService } from "../../../../../../generated";
+import { cookies } from "next/headers";
+import { client, getTeamsByTournament } from "../../../../../../client";
 import { TeamCard } from "@ui/molecules/Cards/TeamCard";
-import { executeFetch } from "@/lib/executeFetch";
 import Section from "@ui/atoms/Section/Section";
 import { getUser } from "@/actions/public/getUserAction";
 
@@ -12,13 +12,24 @@ const SingleTournamentTeams = async ({
 		tournamentId: string;
 	};
 }) => {
-	const getTeams = await executeFetch(TeamService.getTeamsByTournament(tournamentId));
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getTeams } = await getTeamsByTournament({
+		path: {
+			abbreviation: tournamentId,
+		},
+	});
 	const userData = await getUser();
-	if (!getTeams.status) {
-		return <Section>{getTeams.errorMessage}</Section>;
-	}
 
-	const findMyTeam = getTeams.response.find((team) =>
+	const findMyTeam = getTeams?.find((team) =>
 		team.participants.some((participant) => participant.user.id === userData?.id),
 	);
 
@@ -43,7 +54,7 @@ const SingleTournamentTeams = async ({
 					</div>
 				</div>
 				<div className={"grid grid-cols-1 gap-10 md:grid-cols-2"}>
-					{getTeams.response.map((team) => (
+					{getTeams?.map((team) => (
 						<TeamCard tournamentAbb={tournamentId} team={team} key={team.id} />
 					))}
 				</div>

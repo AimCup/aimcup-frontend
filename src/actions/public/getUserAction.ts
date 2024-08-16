@@ -1,14 +1,21 @@
-import { OpenAPI, UserService } from "../../../generated";
-import { verifySession } from "@/lib/session";
+import { cache } from "react";
+import { cookies } from "next/headers";
+import { client, me } from "../../../client";
 
-export const getUser = async () => {
-	const JWT = await verifySession();
-	if (typeof JWT.token === "string" && JWT.isAuth) {
-		OpenAPI.HEADERS = {
-			Cookie: `token=${JWT.token}`,
-		};
-		const userData = await UserService.me();
-		return userData;
+export const getUser = cache(async () => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	if (cookie) {
+		const { data } = await me();
+		return data;
 	}
 	return null;
-};
+});

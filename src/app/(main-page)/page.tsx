@@ -2,11 +2,23 @@ import React, { Suspense } from "react";
 import Image from "next/image";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { client } from "../../../client";
 import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 import { Loading } from "@ui/atoms/Loading/Loading";
 import Section from "@ui/atoms/Section/Section";
 
 const Main = async () => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	return (
 		<>
 			<section className={"relative h-[calc(100vh-64px)] w-full"}>

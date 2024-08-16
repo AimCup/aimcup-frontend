@@ -1,65 +1,133 @@
 "use server";
 
-import { AdminStaffMemberService } from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
+import { cookies } from "next/headers";
+import { addStaffMembers, client, updateStaffMembers } from "../../../client";
 import { type AddStaffMembersSchemaType } from "@/formSchemas/addEditStaffMembersSchema";
 import { type AddUserLessStaffMembersSchemaType } from "@/formSchemas/addEditUserLessStaffMembersSchema";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
-export async function editStaffMemberAction(data: AddStaffMembersSchemaType) {
+export async function editStaffMemberAction(formData: AddStaffMembersSchemaType) {
 	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await updateStaffMembers({
+		path: {
+			staffMemberId: formData.osuId,
+			abbreviation: formData.tournamentAbbreviation,
+		},
+		body: {
+			discordId: formData.discordId,
+			roles: formData.roles,
+			permissions: formData.permissions,
+		},
+	});
 
-	return executeFetch(
-		AdminStaffMemberService.updateStaffMembers(data.tournamentAbbreviation, data.osuId, {
-			discordId: data.discordId,
-			roles: data.roles,
-			permissions: data.permissions,
-		}),
-		["/", `/dashboard/${data.tournamentAbbreviation}/staff-members`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<AdminStaffMemberService>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	if (error) {
+		return {
+			status: false as const,
+			// errorMessage: error.errors?.map((e) => e).join(", "), //todo
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbbreviation}/staff-members`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }
 
-export async function addStaffMemberAction(data: AddStaffMembersSchemaType) {
+export async function addStaffMemberAction(formData: AddStaffMembersSchemaType) {
 	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await addStaffMembers({
+		path: {
+			abbreviation: formData.tournamentAbbreviation,
+		},
+		body: {
+			osuId: formData.osuId,
+			discordId: formData.discordId,
+			roles: formData.roles,
+			permissions: formData.permissions,
+		},
+	});
 
-	return executeFetch(
-		AdminStaffMemberService.addStaffMembers(data.tournamentAbbreviation, {
-			osuId: data.osuId,
-			discordId: data.discordId,
-			roles: data.roles || [],
-			permissions: data.permissions || [],
-		}),
-		["/", `/dashboard/${data.tournamentAbbreviation}/staff-members`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<AdminStaffMemberService>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	if (error) {
+		return {
+			status: false as const,
+			// errorMessage: error.errors?.map((e) => e).join(", "), //todo
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbbreviation}/staff-members`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }
 
-export async function addUserLessStaffMemberAction(data: AddUserLessStaffMembersSchemaType) {
+export async function addUserLessStaffMemberAction(formData: AddUserLessStaffMembersSchemaType) {
 	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await addStaffMembers({
+		path: {
+			abbreviation: formData.tournamentAbbreviation,
+		},
+		body: {
+			username: formData.username,
+			roles: formData.roles,
+			redirectUrl: formData.redirectUrl,
+			imageUrl: formData.imageUrl,
+		},
+	});
 
-	return executeFetch(
-		AdminStaffMemberService.addStaffMembers(data.tournamentAbbreviation, {
-			roles: data.roles || [],
-			username: data.username,
-			redirectUrl: data.redirectUrl,
-			imageUrl: data.imageUrl,
-		}),
-		["/", `/dashboard/${data.tournamentAbbreviation}/staff-members`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<AdminStaffMemberService>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	if (error) {
+		return {
+			status: false as const,
+			// errorMessage: error.errors?.map((e) => e).join(", "), //todo
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbbreviation}/staff-members`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

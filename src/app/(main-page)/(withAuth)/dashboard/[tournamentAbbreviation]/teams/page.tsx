@@ -1,7 +1,8 @@
 import React from "react";
 import Image from "next/image";
-import { AdminTeamService } from "../../../../../../../generated";
-import { executeFetch } from "@/lib/executeFetch";
+import { cookies } from "next/headers";
+import { changeTeamStatus, client, deleteTeam, getTeams } from "../../../../../../../client";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const TeamsPage = async ({
 	params: { tournamentAbbreviation },
@@ -10,8 +11,22 @@ const TeamsPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const teams = await executeFetch(AdminTeamService.getTeams(tournamentAbbreviation));
-	if (!teams.status) {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await getTeams({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
+	if (error) {
 		return <div>Failed to fetch teams</div>;
 	}
 	return (
@@ -30,7 +45,7 @@ const TeamsPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{teams.response.map((team) => {
+						{data?.map((team) => {
 							return (
 								<tr key={team.id}>
 									<td>
@@ -87,19 +102,31 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminTeamService.changeTeamStatus(
-														tournamentAbbreviation,
-														team.id,
-														"ACCEPTED",
-													),
-													[
-														"/",
-														`/dashboard/${tournamentAbbreviation}/teams`,
-														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
-														`/account/`,
-													],
-												);
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
+												await changeTeamStatus({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+													query: {
+														status: "ACCEPTED",
+													},
+												});
+												await multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
 											}}
 										>
 											<button
@@ -112,19 +139,31 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminTeamService.changeTeamStatus(
-														tournamentAbbreviation,
-														team.id,
-														"REJECTED",
-													),
-													[
-														"/",
-														`/dashboard/${tournamentAbbreviation}/teams`,
-														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
-														`/account/`,
-													],
-												);
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
+												await changeTeamStatus({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+													query: {
+														status: "REJECTED",
+													},
+												});
+												await multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
 											}}
 										>
 											<button
@@ -137,18 +176,28 @@ const TeamsPage = async ({
 										<form
 											action={async (_e) => {
 												"use server";
-												await executeFetch(
-													AdminTeamService.deleteTeam(
-														tournamentAbbreviation,
-														team.id,
-													),
-													[
-														"/",
-														`/dashboard/${tournamentAbbreviation}/teams`,
-														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
-														`/account/`,
-													],
-												);
+												const cookie = cookies().get("JWT")?.value;
+												// configure internal service client
+												client.setConfig({
+													// set default base url for requests
+													baseUrl: process.env.NEXT_PUBLIC_API_URL,
+													// set default headers for requests
+													headers: {
+														Cookie: `token=${cookie}`,
+													},
+												});
+												await deleteTeam({
+													path: {
+														abbreviation: tournamentAbbreviation,
+														teamId: team.id,
+													},
+												});
+												await multipleRevalidatePaths([
+													"/",
+													`/dashboard/${tournamentAbbreviation}/teams`,
+													`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+													`/account/`,
+												]);
 											}}
 										>
 											<button

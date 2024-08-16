@@ -1,15 +1,11 @@
 import React from "react";
 import { format } from "date-fns";
 import Link from "next/link";
-import {
-	AdminStageService,
-	StageResponseDto,
-	StageService,
-	TournamentService,
-} from "../../../../../../../generated";
+import { cookies } from "next/headers";
+import { client, deleteStage, getStages, stageType } from "../../../../../../../client";
 import { StageForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageForm";
-import { executeFetch } from "@/lib/executeFetch";
 import { stageTypeEnumToString } from "@/lib/helpers";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const StagePage = async ({
 	params: { tournamentAbbreviation },
@@ -18,23 +14,23 @@ const StagePage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const tournamentData = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(tournamentAbbreviation),
-	);
-	const getStagesData = await executeFetch(StageService.getStages(tournamentAbbreviation));
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	const stageWithoutMappool = [
-		StageResponseDto.stageType.REGISTRATION,
-		StageResponseDto.stageType.SCREENING,
-	];
-
-	if (!tournamentData.status) {
-		return <>{tournamentData.errorMessage}</>;
-	}
-
-	if (!getStagesData.status) {
-		return <div>Failed to fetch stages</div>;
-	}
+	const stageWithoutMappool = [stageType.REGISTRATION, stageType.SCREENING];
 
 	return (
 		<div className={"flex w-full flex-col !px-3 !py-2"}>
@@ -44,9 +40,11 @@ const StagePage = async ({
 					type: "add",
 				}}
 				tournamentAbb={tournamentAbbreviation}
-				alreadyAddedStages={getStagesData.response.map((stage) => {
-					return stage.stageType;
-				})}
+				alreadyAddedStages={
+					getStagesData?.map((stage) => {
+						return stage.stageType as stageType;
+					}) || []
+				}
 			/>
 
 			<div className="mt-10 overflow-x-auto">
@@ -61,8 +59,8 @@ const StagePage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getStagesData.response
-							.sort((a, b) => {
+						{getStagesData
+							?.sort((a, b) => {
 								return (
 									new Date(a.startDate).getTime() -
 									new Date(b.startDate).getTime()
@@ -89,13 +87,26 @@ const StagePage = async ({
 											<form
 												action={async (_e) => {
 													"use server";
-													await executeFetch(
-														AdminStageService.deleteStage(
-															tournamentAbbreviation,
-															stage.stageType,
-														),
-														["/", "/dashboard/[tournamentAbb]/stages"],
-													);
+													const cookie = cookies().get("JWT")?.value;
+													// configure internal service client
+													client.setConfig({
+														// set default base url for requests
+														baseUrl: process.env.NEXT_PUBLIC_API_URL,
+														// set default headers for requests
+														headers: {
+															Cookie: `token=${cookie}`,
+														},
+													});
+													await deleteStage({
+														path: {
+															abbreviation: tournamentAbbreviation,
+															stageType: stage.stageType,
+														},
+													});
+													await multipleRevalidatePaths([
+														"/",
+														`/dashboard/${tournamentAbbreviation}/stages`,
+													]);
 												}}
 											>
 												<button
@@ -106,7 +117,7 @@ const StagePage = async ({
 												</button>
 											</form>
 											{stageWithoutMappool.includes(
-												stage.stageType,
+												stage?.stageType as stageType,
 											) ? null : (
 												<button className="btn btn-ghost btn-xs">
 													<Link

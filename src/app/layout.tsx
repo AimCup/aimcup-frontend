@@ -2,6 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Montserrat } from "@next/font/google";
 import { Toaster } from "sonner";
+import { cookies } from "next/headers";
+import { client } from "../../client";
 
 export const metadata: Metadata = {
 	title: "AimCup",
@@ -13,7 +15,23 @@ const monserrat = Montserrat({
 	subsets: ["latin"],
 });
 
+// configure internal service client
+client.setConfig({
+	// set default base url for requests
+	baseUrl: process.env.NEXT_PUBLIC_API_URL,
+	// set default headers for requests
+});
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	client.interceptors.request.use((req) => {
+		const cookie = cookies().get("JWT")?.value;
+		console.log(cookie, "cookiecookiecookiecookiecookiecookiecookiecookiecookiecookie");
+		if (cookie) {
+			req.headers.set("Cookie", `token=${cookie}`);
+		}
+		return req;
+	});
+
 	return (
 		<html
 			lang="en"

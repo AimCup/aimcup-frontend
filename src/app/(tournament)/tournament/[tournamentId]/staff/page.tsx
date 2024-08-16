@@ -1,5 +1,6 @@
 import React from "react";
-import { StaffMemberService } from "../../../../../../generated";
+import { cookies } from "next/headers";
+import { client, getStaffMembers } from "../../../../../../client";
 import StaffMember from "@ui/organisms/StaffMember/StaffMember";
 import Section from "@ui/atoms/Section/Section";
 
@@ -10,9 +11,23 @@ const SingleTournamentStaff = async ({
 		tournamentId: string;
 	};
 }) => {
-	const getStaffMembers = await StaffMemberService.getStaffMembers(params.tournamentId);
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getStaffMembers1 } = await getStaffMembers({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
-	const isStaff = getStaffMembers.some(
+	const isStaff = getStaffMembers1?.some(
 		(staff) => staff.staffMembers && staff.staffMembers.length > 0,
 	);
 
@@ -26,8 +41,8 @@ const SingleTournamentStaff = async ({
 			{!isStaff && <p>No staff members</p>}
 			<div className={"grid grid-cols-1 gap-4"}>
 				{isStaff &&
-					getStaffMembers
-						.sort((a, b) => {
+					getStaffMembers1
+						?.sort((a, b) => {
 							if (a.position < b.position) {
 								return -1;
 							}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import { toast } from "sonner";
-import { BeatmapModificationResponseDto } from "../../../../../../../../../generated";
+import { modification } from "../../../../../../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox } from "@ui/atoms/Forms/Select/ComboBox";
@@ -37,39 +37,39 @@ export const AddBeatMap = ({ tournamentAbb, mappoolId }: IAddStageFormProps) => 
 
 	const modificationTypeSelectOptions = [
 		{
-			id: BeatmapModificationResponseDto.modification.DT,
+			id: modification.DT,
 			label: "DT",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.HR,
+			id: modification.HR,
 			label: "HR",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.HD,
+			id: modification.HD,
 			label: "HD",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.FL,
+			id: modification.FL,
 			label: "FL",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.EZ,
+			id: modification.EZ,
 			label: "EZ",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.NM,
+			id: modification.NM,
 			label: "NM",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.TB,
+			id: modification.TB,
 			label: "TB",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.FM,
+			id: modification.FM,
 			label: "FM",
 		},
 		{
-			id: BeatmapModificationResponseDto.modification.HT,
+			id: modification.HT,
 			label: "HT",
 		},
 	];

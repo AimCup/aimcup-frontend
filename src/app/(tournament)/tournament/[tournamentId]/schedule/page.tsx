@@ -1,5 +1,6 @@
 import React from "react";
-import { StageService } from "../../../../../../generated";
+import { cookies } from "next/headers";
+import { client, getStages } from "../../../../../../client";
 import { ScheduleList } from "@ui/organisms/ScheduleList/ScheduleList";
 
 const SingleTournamentSchedule = async ({
@@ -9,7 +10,21 @@ const SingleTournamentSchedule = async ({
 		tournamentId: string;
 	};
 }) => {
-	const data = await StageService.getStages(params.tournamentId);
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 	return (
 		<main className={"text-white container mx-auto"}>
 			<section
@@ -23,7 +38,7 @@ const SingleTournamentSchedule = async ({
 						<h2 className={"text-4xl font-bold "}>Schedule</h2>
 					</div>
 				</div>
-				<ScheduleList scheduleList={data} />
+				<ScheduleList scheduleList={data || []} />
 			</section>
 		</main>
 	);

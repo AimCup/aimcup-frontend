@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { TournamentRequestDto } from "../../../../../generated";
+import { qualificationType, tournamentType } from '../../../../../client'
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
@@ -30,20 +30,20 @@ const CreateTournamentModal = () => {
 		router.push(`/dashboard/${tournamentResponseDto.response.abbreviation}`);
 	});
 	const [tournamentTourType, setTournamentTourType] =
-		React.useState<TournamentRequestDto.tournamentType>(
-			TournamentRequestDto.tournamentType.TEAM_VS,
+		React.useState<tournamentType>(
+			tournamentType.TEAM_VS,
 		);
 
 	const tournamentTourTypeSelectOptions: selectOptions[] = [
-		{ id: TournamentRequestDto.tournamentType.TEAM_VS, label: "Team vs" },
-		{ id: TournamentRequestDto.tournamentType.INTERNATIONAL, label: "International" },
+		{ id: tournamentType.TEAM_VS, label: "Team vs" },
+		{ id: tournamentType.INTERNATIONAL, label: "International" },
 		// todo
 		// { id: TournamentRequestDto.tournamentType.PARTICIPANT_VS, label: "Participant vs" },
 	];
 
 	const qualificationTypeSelectOptions: selectOptions[] = [
-		{ id: TournamentRequestDto.qualificationType.Z_SUM, label: "Z-sum" },
-		{ id: TournamentRequestDto.qualificationType.ZIP_LAW, label: "Zip law" },
+		{ id: qualificationType.Z_SUM, label: "Z-sum" },
+		{ id: qualificationType.ZIP_LAW, label: "Zip law" },
 	];
 
 	return (
@@ -86,7 +86,7 @@ const CreateTournamentModal = () => {
 							selectOptions={tournamentTourTypeSelectOptions}
 							onSelect={(e) => {
 								setTournamentTourType(
-									e.target.value as TournamentRequestDto.tournamentType,
+									e.target.value as tournamentType,
 								);
 							}}
 						/>
@@ -114,7 +114,7 @@ const CreateTournamentModal = () => {
 							label={"Maximum rank limit"}
 						/>
 						{tournamentTourType !==
-							TournamentRequestDto.tournamentType.PARTICIPANT_VS && (
+							tournamentType.PARTICIPANT_VS && (
 							<>
 								<Input
 									name={"minimumTeamSize"}

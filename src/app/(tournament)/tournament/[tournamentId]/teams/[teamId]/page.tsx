@@ -1,37 +1,54 @@
 import React from "react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { TeamService } from "../../../../../../../generated";
+import { cookies } from "next/headers";
+import {
+	client,
+	deleteParticipantFromTeam,
+	disbandTeam,
+	getTeamsById,
+} from "../../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
 import { Button } from "@ui/atoms/Button/Button";
-import { executeFetch } from "@/lib/executeFetch";
 import { getUser } from "@/actions/public/getUserAction";
 import { ChangeTeamNameForm } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/ChangeTeamNameForm";
 import { InvitePlayerToTeamButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/InvitePlayerToTeamButton";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const TeamPage = async ({
 	params: { tournamentId, teamId },
 }: {
 	params: { tournamentId: string; teamId: string };
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const userData = await getUser();
-	const getTeam = await executeFetch(TeamService.getTeamsById(tournamentId, teamId));
+	const { data: getTeam } = await getTeamsById({
+		path: {
+			abbreviation: tournamentId,
+			teamId: teamId,
+		},
+	});
 
-	if (!getTeam.status) {
-		return <Section>{getTeam.errorMessage}</Section>;
-	}
-
-	const isCaptain = getTeam.response.captain.user.id === userData?.id;
+	const isCaptain = getTeam?.captain.user.id === userData?.id;
 
 	return (
 		<Section className={"flex-col"}>
 			<div className={"mb-10 flex"}>
 				<div className={"flex gap-4 md:flex-row md:items-center"}>
-					{getTeam.response.logoUrl && (
+					{getTeam?.logoUrl && (
 						<div className="avatar">
 							<div className="mask mask-squircle h-24 w-24">
 								<img
-									src={getTeam.response.logoUrl}
+									src={getTeam?.logoUrl}
 									alt="team logo"
 									width={100}
 									height={100}
@@ -40,25 +57,37 @@ const TeamPage = async ({
 						</div>
 					)}
 					<div>
-						<h2 className={"text-4xl font-bold"}>{getTeam.response.name}</h2>
-						<p>Status: {getTeam.response.status}</p>
+						<h2 className={"text-4xl font-bold"}>{getTeam?.name}</h2>
+						<p>Status: {getTeam?.status}</p>
 					</div>
 					{isCaptain && (
 						<form
 							className={"flex flex-col gap-4 md:flex-row md:items-center"}
 							action={async (_e) => {
 								"use server";
+								const cookie = cookies().get("JWT")?.value;
+								// configure internal service client
+								client.setConfig({
+									// set default base url for requests
+									baseUrl: process.env.NEXT_PUBLIC_API_URL,
+									// set default headers for requests
+									headers: {
+										Cookie: `token=${cookie}`,
+									},
+								});
+								const { data: disbandTeamResponse } = await disbandTeam({
+									path: {
+										abbreviation: tournamentId,
+										teamId,
+									},
+								});
 
-								const disbandTeamResponse = await executeFetch(
-									TeamService.disbandTeam(tournamentId, teamId),
-									[
-										`/tournament/${tournamentId}/teams`,
-										`/tournament/${tournamentId}`,
-										"/",
-									],
-								);
-
-								if (disbandTeamResponse.status) {
+								await multipleRevalidatePaths([
+									`/tournament/${tournamentId}/teams`,
+									`/tournament/${tournamentId}`,
+									"/",
+								]);
+								if (disbandTeamResponse) {
 									redirect(`/tournament/${tournamentId}/teams`);
 								}
 							}}
@@ -80,9 +109,9 @@ const TeamPage = async ({
 					<div className={"mb-10 flex"}>
 						<ChangeTeamNameForm
 							team={{
-								teamId: getTeam.response.id,
-								teamName: getTeam.response.name,
-								logoUrl: getTeam.response.logoUrl,
+								teamId: getTeam?.id || "",
+								teamName: getTeam?.name || "",
+								logoUrl: getTeam?.logoUrl || "",
 								tournamentAbbreviation: tournamentId,
 							}}
 						/>
@@ -90,7 +119,7 @@ const TeamPage = async ({
 					<div className={"mb-10 flex"}>
 						<InvitePlayerToTeamButton
 							team={{
-								teamId: getTeam.response.id,
+								teamId: getTeam?.id || "",
 								tournamentAbbreviation: tournamentId,
 							}}
 						/>
@@ -109,7 +138,7 @@ const TeamPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getTeam.response.participants.map((participant) => (
+						{getTeam?.participants.map((participant) => (
 							<tr key={participant.id}>
 								<td>
 									<div className="flex items-center gap-3">
@@ -139,19 +168,29 @@ const TeamPage = async ({
 												}
 												action={async (_e) => {
 													"use server";
+													const cookie = cookies().get("JWT")?.value;
+													// configure internal service client
+													client.setConfig({
+														// set default base url for requests
+														baseUrl: process.env.NEXT_PUBLIC_API_URL,
+														// set default headers for requests
+														headers: {
+															Cookie: `token=${cookie}`,
+														},
+													});
+													await deleteParticipantFromTeam({
+														path: {
+															teamId: getTeam?.id || "",
+															osuId: "" + participant.user.osuId,
+															abbreviation: tournamentId,
+														},
+													});
 
-													await executeFetch(
-														TeamService.deleteParticipantFromTeam(
-															tournamentId,
-															teamId,
-															"" + participant.user.osuId,
-														),
-														[
-															"/tournament/[tournamentId]/teams",
-															"/tournament",
-															"/",
-														],
-													);
+													await multipleRevalidatePaths([
+														`/tournament/${tournamentId}/teams`,
+														`/tournament/${tournamentId}`,
+														"/",
+													]);
 												}}
 											>
 												<button

@@ -1,22 +1,28 @@
 import React from "react";
 import Link from "next/link";
-import { TournamentService } from "../../../../../generated";
+import { cookies } from "next/headers";
+import { client, getTournaments } from "../../../../../client";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
-import { executeFetch } from "@/lib/executeFetch";
 
 const DashboardPage = async () => {
-	const tournaments = await executeFetch(TournamentService.getTournaments());
-
-	if (!tournaments.status) {
-		return <div>{tournaments.errorMessage}</div>;
-	}
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: tournaments } = await getTournaments();
 
 	return (
 		<div className={"w-full"}>
 			<h1 className={"my-2 text-lg"}>Select tournament</h1>
 			<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
 				<CreateTournamentModal />
-				{tournaments.response.map((tournament) => (
+				{tournaments?.map((tournament) => (
 					<Link
 						href={`/dashboard/${tournament.abbreviation}`}
 						key={tournament.abbreviation}

@@ -57,7 +57,7 @@ export const StaffMemberModal = ({
 		async (data) => {
 			const addStaffMemberResponse = await addStaffMemberAction(data);
 			if (!addStaffMemberResponse.status) {
-				return toast.error(addStaffMemberResponse.errorMessage, {
+				return toast.error("Error", {
 					duration: 3000,
 				});
 			}
@@ -75,7 +75,7 @@ export const StaffMemberModal = ({
 		async (data) => {
 			const editMemberResponse = await editStaffMemberAction(data);
 			if (!editMemberResponse.status) {
-				return toast.error(editMemberResponse.errorMessage, {
+				return toast.error("error", {
 					duration: 3000,
 				});
 			}

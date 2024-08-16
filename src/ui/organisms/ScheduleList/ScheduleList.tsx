@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import { type StageResponseDto } from "../../../../generated";
+import { type StageResponseDto } from '../../../../client'
 import { stageTypeEnumToString } from "@/lib/helpers";
 
 export const ScheduleList = ({ scheduleList }: { scheduleList: StageResponseDto[] }) => {

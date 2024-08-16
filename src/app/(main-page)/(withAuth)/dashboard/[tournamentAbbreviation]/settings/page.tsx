@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import ReactQuill from "react-quill";
-import { type TournamentResponseDto, TournamentService } from "../../../../../../../generated";
+import { getTournamentByAbbreviation, type TournamentResponseDto } from "../../../../../../../client";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editTournamentSchema } from "@/formSchemas/editTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -55,10 +55,12 @@ const SettingsPage = () => {
 
 	useEffect(() => {
 		const fetchTournamentData = async () => {
-			const tournamentData =
-				await TournamentService.getTournamentByAbbreviation(tournamentAbbreviation);
-			setTournamentData(tournamentData);
-			// console.log(tournamentData);
+			const { data: tournamentData } = await getTournamentByAbbreviation({
+				path: {
+					abbreviation: tournamentAbbreviation,
+				},
+			});
+			setTournamentData(tournamentData || null);
 		};
 		void fetchTournamentData();
 	}, [tournamentAbbreviation]);
