@@ -1,8 +1,7 @@
-import { cache } from "react";
 import { OpenAPI, UserService } from "../../../generated";
 import { verifySession } from "@/lib/session";
 
-export const getUser = cache(async () => {
+export const getUser = async () => {
 	const JWT = await verifySession();
 	if (typeof JWT.token === "string" && JWT.isAuth) {
 		OpenAPI.HEADERS = {
@@ -12,4 +11,4 @@ export const getUser = cache(async () => {
 		return userData;
 	}
 	return null;
-});
+};
