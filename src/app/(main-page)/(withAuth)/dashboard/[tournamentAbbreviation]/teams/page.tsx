@@ -134,6 +134,30 @@ const TeamsPage = async ({
 												REJECT
 											</button>
 										</form>
+										<form
+											action={async (_e) => {
+												"use server";
+												await executeFetch(
+													AdminTeamService.deleteTeam(
+														tournamentAbbreviation,
+														team.id,
+													),
+													[
+														"/",
+														`/dashboard/${tournamentAbbreviation}/teams`,
+														`/tournament/${tournamentAbbreviation}/teams/${team.id}`,
+														`/account/`,
+													],
+												);
+											}}
+										>
+											<button
+												className="btn btn-ghost btn-xs"
+												type={"submit"}
+											>
+												DELETE
+											</button>
+										</form>
 									</td>
 								</tr>
 							);
