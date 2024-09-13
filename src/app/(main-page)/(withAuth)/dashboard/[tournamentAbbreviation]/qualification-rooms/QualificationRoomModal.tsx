@@ -154,7 +154,7 @@ export const QualificationRoomModal = ({ tournamentAbb, modalType }: IAddStaffMe
 							name={"offset"}
 							label={"Offset"}
 							required={true}
-							max={24}
+							min={1}
 							disabled={modalType.type === "edit"}
 							errorMessage={
 								stateAddNewQRoom?.errors.offset &&
