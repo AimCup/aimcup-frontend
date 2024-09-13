@@ -11,35 +11,18 @@ import {
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
 	getTournamentStaffMember,
-	type ParticipantResponseDto,
 	type QualificationRoomResponseDto,
-	signInQualificationRoom,
-	type StaffMemberResponseDto,
-	type TeamResponseDto,
+	signInOutQualificationRoom,
 	tournamentType,
 } from "../../../../../../../client";
 import { QualificationRoomModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomModal";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
-
-interface QualificationRoom extends QualificationRoomResponseDto {
-	id: string;
-	number: number;
-	isClosed: number;
-	maxSlots: number;
-	occupiedSlots: number;
-	staffMember: StaffMemberResponseDto;
-	startDate: string;
-}
-
-interface TeamBasedQualificationRoom extends QualificationRoom {
-	teams: TeamResponseDto[];
-}
-
-interface ParticipantBasedQualificationRoom extends QualificationRoom {
-	participants: ParticipantResponseDto[];
-}
+import {
+	type ParticipantBasedQualificationRoom,
+	type TeamBasedQualificationRoom,
+} from "@/models/QualificationRoom";
 
 const qualificationRooms = (
 	rooms: QualificationRoomResponseDto[],
@@ -138,9 +121,6 @@ const QRoomsPage = async ({
 
 	return (
 		<div className={"flex w-full flex-col !px-3 !py-2"}>
-			{`
-               brakujue sign out :) 
-            `}
 			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Qualification rooms</h2>
 			<QualificationRoomModal
 				tournamentAbb={tournamentAbbreviation}
@@ -164,8 +144,8 @@ const QRoomsPage = async ({
 						{qualificationRooms(getQualificationRoomsData || []).map((room) => (
 							<tr key={room.id}>
 								<td>{room.number}</td>
-								<td>{format(new Date(room.startDate), "dd/MM/yyyy hh:mm")}</td>
-								<td>
+								<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
+								<td className={"flex flex-col gap-2"}>
 									{room.tournamentType === tournamentType.PARTICIPANT_VS
 										? (
 												room as ParticipantBasedQualificationRoom
@@ -175,21 +155,58 @@ const QRoomsPage = async ({
 												</div>
 											))
 										: (room as TeamBasedQualificationRoom).teams.map((team) => (
-												<div key={team.id}>
-													{team.name}
+												<div
+													key={team.id}
+													className={"flex gap-2 truncate"}
+												>
 													<Image
 														src={team.logoUrl}
 														alt={team.name}
-														width={50}
-														height={50}
+														width={20}
+														height={20}
 													/>
+													{team.name}
 												</div>
 											))}
 								</td>
 								<td>
 									{room.staffMember ? (
 										userData?.id === room.staffMember.user?.id ? (
-											<div>Sign out:todo</div>
+											<form
+												action={async (_e) => {
+													"use server";
+													const cookie = cookies().get("JWT")?.value;
+													// configure internal service client
+													client.setConfig({
+														// set default base url for requests
+														baseUrl: process.env.NEXT_PUBLIC_API_URL,
+														// set default headers for requests
+														headers: {
+															Cookie: `token=${cookie}`,
+														},
+													});
+													await signInOutQualificationRoom({
+														path: {
+															abbreviation: tournamentAbbreviation,
+															roomId: room.id,
+														},
+														query: {
+															in: false,
+														},
+													});
+													await multipleRevalidatePaths([
+														"/",
+														`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
+													]);
+												}}
+											>
+												<button
+													className="btn btn-ghost btn-xs"
+													type={"submit"}
+												>
+													sign out
+												</button>
+											</form>
 										) : (
 											<div className={"flex items-center gap-2"}>
 												<div className="avatar">
@@ -219,10 +236,13 @@ const QRoomsPage = async ({
 														Cookie: `token=${cookie}`,
 													},
 												});
-												await signInQualificationRoom({
+												await signInOutQualificationRoom({
 													path: {
 														abbreviation: tournamentAbbreviation,
 														roomId: room.id,
+													},
+													query: {
+														in: true,
 													},
 												});
 												await multipleRevalidatePaths([

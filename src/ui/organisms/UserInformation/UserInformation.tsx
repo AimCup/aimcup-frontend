@@ -5,7 +5,6 @@ import { RiBarChartFill } from "react-icons/ri";
 import Image from "next/image";
 import { cookies } from "next/headers";
 import { client } from "../../../../client";
-import Section from "@ui/atoms/Section/Section";
 import { getUser } from "@/actions/public/getUserAction";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
 
@@ -23,7 +22,7 @@ export const UserInformation = async () => {
 	const userData = await getUser();
 
 	return (
-		<Section id="user-information" className={"flex w-full flex-col gap-8"}>
+		<div id="user-information" className={"flex w-full flex-col gap-8"}>
 			<div className={"flex flex-wrap items-end gap-4"}>
 				<h2 className={"text-3xl font-bold"}>Welcome back,</h2>
 				<h2 className={"text-3xl font-bold text-deepRed"}>{userData?.username}</h2>
@@ -45,16 +44,16 @@ export const UserInformation = async () => {
 				</div>
 				<div className={"flex flex-col gap-4"}>
 					<p className={"flex items-center gap-3 text-lg"}>
-						<RiBarChartFill className={"text-xl text-deepRed"} /> TODO
+						<RiBarChartFill className={"text-xl text-deepRed"} /> ---
 					</p>
 					<p className={"flex items-center gap-3 text-lg"}>
-						<ImEarth className={"text-xl text-deepRed"} /> TODO
+						<ImEarth className={"text-xl text-deepRed"} /> ---
 					</p>
 					<p className={"flex items-center gap-3 text-lg"}>
-						<FaDiscord className={"text-xl text-deepRed"} /> TODO
+						<FaDiscord className={"text-xl text-deepRed"} /> {userData?.discordId}
 					</p>
 				</div>
 			</div>
-		</Section>
+		</div>
 	);
 };

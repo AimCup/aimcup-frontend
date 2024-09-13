@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import {
 	client,
 	getMappoolsByTournament,
+	getQualificationRooms,
 	getStaffMembers1,
 	getStages,
 	getTeamsByTournament,
@@ -58,6 +59,10 @@ const SingleTournament = async ({
 		path: {
 			abbreviation: params.tournamentId,
 		},
+	});
+
+	const { data: getQualificationRoomsData } = await getQualificationRooms({
+		path: { abbreviation: params.tournamentId },
 	});
 
 	let teams: TeamResponseDto[] = [];
@@ -228,6 +233,30 @@ const SingleTournament = async ({
 					</Link>
 				</div>
 			</Section>
+			{getQualificationRoomsData?.length && getQualificationRoomsData?.length > 0 && (
+				<Section id="schedule" className={"flex-col"}>
+					<div className={"flex"}>
+						<Link
+							href={`${params.tournamentId}/qualification-rooms`}
+							className={"group flex cursor-pointer items-center gap-4 "}
+						>
+							<h2
+								className={
+									"text-4xl font-bold leading-relaxed transition-all group-hover:underline"
+								}
+							>
+								Qualification rooms
+							</h2>{" "}
+							<LiaLongArrowAltRightSolid
+								size={45}
+								className={
+									"transition-all group-hover:-rotate-45 group-hover:transform"
+								}
+							/>
+						</Link>
+					</div>
+				</Section>
+			)}
 			{mappools && mappools.length !== 0 ? (
 				<Section id="mappool" className={"flex-col"}>
 					<div className={"flex flex-col md:w-full"}>

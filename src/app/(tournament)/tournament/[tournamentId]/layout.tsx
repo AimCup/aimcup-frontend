@@ -4,6 +4,7 @@ import NextTopLoader from "nextjs-toploader";
 import { cookies } from "next/headers";
 import {
 	client,
+	getQualificationRooms,
 	getStages,
 	getTournamentByAbbreviation,
 	tournamentType,
@@ -22,6 +23,7 @@ type ITournamentLayout = {
 const navbarRoutes: INavbarProps[] = [
 	{ name: "Home", href: "/" },
 	{ name: "Rules", href: "/rules" },
+	{ name: "Qualification rooms", href: "/qualification-rooms" },
 	{ name: "Schedule", href: "/schedule" },
 	{
 		name: "Mappool",
@@ -55,6 +57,10 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		},
 	});
 
+	const { data: getQualificationRoomsData } = await getQualificationRooms({
+		path: { abbreviation: params.tournamentId },
+	});
+
 	const getStateTypes =
 		getStagesData &&
 		getStagesData
@@ -64,6 +70,17 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 			.map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
+		if (
+			getQualificationRoomsData?.length &&
+			getQualificationRoomsData?.length > 0 &&
+			item.name === "Qualification rooms"
+		) {
+			return {
+				...item,
+				href: `/tournament/${params.tournamentId}/qualification-rooms`,
+			};
+		}
+
 		if (item.name === "Mappool") {
 			return {
 				...item,
