@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { addBeatmap, client, type modification } from "../../../client";
 import { type AddBeatMapSchemaType } from "@/formSchemas/addBeatMapSchema";
+// import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 export async function addBeatMapAction(formData: AddBeatMapSchemaType) {
 	"use server";
@@ -35,7 +36,12 @@ export async function addBeatMapAction(formData: AddBeatMapSchemaType) {
 		};
 	}
 
-	// todo: ADD REVALIDATE_PATHS
+	// await multipleRevalidatePaths([
+	// 	"/",
+	// 	`/dashboard/${formData.tournamentAbb}/mappool/${formData.mappoolId}`,
+	// 	`/tournament/${formData.tournamentAbb}/mappool/${formData.mappoolId}`,
+	// ]);
+	//todo: revalidate paths
 
 	return {
 		status: true as const,

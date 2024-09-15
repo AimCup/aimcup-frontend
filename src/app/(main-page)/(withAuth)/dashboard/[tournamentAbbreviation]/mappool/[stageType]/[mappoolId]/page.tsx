@@ -120,7 +120,7 @@ const StageTypePage = async ({
 										<td>{beatmap.beatmapStatistics.ar.toFixed(2)}</td>
 										<td>{beatmap.beatmapStatistics.hp.toFixed(2)}</td>
 										<td>{beatmap.beatmapStatistics.starRating.toFixed(2)}</td>
-										<td>{beatmap.beatmapStatistics.bpm}</td>
+										<td>{beatmap.beatmapStatistics.bpm.toFixed(2)}</td>
 										<td>{beatmap.beatmapStatistics.length}</td>
 										<td>{beatmap.creator}</td>
 										<td>

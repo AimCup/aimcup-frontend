@@ -21,13 +21,17 @@ import {
 const qualificationRooms = (
 	rooms: QualificationRoomResponseDto[],
 ): (TeamBasedQualificationRoom | ParticipantBasedQualificationRoom)[] => {
-	return rooms.map((room) => {
-		if (room.tournamentType !== tournamentType.PARTICIPANT_VS) {
-			return room as TeamBasedQualificationRoom;
-		} else {
-			return room as ParticipantBasedQualificationRoom;
-		}
-	});
+	return rooms
+		.map((room) => {
+			if (room.tournamentType !== tournamentType.PARTICIPANT_VS) {
+				return room as TeamBasedQualificationRoom;
+			} else {
+				return room as ParticipantBasedQualificationRoom;
+			}
+		})
+		.sort((a, b) => {
+			return a.startDate > b.startDate ? 1 : -1;
+		});
 };
 
 const QualificationRoomsPage = async ({
@@ -81,7 +85,6 @@ const QualificationRoomsPage = async ({
 					<table className="table">
 						<thead>
 							<tr>
-								<th>Number</th>
 								<th>Start date time</th>
 								<th>Roster</th>
 								<th>Referee</th>
@@ -91,7 +94,6 @@ const QualificationRoomsPage = async ({
 						<tbody>
 							{qualificationRooms(getQualificationRoomsData || []).map((room) => (
 								<tr key={room.id}>
-									<td>{room.number}</td>
 									<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
 									<td className={"flex flex-col gap-2"}>
 										{room.tournamentType === tournamentType.PARTICIPANT_VS
