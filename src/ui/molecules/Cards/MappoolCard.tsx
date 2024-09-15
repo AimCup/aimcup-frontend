@@ -43,8 +43,8 @@ export const MappoolCard = ({
 						className="embla__slide__img h-1/3 w-full rounded-t-md object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
 						src={img || `/placeholder.png`}
 						alt="mappool-card"
-						width={350}
-						height={384}
+						width={1920}
+						height={1080}
 					/>
 					{isCustom && (
 						<div className="absolute left-2 top-2 z-20 md:left-6 md:top-6">
