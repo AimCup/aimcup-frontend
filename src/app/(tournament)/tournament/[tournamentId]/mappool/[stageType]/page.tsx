@@ -63,7 +63,7 @@ const SingleTournamentMappool = async ({
 				)}
 
 				{getMappoolByStageData?.beatmapsModifications.map((bm) => (
-					<div className={"mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2"} key={bm.id}>
+					<div className={"mb-6 mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2"} key={bm.id}>
 						{bm?.beatmaps
 							?.filter((map) => {
 								if (!searchParams.modification) {
