@@ -20,7 +20,7 @@ export const MappoolStages = (props: IMappoolStagesProps) => {
 		return bm.beatmaps && bm.beatmaps.length > 0;
 	});
 	if (findFirstBm && findFirstBm.beatmaps && findFirstBm.beatmaps.length > 0) {
-		firstImage = findFirstBm.beatmaps[0].cardCover || firstImage;
+		firstImage = findFirstBm.beatmaps[0].normalCover || firstImage;
 	}
 	const { stage } = props;
 	return (

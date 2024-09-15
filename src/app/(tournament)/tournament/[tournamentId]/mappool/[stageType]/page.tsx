@@ -91,7 +91,7 @@ const SingleTournamentMappool = async ({
 										od: map.beatmapStatistics.od,
 										cs: map.beatmapStatistics.cs,
 									}}
-									img={map.cardCover}
+									img={map.normalCover}
 								/>
 							))}
 					</div>
