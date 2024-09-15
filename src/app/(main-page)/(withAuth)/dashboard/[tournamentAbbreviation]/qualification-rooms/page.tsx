@@ -145,9 +145,9 @@ const QRoomsPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{qualificationRooms(getQualificationRoomsData || []).map((room, index) => (
+						{qualificationRooms(getQualificationRoomsData || []).map((room) => (
 							<tr key={room.id}>
-								<td>{index + 1}</td>
+								<td>{room.number}</td>
 								<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
 								<td className={"flex flex-col gap-2"}>
 									{room.tournamentType === tournamentType.PARTICIPANT_VS
