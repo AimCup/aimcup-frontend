@@ -11,6 +11,7 @@ import {
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
 import Section from "@ui/atoms/Section/Section";
+import { Button } from "@ui/atoms/Button/Button";
 
 const SingleTournamentMappool = async ({
 	params,
@@ -195,6 +196,11 @@ const SingleTournamentMappool = async ({
 						<h2 className={"text-4xl font-bold "}>Mappool</h2>
 					</div>
 				</div>
+
+				{getMappoolByStageData?.downloadUrl && (
+					<Button href={getMappoolByStageData.downloadUrl}>Download mappool pack</Button>
+				)}
+
 				{stageContent}
 			</Section>
 		</>
