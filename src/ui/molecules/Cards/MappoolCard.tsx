@@ -35,6 +35,15 @@ export const MappoolCard = ({
 		cs: number;
 	};
 }) => {
+	const formatTime = (seconds: number) => {
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
+
+		const formattedSeconds = remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds;
+
+		return minutes + ":" + formattedSeconds;
+	};
+
 	return (
 		<a href={href} target={"_blank"}>
 			<div className="group grid h-96 overflow-hidden rounded-md border border-solid border-transparent bg-tuned transition-all md:rounded-2xl">
@@ -78,7 +87,9 @@ export const MappoolCard = ({
 								<span className={"text-white"}>
 									<IoTime />
 								</span>
-								<span className={"text-white"}>{mapInformation?.time}</span>
+								<span className={"text-white"}>
+									{formatTime(mapInformation?.time)}
+								</span>
 							</div>
 							<div className={"flex items-center gap-2"}>
 								<span className={"text-white"}>
