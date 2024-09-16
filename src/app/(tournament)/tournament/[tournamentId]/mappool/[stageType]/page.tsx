@@ -71,6 +71,7 @@ const SingleTournamentMappool = async ({
 								}
 								return map.modification === searchParams.modification;
 							})
+							?.sort((a, b) => a.position - b.position)
 							?.map((map) => (
 								<MappoolCard
 									href={`https://osu.ppy.sh/beatmapsets/${map.beatmapsetId}#osu/${map.beatmapId}`}
