@@ -164,7 +164,7 @@ const QRoomsPage = async ({
 													className={"flex gap-2 truncate"}
 												>
 													<Image
-														src={team.logoUrl}
+														src={team.logoUrl || "/aim_logo.svg"}
 														alt={team.name}
 														width={20}
 														height={20}

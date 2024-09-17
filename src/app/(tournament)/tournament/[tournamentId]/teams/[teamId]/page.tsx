@@ -44,18 +44,17 @@ const TeamPage = async ({
 		<Section className={"flex-col"}>
 			<div className={"mb-10 flex"}>
 				<div className={"flex gap-4 md:flex-row md:items-center"}>
-					{getTeam?.logoUrl && (
-						<div className="avatar">
-							<div className="mask mask-squircle h-24 w-24">
-								<img
-									src={getTeam?.logoUrl}
-									alt="team logo"
-									width={100}
-									height={100}
-								/>
-							</div>
+					<div className="avatar">
+						<div className="mask mask-squircle h-24 w-24">
+							<img
+								src={getTeam?.logoUrl || "/aim_logo.svg"}
+								alt="team logo"
+								width={100}
+								height={100}
+							/>
 						</div>
-					)}
+					</div>
+
 					<div>
 						<h2 className={"text-4xl font-bold"}>{getTeam?.name}</h2>
 						<p>Status: {getTeam?.status}</p>

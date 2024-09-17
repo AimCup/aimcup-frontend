@@ -53,7 +53,7 @@ const TeamsPage = async ({
 											<div className="avatar">
 												<div className="mask mask-squircle h-12 w-12">
 													<Image
-														src={team.logoUrl || ""}
+														src={team.logoUrl || "/aim_logo.svg"}
 														alt="Team logo"
 														width={48}
 														height={48}
