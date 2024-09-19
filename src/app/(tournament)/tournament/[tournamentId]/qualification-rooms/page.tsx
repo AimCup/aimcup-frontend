@@ -85,7 +85,7 @@ const QualificationRoomsPage = async ({
 					<table className="table">
 						<thead>
 							<tr>
-								<th>Start date time</th>
+								<th>Start date time (UTC+0)</th>
 								<th>Roster</th>
 								<th>Referee</th>
 								{isUserCaptain && <th>Actions</th>}

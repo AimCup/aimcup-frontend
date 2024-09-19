@@ -138,7 +138,7 @@ const QRoomsPage = async ({
 					<thead>
 						<tr>
 							<th>Number</th>
-							<th>Start date time</th>
+							<th>Start date time (UTC+0)</th>
 							<th>Roster</th>
 							<th>Referee</th>
 							<th>Actions</th>
