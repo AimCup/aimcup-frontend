@@ -125,7 +125,10 @@ const TeamPage = async ({
 					</div>
 				</>
 			)}
-
+			<div className={"my-2"}>
+				<strong>Captain discord: </strong>
+				{getTeam?.captain?.user?.discordUsername}
+			</div>
 			<strong>Team Members:</strong>
 			<div className="overflow-x-auto">
 				<table className="table">

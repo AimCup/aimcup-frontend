@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { format } from "date-fns";
+import Link from "next/link";
 import { client, getMatches } from "../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
 
@@ -56,8 +57,24 @@ const SingleTournamentSchedule = async ({
 											{format(new Date(match.startDate), "dd/MM/yyyy HH:mm")}
 										</td>
 										<td>{match.stage?.stageType}</td>
-										<td>{match.teamBlue.name}</td>
-										<td>{match.teamRed.name}</td>
+										<td>
+											<Link
+												href={`
+													/tournament/${params.tournamentId}/teams/${match.teamBlue.id}
+												`}
+											>
+												{match.teamBlue.name}
+											</Link>
+										</td>
+										<td>
+											<Link
+												href={`
+													/tournament/${params.tournamentId}/teams/${match.teamRed.id}
+												`}
+											>
+												{match.teamRed.name}
+											</Link>
+										</td>
 										<td>
 											{match.referees?.map((referee) => (
 												<div key={referee?.user?.id}>
