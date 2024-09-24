@@ -238,7 +238,7 @@ export const MatchesModal = ({
 						<ComboBox
 							name={"refereeIds"}
 							label={"Select referee"}
-							selectOptions={modalType.type === "edit" ? staffMembers : []}
+							selectOptions={staffMembers}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
@@ -257,7 +257,7 @@ export const MatchesModal = ({
 						<ComboBox
 							name={"commentatorIds"}
 							label={"Select commentator"}
-							selectOptions={modalType.type === "edit" ? staffMembers : []}
+							selectOptions={staffMembers}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
@@ -276,7 +276,7 @@ export const MatchesModal = ({
 						<ComboBox
 							name={"streamerIds"}
 							label={"Select streamer"}
-							selectOptions={modalType.type === "edit" ? staffMembers : []}
+							selectOptions={staffMembers}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
