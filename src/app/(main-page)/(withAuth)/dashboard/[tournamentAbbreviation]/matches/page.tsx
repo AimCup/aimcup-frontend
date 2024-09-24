@@ -94,10 +94,14 @@ const MatchesPage = async ({
 		},
 	});
 
-	const canSignIn = getStaffForATournamentUser?.permissions?.some((permission) => {
-		const b = permission === "MATCH_STAFF_MEMBER_SIGN_IN";
-		return b;
-	});
+	const canSignIn =
+		getStaffForATournamentUser?.permissions?.some((permission) => {
+			const b = permission === "MATCH_STAFF_MEMBER_SIGN_IN";
+			return b;
+		}) ||
+		getStaffForATournamentUser?.roles?.some((role) =>
+			role.permissions.some((permission) => permission === "MATCH_STAFF_MEMBER_SIGN_IN"),
+		);
 
 	const showSignOut = (staffMembers: StaffMemberResponseDto[] | undefined) => {
 		return (
