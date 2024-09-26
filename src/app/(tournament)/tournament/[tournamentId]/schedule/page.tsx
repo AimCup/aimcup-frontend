@@ -36,6 +36,7 @@ const SingleTournamentSchedule = async ({
 					<table className="table">
 						<thead>
 							<tr>
+								<td>Match ID</td>
 								<th>Start date time (UTC+0)</th>
 								<th>Stage</th>
 								<th>Team blue</th>
@@ -53,6 +54,7 @@ const SingleTournamentSchedule = async ({
 								})
 								.map((match) => (
 									<tr key={match.id}>
+										<td>{match.matchId}</td>
 										<td>
 											{format(new Date(match.startDate), "dd/MM/yyyy HH:mm")}
 										</td>
