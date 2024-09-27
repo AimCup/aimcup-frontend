@@ -137,6 +137,7 @@ const MatchesPage = async ({
 					<table className="table">
 						<thead>
 							<tr>
+								<th>Match ID</th>
 								<th>Start date time (UTC+0)</th>
 								<th>Stage</th>
 								<th>Team blue</th>
@@ -155,6 +156,7 @@ const MatchesPage = async ({
 								})
 								.map((match) => (
 									<tr key={match.id}>
+										<td>{match.matchId}</td>
 										<td>
 											{format(new Date(match.startDate), "dd/MM/yyyy HH:mm")}
 										</td>
