@@ -23,6 +23,7 @@ export async function addMatchAction(formData: AddMachSchemaType) {
 		},
 		body: {
 			startDate: formData.dataTimeStart,
+			matchId: formData.matchId,
 			commentatorIds: formData.commentatorIds,
 			refereeIds: formData.refereeIds,
 			streamerIds: formData.streamerIds,

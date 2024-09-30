@@ -2,6 +2,7 @@ import * as zod from "zod";
 
 export const addMatchSchema = zod.object({
 	dataTimeStart: zod.string(),
+	matchId: zod.string(),
 	tournamentAbbreviation: zod.string(),
 	stageType: zod.string(),
 	teamBlueId: zod.string(),

@@ -153,6 +153,7 @@ export const MatchesModal = ({
 							type={"hidden"}
 							required={true}
 						/>
+						<Input label={"Match ID"} name={"matchId"} required={true} />
 						<Input
 							name={"dataTimeStart"}
 							label={"Date and time start"}
