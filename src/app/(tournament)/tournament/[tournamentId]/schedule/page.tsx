@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { client, getMatches } from "../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
+import { getUser } from "@/actions/public/getUserAction";
+import { RescheduleMatchModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/RescheduleMatchModal";
 
 const SingleTournamentSchedule = async ({
 	params,
@@ -22,6 +24,7 @@ const SingleTournamentSchedule = async ({
 			Cookie: `token=${cookie}`,
 		},
 	});
+	const userData = await getUser();
 	const { data } = await getMatches({
 		path: {
 			abbreviation: params.tournamentId,
@@ -44,6 +47,7 @@ const SingleTournamentSchedule = async ({
 								<th>Referee</th>
 								<th>Commentators</th>
 								<th>Streamers</th>
+								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -97,6 +101,18 @@ const SingleTournamentSchedule = async ({
 													{streamer?.user?.username}
 												</div>
 											))}
+										</td>
+										<td>
+											{(match.teamRed?.captain?.user?.id === userData?.id ||
+												match.teamBlue?.captain?.user?.id === userData?.id) && (
+												<RescheduleMatchModal
+													tournamentAbb={params.tournamentId}
+													matchId={match.id}
+													currentMatchDate={new Date(match.startDate)
+														.toISOString()
+														.slice(0, 16)}
+												/>
+											)}
 										</td>
 									</tr>
 								))}

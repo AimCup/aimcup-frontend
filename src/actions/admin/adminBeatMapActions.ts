@@ -1,10 +1,10 @@
 "use server";
 import { cookies } from "next/headers";
-import { addBeatmap, client, type modification } from "../../../client";
+import { addBeatmap, client, type modification, type stageType } from "../../../client";
 import { type AddBeatMapSchemaType } from "@/formSchemas/addBeatMapSchema";
-// import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
-export async function addBeatMapAction(formData: AddBeatMapSchemaType) {
+export async function addBeatMapAction(formData: AddBeatMapSchemaType, stageType: stageType) {
 	"use server";
 	const cookie = cookies().get("JWT")?.value;
 	// configure internal service client
@@ -36,12 +36,11 @@ export async function addBeatMapAction(formData: AddBeatMapSchemaType) {
 		};
 	}
 
-	// await multipleRevalidatePaths([
-	// 	"/",
-	// 	`/dashboard/${formData.tournamentAbb}/mappool/${formData.mappoolId}`,
-	// 	`/tournament/${formData.tournamentAbb}/mappool/${formData.mappoolId}`,
-	// ]);
-	//todo: revalidate paths
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbb}/mappool/${stageType}/${formData.mappoolId}`,
+		`/tournament/${formData.tournamentAbb}/mappool/${stageType}`,
+	]);
 
 	return {
 		status: true as const,

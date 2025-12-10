@@ -72,7 +72,7 @@ const StageTypePage = async ({
 					{getMappoolData.isReleased ? "Unrelease" : "Release"} mappool
 				</Button>
 			</form>
-			<AddBeatMap tournamentAbb={tournamentAbbreviation} mappoolId={mappoolId} />
+			<AddBeatMap tournamentAbb={tournamentAbbreviation} mappoolId={mappoolId} stageType={stageType} />
 			<div className="mt-3 overflow-x-auto">
 				<table className="table">
 					{/* head */}

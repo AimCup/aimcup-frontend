@@ -18,6 +18,8 @@ import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 import { MatchesModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchesModal";
+import { EditMatchModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/EditMatchModal";
+import { deleteMatchAction } from "@/actions/admin/adminDeleteMatchActions";
 
 const MatchesPage = async ({
 	params: { tournamentAbbreviation },
@@ -103,6 +105,9 @@ const MatchesPage = async ({
 			role.permissions.some((permission) => permission === "MATCH_STAFF_MEMBER_SIGN_IN"),
 		);
 
+	const isHost =
+		getStaffForATournamentUser?.roles?.some((role) => role.name === "Host") || false;
+
 	const showSignOut = (staffMembers: StaffMemberResponseDto[] | undefined) => {
 		return (
 			staffMembers?.some((staffMember) => {
@@ -119,6 +124,7 @@ const MatchesPage = async ({
 			})
 		);
 	};
+
 
 	return (
 		<div className={"flex w-full flex-col !px-3 !py-2"}>
@@ -145,7 +151,7 @@ const MatchesPage = async ({
 								<th>Referee</th>
 								<th>Commentators</th>
 								<th>Streamers</th>
-								<th>Action</th>
+								{isHost && <th>Actions</th>}
 							</tr>
 						</thead>
 						<tbody>
@@ -466,7 +472,38 @@ const MatchesPage = async ({
 												</form>
 											)}
 										</td>
-										<td>(edit)</td>
+										{isHost && (
+											<td>
+												<div className="flex gap-2">
+													<EditMatchModal
+														tournamentAbb={tournamentAbbreviation}
+														modalType={{
+															match: match,
+															staffMembers: staffMemberSelectOptions,
+														}}
+													/>
+													<form
+														action={async () => {
+															"use server";
+															const result = await deleteMatchAction(
+																tournamentAbbreviation,
+																match.id,
+															);
+															if (!result.status) {
+																throw new Error(result.errorMessage);
+															}
+														}}
+													>
+														<button
+															className="btn btn-ghost btn-xs text-error"
+															type={"submit"}
+														>
+															Delete
+														</button>
+													</form>
+												</div>
+											</td>
+										)}
 									</tr>
 								))}
 						</tbody>

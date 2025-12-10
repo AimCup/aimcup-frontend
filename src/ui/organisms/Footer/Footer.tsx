@@ -4,9 +4,13 @@ import { SiKofi } from "react-icons/si";
 import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Link from "next/link";
-import { getTournaments } from "../../../../client";
+import { client, getTournaments } from "../../../../client";
 
 export const Footer = async () => {
+	const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+	client.setConfig({
+		baseUrl: baseUrl,
+	});
 	const { data } = await getTournaments();
 
 	return (

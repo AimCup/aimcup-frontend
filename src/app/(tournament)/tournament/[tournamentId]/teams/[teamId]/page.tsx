@@ -1,19 +1,17 @@
 import React from "react";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import {
 	client,
-	deleteParticipantFromTeam,
-	disbandTeam,
 	getTeamsById,
+	getTournamentByAbbreviation,
 } from "../../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
-import { Button } from "@ui/atoms/Button/Button";
 import { getUser } from "@/actions/public/getUserAction";
 import { ChangeTeamNameForm } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/ChangeTeamNameForm";
 import { InvitePlayerToTeamButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/InvitePlayerToTeamButton";
-import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+import { DisbandTeamButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/DisbandTeamButton";
+import { DeleteParticipantButton } from "@/app/(tournament)/tournament/[tournamentId]/teams/[teamId]/DeleteParticipantButton";
 
 const TeamPage = async ({
 	params: { tournamentId, teamId },
@@ -38,7 +36,14 @@ const TeamPage = async ({
 		},
 	});
 
+	const { data: tournament } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: tournamentId,
+		},
+	});
+
 	const isCaptain = getTeam?.captain.user.id === userData?.id;
+	const isRegistrationStage = tournament?.currentStage === "REGISTRATION";
 
 	return (
 		<Section className={"flex-col"}>
@@ -46,11 +51,16 @@ const TeamPage = async ({
 				<div className={"flex gap-4 md:flex-row md:items-center"}>
 					<div className="avatar">
 						<div className="mask mask-squircle h-24 w-24">
-							<img
-								src={getTeam?.logoUrl || "/aim_logo.svg"}
+							<Image
+								src={
+									getTeam?.logoUrl && getTeam.logoUrl.startsWith("/api/teams/")
+										? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}${getTeam.logoUrl}`
+										: getTeam?.logoUrl || "/aim_logo.svg"
+								}
 								alt="team logo"
 								width={100}
 								height={100}
+								unoptimized={getTeam?.logoUrl?.startsWith("/api/teams/")}
 							/>
 						</div>
 					</div>
@@ -60,39 +70,11 @@ const TeamPage = async ({
 						<p>Status: {getTeam?.status}</p>
 					</div>
 					{isCaptain && (
-						<form
-							className={"flex flex-col gap-4 md:flex-row md:items-center"}
-							action={async (_e) => {
-								"use server";
-								const cookie = cookies().get("JWT")?.value;
-								// configure internal service client
-								client.setConfig({
-									// set default base url for requests
-									baseUrl: process.env.NEXT_PUBLIC_API_URL,
-									// set default headers for requests
-									headers: {
-										Cookie: `token=${cookie}`,
-									},
-								});
-								const { data: disbandTeamResponse } = await disbandTeam({
-									path: {
-										abbreviation: tournamentId,
-										teamId,
-									},
-								});
-
-								await multipleRevalidatePaths([
-									`/tournament/${tournamentId}/teams`,
-									`/tournament/${tournamentId}`,
-									"/",
-								]);
-								if (disbandTeamResponse) {
-									redirect(`/tournament/${tournamentId}/teams`);
-								}
-							}}
-						>
-							<Button type={"submit"}>Disband team</Button>
-						</form>
+						<DisbandTeamButton
+							tournamentId={tournamentId}
+							teamId={teamId}
+							isRegistrationStage={isRegistrationStage || false}
+						/>
 					)}
 				</div>
 			</div>
@@ -113,6 +95,7 @@ const TeamPage = async ({
 								logoUrl: getTeam?.logoUrl || "",
 								tournamentAbbreviation: tournamentId,
 							}}
+							isRegistrationStage={isRegistrationStage || false}
 						/>
 					</div>
 					<div className={"mb-10 flex"}>
@@ -121,6 +104,7 @@ const TeamPage = async ({
 								teamId: getTeam?.id || "",
 								tournamentAbbreviation: tournamentId,
 							}}
+							isRegistrationStage={isRegistrationStage || false}
 						/>
 					</div>
 				</>
@@ -164,44 +148,12 @@ const TeamPage = async ({
 								{isCaptain && (
 									<th>
 										{participant.user.id !== userData?.id && ( // if not captain
-											<form
-												className={
-													"flex flex-col gap-4 md:flex-row md:items-center"
-												}
-												action={async (_e) => {
-													"use server";
-													const cookie = cookies().get("JWT")?.value;
-													// configure internal service client
-													client.setConfig({
-														// set default base url for requests
-														baseUrl: process.env.NEXT_PUBLIC_API_URL,
-														// set default headers for requests
-														headers: {
-															Cookie: `token=${cookie}`,
-														},
-													});
-													await deleteParticipantFromTeam({
-														path: {
-															teamId: getTeam?.id || "",
-															participantId: "" + participant.id,
-															abbreviation: tournamentId,
-														},
-													});
-
-													await multipleRevalidatePaths([
-														`/tournament/${tournamentId}/teams`,
-														`/tournament/${tournamentId}`,
-														"/",
-													]);
-												}}
-											>
-												<button
-													className={"btn btn-ghost btn-xs"}
-													type={"submit"}
-												>
-													delete
-												</button>
-											</form>
+											<DeleteParticipantButton
+												tournamentId={tournamentId}
+												teamId={getTeam?.id || ""}
+												participantId={participant.id}
+												isRegistrationStage={isRegistrationStage || false}
+											/>
 										)}
 									</th>
 								)}

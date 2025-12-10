@@ -10,11 +10,13 @@ import { resetFormValues } from "@/lib/helpers";
 
 export const InvitePlayerToTeamButton = ({
 	team: { teamId, tournamentAbbreviation },
+	isRegistrationStage,
 }: {
 	team: {
 		tournamentAbbreviation: string;
 		teamId: string;
 	};
+	isRegistrationStage: boolean;
 }) => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [stateInviteToTeam, inviteToTeamFormAction] = useTypeSafeFormState(
@@ -33,6 +35,10 @@ export const InvitePlayerToTeamButton = ({
 			});
 		},
 	);
+
+	if (!isRegistrationStage) {
+		return null;
+	}
 
 	return (
 		<form

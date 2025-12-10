@@ -1,6 +1,7 @@
 import React from "react";
 import { PiCrownSimpleFill } from "react-icons/pi";
 import Link from "next/link";
+import Image from "next/image";
 import { type TeamResponseDto } from "../../../../client";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 
@@ -20,7 +21,13 @@ export const TeamCard = ({
 			className={"flex w-full flex-col gap-4 rounded-md bg-tuned p-6 text-primary-light"}
 		>
 			<div className={"flex items-center gap-2"}>
-				<img src={team?.logoUrl || "/aim_logo.svg"} className={"h-10 w-10 rounded-md"} />
+				<Image 
+					src={team?.logoUrl || "/aim_logo.svg"} 
+					alt={`${team?.name} logo`}
+					width={40}
+					height={40}
+					className={"h-10 w-10 rounded-md"}
+				/>
 				<h3 className={"text-2xl font-bold"}>{team?.name}</h3>
 			</div>
 			<h3 className={"gap-2 text-lg"}>

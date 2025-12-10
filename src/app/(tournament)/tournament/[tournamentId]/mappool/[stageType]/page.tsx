@@ -4,10 +4,12 @@ import {
 	type BeatmapModificationResponseDto,
 	client,
 	getMappoolByStage,
+	getStages,
 	type StageResponseDto,
 } from "../../../../../../../client";
 import { stageTypeEnumToString } from "@/lib/helpers";
-import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
+import { BeatmapListItem } from "@ui/molecules/BeatmapListItem/BeatmapListItem";
+import { StageNavigation } from "@ui/organisms/StageNavigation/StageNavigation";
 import Section from "@ui/atoms/Section/Section";
 import { Button } from "@ui/atoms/Button/Button";
 
@@ -33,6 +35,7 @@ const SingleTournamentMappool = async ({
 			Cookie: `token=${cookie}`,
 		},
 	});
+	
 	let getMappoolByStageData;
 	try {
 		const { data: getMappoolByStageData1 } = await getMappoolByStage({
@@ -46,57 +49,88 @@ const SingleTournamentMappool = async ({
 		console.error(error);
 	}
 
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
+
+	// Collect all beatmaps from all modifications, sorted
+	const allBeatmaps = getMappoolByStageData?.beatmapsModifications
+		.flatMap((bm) =>
+			bm?.beatmaps
+				?.filter((map) => {
+					if (!searchParams.modification) {
+						return true;
+					}
+					return map.modification === searchParams.modification;
+				})
+				?.map((map) => ({
+					...map,
+					modification: bm.modification,
+				})) || [],
+		)
+		.sort((a, b) => {
+			// Sort by modification first, then by position
+			if (a.modification !== b.modification) {
+				const modOrder = ["NM", "HD", "HR", "DT", "FM", "TB"];
+				const aIndex = modOrder.indexOf(a.modification || "");
+				const bIndex = modOrder.indexOf(b.modification || "");
+				return aIndex - bIndex;
+			}
+			return a.position - b.position;
+		}) || [];
+
 	return (
 		<>
+			{getStagesData && (
+				<StageNavigation
+					stages={getStagesData}
+					currentStage={params.stageType}
+					tournamentAbbreviation={params.tournamentId}
+				/>
+			)}
 			<Section id="mappool" className={"flex-col"}>
-				<div className={"mb-10 flex"}>
-					<div className={"flex flex-col gap-4"}>
+				<div className={"mb-6 flex items-center justify-between"}>
+					<div className={"flex flex-col gap-2"}>
 						<h2 className={"text-4xl font-bold "}>Mappool</h2>
 						<h2 className={"text-2xl font-bold "}>
 							{stageTypeEnumToString(params.stageType)}
 						</h2>
 					</div>
+					{getMappoolByStageData?.downloadUrl && (
+						<Button href={getMappoolByStageData.downloadUrl}>Download mappool pack</Button>
+					)}
 				</div>
 
-				{getMappoolByStageData?.downloadUrl && (
-					<Button href={getMappoolByStageData.downloadUrl}>Download mappool pack</Button>
-				)}
-
-				{getMappoolByStageData?.beatmapsModifications.map((bm) => (
-					<div className={"mb-6 mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2"} key={bm.id}>
-						{bm?.beatmaps
-							?.filter((map) => {
-								if (!searchParams.modification) {
-									return true;
-								}
-								return map.modification === searchParams.modification;
-							})
-							?.sort((a, b) => a.position - b.position)
-							?.map((map) => (
-								<MappoolCard
-									href={`https://osu.ppy.sh/beatmapsets/${map.beatmapsetId}#osu/${map.beatmapId}`}
-									key={map.id}
-									version={map.version}
-									title={map.title}
-									// modification={searchParams.modification as modification}
-									modification={map.modification}
-									author={map.creator}
-									isCustom={map.isCustom}
-									position={map.position}
-									mapInformation={{
-										stars: map.beatmapStatistics.starRating,
-										time: map.beatmapStatistics.length,
-										bpm: map.beatmapStatistics.bpm,
-										ar: map.beatmapStatistics.ar,
-										hp: map.beatmapStatistics.hp,
-										od: map.beatmapStatistics.od,
-										cs: map.beatmapStatistics.cs,
-									}}
-									img={map.normalCover}
-								/>
-							))}
-					</div>
-				))}
+				<div className="flex flex-col gap-3">
+					{allBeatmaps.map((map) => (
+						<BeatmapListItem
+							key={map.id}
+							href={`https://osu.ppy.sh/beatmapsets/${map.beatmapsetId}#osu/${map.beatmapId}`}
+							title={map.title}
+							artist={map.artist}
+							version={map.version}
+							creator={map.creator}
+							modification={map.modification}
+							position={map.position}
+							isCustom={map.isCustom}
+							img={map.normalCover}
+							mapInformation={{
+								stars: map.beatmapStatistics.starRating,
+								time: map.beatmapStatistics.length,
+								bpm: map.beatmapStatistics.bpm,
+								ar: map.beatmapStatistics.ar,
+								hp: map.beatmapStatistics.hp,
+								od: map.beatmapStatistics.od,
+								cs: map.beatmapStatistics.cs,
+							}}
+							tournamentAbbreviation={params.tournamentId}
+							beatmapId={map.beatmapId}
+							beatmapsetId={map.beatmapsetId}
+						/>
+					))}
+				</div>
 			</Section>
 		</>
 	);

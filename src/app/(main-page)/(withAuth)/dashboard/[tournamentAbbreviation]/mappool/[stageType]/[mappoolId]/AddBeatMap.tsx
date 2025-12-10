@@ -1,7 +1,8 @@
 "use client";
 import React, { useRef } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { modification } from "../../../../../../../../../client";
+import { modification, type stageType } from "../../../../../../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox } from "@ui/atoms/Forms/Select/ComboBox";
@@ -14,26 +15,41 @@ import { addBeatMapAction } from "@/actions/admin/adminBeatMapActions";
 interface IAddStageFormProps {
 	tournamentAbb: string;
 	mappoolId: string;
+	stageType: stageType;
 }
 
-export const AddBeatMap = ({ tournamentAbb, mappoolId }: IAddStageFormProps) => {
+export const AddBeatMap = ({ tournamentAbb, mappoolId, stageType }: IAddStageFormProps) => {
 	const modalRef = useRef<HTMLDialogElement>(null);
 	const formRef = React.useRef<HTMLFormElement>(null);
+	const router = useRouter();
 
 	const [state, formAction] = useTypeSafeFormState(addBeatMapSchema, async (data) => {
-		const addBeatMapResponse = await addBeatMapAction(data);
+		const addBeatMapResponse = await addBeatMapAction(data, stageType);
 		if (!addBeatMapResponse.status) {
 			return toast.error(addBeatMapResponse.errorMessage, {
 				duration: 3000,
 			});
 		}
+		toast.success("Beatmap added successfully", {
+			duration: 3000,
+		});
 		modalRef.current?.close();
 		resetFormValues({
 			formRef,
 			resetWithoutInputNames: ["tournamentAbb", "mappoolId"],
 			schema: addBeatMapSchema,
 		});
+		router.refresh();
 	});
+
+	const handleOpenModal = () => {
+		resetFormValues({
+			formRef,
+			resetWithoutInputNames: ["tournamentAbb", "mappoolId"],
+			schema: addBeatMapSchema,
+		});
+		modalRef?.current?.showModal();
+	};
 
 	const modificationTypeSelectOptions = [
 		{
@@ -76,7 +92,7 @@ export const AddBeatMap = ({ tournamentAbb, mappoolId }: IAddStageFormProps) => 
 
 	return (
 		<>
-			<Button onClick={() => modalRef?.current?.showModal()} type={"button"}>
+			<Button onClick={handleOpenModal} type={"button"}>
 				Add beatmap
 			</Button>
 

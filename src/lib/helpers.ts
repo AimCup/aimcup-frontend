@@ -58,7 +58,11 @@ export const resetFormValues = <T extends ZodObject<ZodRawShape>>({
 			schemaKeys.includes(input.name as keyof z.infer<T>) &&
 			!resetWithoutInputNames.includes(input.name as keyof z.infer<T>)
 		) {
-			input.value = "";
+			if (input.type === "checkbox") {
+				(input as HTMLInputElement).checked = false;
+			} else {
+				input.value = "";
+			}
 		}
 	});
 };

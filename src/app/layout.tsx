@@ -18,7 +18,7 @@ const monserrat = Montserrat({
 // configure internal service client
 client.setConfig({
 	// set default base url for requests
-	baseUrl: process.env.NEXT_PUBLIC_API_URL,
+	baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
 	// set default headers for requests
 });
 

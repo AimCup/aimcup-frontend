@@ -5,6 +5,7 @@ import { stageType } from "../../../../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { StaffMemberAutocomplete } from "@ui/atoms/Forms/Select/StaffMemberAutocomplete";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editQualificationRoomsAction } from "@/actions/admin/adminQualificationRoomsActions";
@@ -236,61 +237,37 @@ export const MatchesModal = ({
 							// }
 							// readonly={modalType.type === "edit" ? true : false}
 						/>
-						<ComboBox
+						<StaffMemberAutocomplete
 							name={"refereeIds"}
-							label={"Select referee"}
-							selectOptions={staffMembers}
+							label={"Select referees"}
+							tournamentAbbreviation={tournamentAbb}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
-									: undefined
+									: []
 							}
-							// type={modalType.type === "edit" ? undefined : "hidden"}
-							// disabled={modalType.type === "add"}
-							// hidden={modalType.type === "add"}
-							multiple={true}
-							// errorMessage={
-							// 	stateEditQRoom?.errors.rosterIds &&
-							// 	stateEditQRoom?.errors.rosterIds[0]
-							// }
 						/>
 
-						<ComboBox
+						<StaffMemberAutocomplete
 							name={"commentatorIds"}
-							label={"Select commentator"}
-							selectOptions={staffMembers}
+							label={"Select commentators"}
+							tournamentAbbreviation={tournamentAbb}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
-									: undefined
+									: []
 							}
-							// type={modalType.type === "edit" ? undefined : "hidden"}
-							// disabled={modalType.type === "add"}
-							// hidden={modalType.type === "add"}
-							multiple={true}
-							// errorMessage={
-							// 	stateEditQRoom?.errors.rosterIds &&
-							// 	stateEditQRoom?.errors.rosterIds[0]
-							// }
 						/>
 
-						<ComboBox
+						<StaffMemberAutocomplete
 							name={"streamerIds"}
-							label={"Select streamer"}
-							selectOptions={staffMembers}
+							label={"Select streamers"}
+							tournamentAbbreviation={tournamentAbb}
 							selectedOption={
 								modalType.type === "edit"
 									? staffMembers.map((staff) => staff.id)
-									: undefined
+									: []
 							}
-							// type={modalType.type === "edit" ? undefined : "hidden"}
-							// disabled={modalType.type === "add"}
-							// hidden={modalType.type === "add"}
-							multiple={true}
-							// errorMessage={
-							// 	stateEditQRoom?.errors.rosterIds &&
-							// 	stateEditQRoom?.errors.rosterIds[0]
-							// }
 						/>
 					</div>
 					<Button className="mt-4 w-max" type={"submit"}>
