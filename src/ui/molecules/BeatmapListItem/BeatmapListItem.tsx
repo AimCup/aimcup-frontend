@@ -40,9 +40,6 @@ export const BeatmapListItem = ({
 	isCustom,
 	img,
 	mapInformation,
-	_tournamentAbbreviation,
-	_beatmapId,
-	_beatmapsetId,
 }: BeatmapListItemProps) => {
 	const formatTime = (seconds: number) => {
 		const minutes = Math.floor(seconds / 60);

@@ -113,7 +113,8 @@ export const ChangeTeamNameForm = ({
 
 			const updateTeamResponse = await updateTeamAction(formDataToSend);
 			if (!updateTeamResponse.status) {
-				return toast.error(updateTeamResponse.errorMessage || "Failed to update team", {
+				const errorMsg: string = updateTeamResponse.errorMessage || "Failed to update team";
+				return toast.error(errorMsg, {
 					duration: 3000,
 				});
 			}

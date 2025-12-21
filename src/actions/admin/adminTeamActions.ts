@@ -1,8 +1,13 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { client, addParticipantToTeam, removeParticipantFromTeam, changeTeamCaptain, deleteTeam, changeTeamStatus } from "../../../client";
+import { client, addParticipantToTeam, removeParticipantFromTeam, changeTeamCaptain, deleteTeam, changeTeamStatus, type ErrorResponse } from "../../../client";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+
+// Type guard to check if error is ErrorResponse
+function isErrorResponse(error: unknown): error is ErrorResponse {
+	return typeof error === "object" && error !== null && "errors" in error;
+}
 
 export async function updateTeamAction(formDataToSend: FormData) {
 	"use server";
@@ -96,7 +101,9 @@ export async function addParticipantAction(
 	});
 
 	if (error) {
-		const errorMessage: string = error.errors?.join(", ") || "Failed to add participant";
+		const errorMessage: string = isErrorResponse(error) 
+			? (error.errors?.join(", ") || "Failed to add participant")
+			: "Failed to add participant";
 		return {
 			status: false as const,
 			errorMessage,
@@ -138,7 +145,9 @@ export async function removeParticipantAction(
 	});
 
 	if (error) {
-		const errorMessage: string = error.errors?.join(", ") || "Failed to remove participant";
+		const errorMessage: string = isErrorResponse(error)
+			? (error.errors?.join(", ") || "Failed to remove participant")
+			: "Failed to remove participant";
 		return {
 			status: false as const,
 			errorMessage,
@@ -180,7 +189,9 @@ export async function changeCaptainAction(
 	});
 
 	if (error) {
-		const errorMessage: string = error.errors?.join(", ") || "Failed to change captain";
+		const errorMessage: string = isErrorResponse(error)
+			? (error.errors?.join(", ") || "Failed to change captain")
+			: "Failed to change captain";
 		return {
 			status: false as const,
 			errorMessage,
@@ -220,7 +231,9 @@ export async function deleteTeamAction(
 	});
 
 	if (error) {
-		const errorMessage: string = error.errors?.join(", ") || "Failed to delete team";
+		const errorMessage: string = isErrorResponse(error)
+			? (error.errors?.join(", ") || "Failed to delete team")
+			: "Failed to delete team";
 		return {
 			status: false as const,
 			errorMessage,
@@ -263,7 +276,9 @@ export async function changeTeamStatusAction(
 	});
 
 	if (error) {
-		const errorMessage: string = error.errors?.join(", ") || "Failed to change team status";
+		const errorMessage: string = isErrorResponse(error)
+			? (error.errors?.join(", ") || "Failed to change team status")
+			: "Failed to change team status";
 		return {
 			status: false as const,
 			errorMessage,

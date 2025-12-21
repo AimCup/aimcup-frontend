@@ -149,9 +149,9 @@ const SettingsPage = () => {
 								setTournamentData((prev) => {
 									const prizePool = [...(prev?.prizePool || [])];
 									if (prizePool[0]) {
-										prizePool[0] = { ...prizePool[0], prize: prize || 0 };
+										prizePool[0] = { ...prizePool[0], prize: String(prize || 0) };
 									} else {
-										prizePool[0] = { type: 0, prize: prize || 0 };
+										prizePool[0] = { type: 0, prize: String(prize || 0) };
 									}
 									return {
 										...prev,
@@ -178,9 +178,9 @@ const SettingsPage = () => {
 								setTournamentData((prev) => {
 									const prizePool = [...(prev?.prizePool || [])];
 									if (prizePool[1]) {
-										prizePool[1] = { ...prizePool[1], prize: prize || 0 };
+										prizePool[1] = { ...prizePool[1], prize: String(prize || 0) };
 									} else {
-										prizePool[1] = { type: 1, prize: prize || 0 };
+										prizePool[1] = { type: 1, prize: String(prize || 0) };
 									}
 									return {
 										...prev,
@@ -207,9 +207,9 @@ const SettingsPage = () => {
 								setTournamentData((prev) => {
 									const prizePool = [...(prev?.prizePool || [])];
 									if (prizePool[2]) {
-										prizePool[2] = { ...prizePool[2], prize: prize || 0 };
+										prizePool[2] = { ...prizePool[2], prize: String(prize || 0) };
 									} else {
-										prizePool[2] = { type: 2, prize: prize || 0 };
+										prizePool[2] = { type: 2, prize: String(prize || 0) };
 									}
 									return {
 										...prev,

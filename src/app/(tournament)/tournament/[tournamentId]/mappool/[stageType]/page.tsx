@@ -125,9 +125,9 @@ const SingleTournamentMappool = async ({
 								od: map.beatmapStatistics.od,
 								cs: map.beatmapStatistics.cs,
 							}}
-							tournamentAbbreviation={params.tournamentId}
-							beatmapId={map.beatmapId}
-							beatmapsetId={map.beatmapsetId}
+							_tournamentAbbreviation={params.tournamentId}
+							_beatmapId={map.beatmapId}
+							_beatmapsetId={map.beatmapsetId}
 						/>
 					))}
 				</div>
