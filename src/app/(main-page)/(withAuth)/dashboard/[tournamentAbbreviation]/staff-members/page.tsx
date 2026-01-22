@@ -1,13 +1,17 @@
 import React from "react";
 import Image from "next/image";
+import { cookies } from "next/headers";
 import {
-	AdminStaffMemberService,
-	AdminTournamentRolesService,
-} from "../../../../../../../generated";
+	client,
+	deleteStaffMembers,
+	getStaffMembers1,
+	getTournamentPermissions,
+	getTournamentRoles,
+} from "../../../../../../../client";
 import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
-import { executeFetch } from "@/lib/executeFetch";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 const StaffMembersPage = async ({
 	params: { tournamentAbbreviation },
@@ -16,32 +20,41 @@ const StaffMembersPage = async ({
 		tournamentAbbreviation: string;
 	};
 }) => {
-	const getRoles = await executeFetch(
-		AdminTournamentRolesService.getTournamentRoles(tournamentAbbreviation),
-	);
-	const getPermissions = await executeFetch(
-		AdminTournamentRolesService.getTournamentPermissions(tournamentAbbreviation),
-	);
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getRoles } = await getTournamentRoles({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
+	const { data: getPermissions } = await getTournamentPermissions({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	const getStaffMembers = await executeFetch(
-		AdminStaffMemberService.getStaffMembers1(tournamentAbbreviation),
-	);
+	const { data: getStaffMembers } = await getStaffMembers1({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
-	if (!getRoles.status || !getPermissions.status) {
-		return <div>Failed to fetch roles or permissions</div>;
-	}
-
-	if (!getStaffMembers.status) {
-		return <div>Failed to fetch staff members</div>;
-	}
-
-	const rolesSelectOptions: selectOptions[] = getRoles.response?.map((role) => ({
-		id: role.id,
-		label: role.name,
-	}));
+	const rolesSelectOptions: selectOptions[] =
+		getRoles?.map((role) => ({
+			id: role.id,
+			label: role.name,
+		})) || [];
 
 	const permissionsSelectOptions: selectOptions[] =
-		getPermissions.response.permissions?.map((permission) => ({
+		getPermissions?.permissions?.map((permission) => ({
 			id: permission,
 			label: permission,
 		})) || [];
@@ -79,7 +92,7 @@ const StaffMembersPage = async ({
 						</tr>
 					</thead>
 					<tbody>
-						{getStaffMembers.response.map((s) => (
+						{getStaffMembers?.map((s) => (
 							<tr key={s.id}>
 								<td>{s.user ? s.user.osuId : "-"}</td>
 								<td className={"flex items-center gap-4"}>
@@ -154,16 +167,26 @@ const StaffMembersPage = async ({
 									<form
 										action={async (_e) => {
 											"use server";
-											await executeFetch(
-												AdminStaffMemberService.deleteStaffMembers(
-													tournamentAbbreviation,
-													s.id,
-												),
-												[
-													"/",
-													`/dashboard/${tournamentAbbreviation}/staff-members`,
-												],
-											);
+											const cookie = cookies().get("JWT")?.value;
+											// configure internal service client
+											client.setConfig({
+												// set default base url for requests
+												baseUrl: process.env.NEXT_PUBLIC_API_URL,
+												// set default headers for requests
+												headers: {
+													Cookie: `token=${cookie}`,
+												},
+											});
+											await deleteStaffMembers({
+												path: {
+													abbreviation: tournamentAbbreviation,
+													staffMemberId: s.id,
+												},
+											});
+											await multipleRevalidatePaths([
+												"/",
+												`/dashboard/${tournamentAbbreviation}/staff-members`,
+											]);
 										}}
 									>
 										<button className="btn btn-ghost btn-xs" type={"submit"}>

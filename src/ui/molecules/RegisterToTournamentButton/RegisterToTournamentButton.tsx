@@ -1,7 +1,7 @@
 import React from "react";
-import { ParticipantService } from "../../../../generated";
+import { registerParticipant } from "../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
-import { executeFetch } from "@/lib/executeFetch";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 interface RegisterToTournamentButtonProps {
 	tournamentId: string;
@@ -23,7 +23,12 @@ const RegisterToTournamentButton = ({
 			<form
 				action={async (_e) => {
 					"use server";
-					await executeFetch(ParticipantService.registerParticipant(tournamentId), [
+					await registerParticipant({
+						path: {
+							abbreviation: tournamentId,
+						},
+					});
+					await multipleRevalidatePaths([
 						"/",
 						"/dashboard",
 						"/tournament/[tournamentId]",

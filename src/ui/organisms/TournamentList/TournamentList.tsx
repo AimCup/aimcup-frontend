@@ -1,10 +1,16 @@
 import React from "react";
 import { type EmblaOptionsType } from "embla-carousel";
 import { format } from "date-fns";
-import { type TournamentResponseDto, TournamentService, UserService } from "../../../../generated";
+import { cookies } from "next/headers";
+import {
+	client,
+	getTournaments,
+	getUserTournaments,
+	type TournamentResponseDto,
+} from "../../../../client";
 import { Carousel } from "@ui/organisms/Carousel/Carousel";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
-import { executeFetch } from "@/lib/executeFetch";
+
 const OPTIONS: EmblaOptionsType = { loop: false };
 
 export const TournamentList = async ({
@@ -15,21 +21,31 @@ export const TournamentList = async ({
 	/** Get all tournaments associated with the active user */
 	userTournaments?: boolean;
 }) => {
-	let data: TournamentResponseDto[] | undefined;
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	let tournamentData: TournamentResponseDto[] | undefined;
 
 	if (userTournaments) {
-		const userTournamentData = await executeFetch(UserService.getUserTournaments());
-		if (userTournamentData.status) {
-			data = userTournamentData.response;
+		const { data, error } = await getUserTournaments();
+		if (!error) {
+			tournamentData = data;
 		}
 	} else {
-		const tournamentData = await executeFetch(TournamentService.getTournaments());
-		if (tournamentData.status) {
-			data = tournamentData.response;
+		const { data, error } = await getTournaments();
+		if (!error) {
+			tournamentData = data;
 		}
 	}
 
-	const tournamentSlices = data?.map((tournament) => {
+	const tournamentSlices = tournamentData?.map((tournament) => {
 		return (
 			<TournamentCard
 				key={tournament.id}

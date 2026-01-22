@@ -4,23 +4,25 @@ import { toast } from "sonner";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { Button } from "@ui/atoms/Button/Button";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
-import { inviteToTeam } from "@/actions/public/createTeamAction";
+import { inviteToTeamAction } from "@/actions/public/createTeamAction";
 import { inviteToTeamSchema } from "@/formSchemas/inviteToTeamSchema";
 import { resetFormValues } from "@/lib/helpers";
 
 export const InvitePlayerToTeamButton = ({
 	team: { teamId, tournamentAbbreviation },
+	isRegistrationStage,
 }: {
 	team: {
 		tournamentAbbreviation: string;
 		teamId: string;
 	};
+	isRegistrationStage: boolean;
 }) => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [stateInviteToTeam, inviteToTeamFormAction] = useTypeSafeFormState(
 		inviteToTeamSchema,
 		async (data) => {
-			const inviteToTeamResponse = await inviteToTeam(data);
+			const inviteToTeamResponse = await inviteToTeamAction(data);
 			if (!inviteToTeamResponse.status) {
 				return toast.error(inviteToTeamResponse.errorMessage, {
 					duration: 3000,
@@ -33,6 +35,10 @@ export const InvitePlayerToTeamButton = ({
 			});
 		},
 	);
+
+	if (!isRegistrationStage) {
+		return null;
+	}
 
 	return (
 		<form

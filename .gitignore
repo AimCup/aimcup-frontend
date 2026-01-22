@@ -38,3 +38,5 @@ openapi.json
 /generated
 .idea
 .env
+
+/client

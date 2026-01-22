@@ -1,48 +1,92 @@
 "use server";
 
-import { AdminStageService, type StageResponseDto } from "../../../generated";
-import { type ErrorResponse, executeFetch, type SuccessfulResponse } from "@/lib/executeFetch";
+import { cookies } from "next/headers";
+import { client, createStage, type stageType, updateStage } from "../../../client";
 import {
 	type CreateStageSchemaType,
 	type EditStageSchemaType,
 } from "@/formSchemas/createStageSchema";
+import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
-export async function createStageAction(data: CreateStageSchemaType) {
+export async function createStageAction(formData: CreateStageSchemaType) {
 	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await createStage({
+		path: {
+			abbreviation: formData.tournamentAbb,
+		},
+		body: {
+			startDate: new Date(formData.startDate).toISOString(),
+			endDate: new Date(formData.endDate).toISOString(),
+			stageType: formData.stageType as stageType,
+		},
+	});
 
-	return executeFetch(
-		AdminStageService.createStage(data.tournamentAbb, {
-			endDate: new Date(data.endDate).toISOString(),
-			stageType: data.stageType as StageResponseDto.stageType,
-			startDate: new Date(data.startDate).toISOString(),
-		}),
-		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<StageResponseDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbb}`,
+		`/tournament/${formData.tournamentAbb}`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }
-export async function editStageAction(data: EditStageSchemaType) {
+export async function editStageAction(formData: EditStageSchemaType) {
 	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data, error } = await updateStage({
+		path: {
+			abbreviation: formData.tournamentAbb,
+			stageType: formData.stageType as stageType,
+		},
+		body: {
+			startDate: new Date(formData.startDate).toISOString(),
+			endDate: new Date(formData.endDate).toISOString(),
+		},
+	});
 
-	return executeFetch(
-		AdminStageService.updateStage(
-			data.tournamentAbb,
-			data.stageType as StageResponseDto.stageType,
-			{
-				endDate: new Date(data.endDate).toISOString(),
-				startDate: new Date(data.startDate).toISOString(),
-			},
-		),
-		["/", `/dashboard/${data.tournamentAbb}`, `/tournament/${data.tournamentAbb}`],
-	)
-		.then((res) => {
-			return res as SuccessfulResponse<StageResponseDto>;
-		})
-		.catch((error) => {
-			return error as ErrorResponse;
-		});
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", "),
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${formData.tournamentAbb}`,
+		`/tournament/${formData.tournamentAbb}`,
+	]);
+
+	return {
+		status: true as const,
+		response: data,
+	};
 }

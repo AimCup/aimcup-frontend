@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { type StaffMemberResponseDto } from "../../../../generated";
+import { type StaffMemberResponseDto } from "../../../../client";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 
 type StaffMemberProps = {

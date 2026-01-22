@@ -1,14 +1,24 @@
 import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DiscordService } from "../../../../generated";
+import { cookies } from "next/headers";
+import { client, verify } from "../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import { getUser } from "@/actions/public/getUserAction";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
-import { executeFetch } from "@/lib/executeFetch";
 
 export const LoginAvatar = async () => {
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 	const userData = await getUser();
 	if (!userData?.id) {
 		const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_URL || "https://aimcup.xyz");
@@ -39,9 +49,9 @@ export const LoginAvatar = async () => {
 						<form
 							action={async (_e) => {
 								"use server";
-								const data = await executeFetch(DiscordService.verify(), ["/"]);
-								if (data.status) {
-									redirect(data.response.redirectUri);
+								const { data } = await verify();
+								if (data?.redirectUri) {
+									redirect(data.redirectUri);
 								}
 							}}
 						>

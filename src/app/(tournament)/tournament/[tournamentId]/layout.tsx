@@ -1,14 +1,18 @@
 import React from "react";
 import Image from "next/image";
 import NextTopLoader from "nextjs-toploader";
-import { StageService, TournamentRequestDto, TournamentService } from "../../../../../generated";
+import { cookies } from "next/headers";
+import {
+	client,
+	getQualificationRooms,
+	getStages,
+	getTournamentByAbbreviation,
+	tournamentType,
+} from "../../../../../client";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
-import tournamentType = TournamentRequestDto.tournamentType;
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
-import { executeFetch } from "@/lib/executeFetch";
-import Section from "@ui/atoms/Section/Section";
 
 type ITournamentLayout = {
 	children: React.ReactNode;
@@ -19,6 +23,7 @@ type ITournamentLayout = {
 const navbarRoutes: INavbarProps[] = [
 	{ name: "Home", href: "/" },
 	{ name: "Rules", href: "/rules" },
+	{ name: "Qualification rooms", href: "/qualification-rooms" },
 	{ name: "Schedule", href: "/schedule" },
 	{
 		name: "Mappool",
@@ -30,24 +35,52 @@ const navbarRoutes: INavbarProps[] = [
 ];
 
 export default async function Layout({ children, params }: ITournamentLayout) {
-	const getStagesData = await executeFetch(StageService.getStages(params.tournamentId));
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
-	const tournamentData = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(params.tournamentId),
-	);
+	const { data: tournamentData } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: params.tournamentId,
+		},
+	});
 
-	if (!tournamentData.status) {
-		<Section>{tournamentData.errorMessage}</Section>;
-	}
-	if (!getStagesData.status) {
-		<Section>{getStagesData.errorMessage}</Section>;
-	}
+	const { data: getQualificationRoomsData } = await getQualificationRooms({
+		path: { abbreviation: params.tournamentId },
+	});
 
 	const getStateTypes =
-		getStagesData.status &&
-		getStagesData.response.filter((stage) => !!stage.mappool).map((stage) => stage.stageType);
+		getStagesData &&
+		getStagesData
+			.filter((stage) => !!stage.mappool)
+			.filter((stage) => stage.stageType !== "REGISTRATION")
+			.filter((stage) => stage.stageType !== "SCREENING")
+			.map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
+		if (
+			getQualificationRoomsData?.length &&
+			getQualificationRoomsData?.length > 0 &&
+			item.name === "Qualification rooms"
+		) {
+			return {
+				...item,
+				href: `/tournament/${params.tournamentId}/qualification-rooms`,
+			};
+		}
+
 		if (item.name === "Mappool") {
 			return {
 				...item,
@@ -65,10 +98,7 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		};
 	}) as INavbarProps[];
 
-	if (
-		tournamentData.status &&
-		tournamentData.response?.tournamentType !== tournamentType.PARTICIPANT_VS
-	) {
+	if (tournamentData && tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS) {
 		tournamentNavbarRoutes.push({
 			name: "Teams",
 			href: `/tournament/${params.tournamentId}/teams`,

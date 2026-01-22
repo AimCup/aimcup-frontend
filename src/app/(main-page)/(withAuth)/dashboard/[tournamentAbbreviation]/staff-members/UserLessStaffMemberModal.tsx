@@ -46,7 +46,7 @@ export const UserLessStaffMemberModal = ({
 		async (data) => {
 			const addStaffMemberResponse = await addUserLessStaffMemberAction(data);
 			if (!addStaffMemberResponse.status) {
-				return toast.error(addStaffMemberResponse.errorMessage, {
+				return toast.error("error", {
 					duration: 3000,
 				});
 			}

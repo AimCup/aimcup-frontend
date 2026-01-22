@@ -1,13 +1,17 @@
 import React from "react";
-import Link from "next/link";
+import { cookies } from "next/headers";
 import {
 	type BeatmapModificationResponseDto,
-	MappoolService,
+	client,
+	getMappoolByStage,
+	getStages,
 	type StageResponseDto,
-} from "../../../../../../../generated";
+} from "../../../../../../../client";
 import { stageTypeEnumToString } from "@/lib/helpers";
-import { MappoolCard } from "@ui/molecules/Cards/MappoolCard";
+import { BeatmapListItem } from "@ui/molecules/BeatmapListItem/BeatmapListItem";
+import { StageNavigation } from "@ui/organisms/StageNavigation/StageNavigation";
 import Section from "@ui/atoms/Section/Section";
+import { Button } from "@ui/atoms/Button/Button";
 
 const SingleTournamentMappool = async ({
 	params,
@@ -21,166 +25,112 @@ const SingleTournamentMappool = async ({
 		modification: BeatmapModificationResponseDto["modification"];
 	};
 }) => {
-	let getMappoolByStageData, mappolStages;
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	
+	let getMappoolByStageData;
 	try {
-		getMappoolByStageData = await MappoolService.getMappoolByStage(
-			params.tournamentId,
-			params.stageType,
-		);
-
-		mappolStages = getMappoolByStageData.beatmapsModifications.filter(
-			(stage) => !!stage.beatmaps,
-		);
+		const { data: getMappoolByStageData1 } = await getMappoolByStage({
+			path: {
+				abbreviation: params.tournamentId,
+				stageType: params.stageType,
+			},
+		});
+		getMappoolByStageData = getMappoolByStageData1;
 	} catch (error) {
 		console.error(error);
 	}
 
-	const selectedMappoolByModification = searchParams.modification
-		? getMappoolByStageData?.beatmapsModifications.filter(
-				(m) => m.modification === searchParams.modification,
-			)
-		: getMappoolByStageData?.beatmapsModifications;
-
-	const modifications = mappolStages
-		?.filter((m) => !m.isHidden)
-		?.filter((m) => m.beatmaps?.length && m.beatmaps?.length > 0)
-		.map((m) => m.modification);
-
-	const countModificationBeatmaps:
-		| {
-				[key: string]: number;
-		  }
-		| undefined = getMappoolByStageData?.beatmapsModifications.reduce(
-		(acc, mod) => {
-			acc[mod.modification] = mod.beatmaps?.length || 0;
-			return acc;
+	const { data: getStagesData } = await getStages({
+		path: {
+			abbreviation: params.tournamentId,
 		},
-		{} as { [key: string]: number },
-	);
+	});
 
-	const allModificationsCount =
-		getMappoolByStageData?.beatmapsModifications?.flatMap((m) => m.beatmaps).length || 0;
-
-	const mappoollCard: React.ReactNode[] = [];
-
-	if (searchParams.modification) {
-		selectedMappoolByModification &&
-			selectedMappoolByModification[0]?.beatmaps?.forEach((map) => {
-				mappoollCard.push(
-					<MappoolCard
-						key={map.id}
-						title={map.title}
-						modification={searchParams.modification}
-						author={map.creator}
-						isCustom={map.isCustom}
-						position={map.position}
-						mapInformation={{
-							stars: map.beatmapStatistics.starRating,
-							time: map.beatmapStatistics.length,
-							bpm: map.beatmapStatistics.bpm,
-							ar: map.beatmapStatistics.ar,
-							hp: map.beatmapStatistics.hp,
-							od: map.beatmapStatistics.od,
-							cs: map.beatmapStatistics.cs,
-						}}
-						img={map.cardCover}
-					/>,
-				);
-			});
-	} else {
-		selectedMappoolByModification
-			?.flatMap((m) => m.beatmaps)
-			?.forEach((map) => {
-				mappoollCard.push(
-					<MappoolCard
-						key={map?.id}
-						title={map?.title}
-						modification={map?.modification}
-						author={map?.creator}
-						isCustom={!!map?.isCustom}
-						position={map?.position || 0}
-						mapInformation={{
-							stars: map?.beatmapStatistics.starRating || 0,
-							time: map?.beatmapStatistics.length || 0,
-							bpm: map?.beatmapStatistics.bpm || 0,
-							ar: map?.beatmapStatistics.ar || 0,
-							hp: map?.beatmapStatistics.hp || 0,
-							od: map?.beatmapStatistics.od || 0,
-							cs: map?.beatmapStatistics.cs || 0,
-						}}
-						img={map?.cardCover}
-					/>,
-				);
-			});
-	}
-
-	const stageContent = (
-		<>
-			<div className={"mb-4 mt-10 flex"}>
-				<div className={"flex flex-col gap-4"}>
-					<h2 className={"text-2xl font-bold "}>
-						{stageTypeEnumToString(params.stageType)}
-					</h2>
-					{allModificationsCount > 0 ? (
-						<ul className="menu rounded-box bg-base-200 lg:menu-horizontal">
-							<li
-								className={`${
-									!searchParams.modification ? "active rounded bg-deepRed" : ""
-								}`}
-							>
-								<Link
-									href={`/tournament/${params.tournamentId}/mappool/${params.stageType}`}
-								>
-									ALL
-									<span className="badge badge-sm">{allModificationsCount}</span>
-								</Link>
-							</li>
-							{modifications?.map((mod, index) => {
-								const isActive = searchParams.modification === mod;
-								if (!countModificationBeatmaps) {
-									return null;
-								}
-								const isMappoolEmpty = countModificationBeatmaps[mod] === 0;
-
-								if (isMappoolEmpty) {
-									return null;
-								}
-
-								return (
-									<li
-										className={`${isActive ? "active rounded bg-deepRed" : ""}`}
-										key={index}
-									>
-										<Link
-											href={`/tournament/${params.tournamentId}/mappool/${params.stageType}?modification=${mod}`}
-										>
-											{mod}
-											<span className="badge badge-sm">
-												{countModificationBeatmaps[mod]}
-											</span>
-										</Link>
-									</li>
-								);
-							})}
-						</ul>
-					) : (
-						"No mappool beatmaps found."
-					)}
-				</div>
-			</div>
-			<div className={"flex flex-col gap-10 md:w-full"}>{mappoollCard}</div>
-		</>
-	);
+	// Collect all beatmaps from all modifications, sorted
+	const allBeatmaps = getMappoolByStageData?.beatmapsModifications
+		.flatMap((bm) =>
+			bm?.beatmaps
+				?.filter((map) => {
+					if (!searchParams.modification) {
+						return true;
+					}
+					return map.modification === searchParams.modification;
+				})
+				?.map((map) => ({
+					...map,
+					modification: bm.modification,
+				})) || [],
+		)
+		.sort((a, b) => {
+			// Sort by modification first, then by position
+			if (a.modification !== b.modification) {
+				const modOrder = ["NM", "HD", "HR", "DT", "FM", "TB"];
+				const aIndex = modOrder.indexOf(a.modification || "");
+				const bIndex = modOrder.indexOf(b.modification || "");
+				return aIndex - bIndex;
+			}
+			return a.position - b.position;
+		}) || [];
 
 	return (
 		<>
+			{getStagesData && (
+				<StageNavigation
+					stages={getStagesData}
+					currentStage={params.stageType}
+					tournamentAbbreviation={params.tournamentId}
+				/>
+			)}
 			<Section id="mappool" className={"flex-col"}>
-				<div className={"mb-10 flex"}>
-					<div className={"flex flex-col gap-4 md:flex-row md:items-center"}>
+				<div className={"mb-6 flex items-center justify-between"}>
+					<div className={"flex flex-col gap-2"}>
 						<h2 className={"text-4xl font-bold "}>Mappool</h2>
+						<h2 className={"text-2xl font-bold "}>
+							{stageTypeEnumToString(params.stageType)}
+						</h2>
 					</div>
+					{getMappoolByStageData?.downloadUrl && (
+						<Button href={getMappoolByStageData.downloadUrl}>Download mappool pack</Button>
+					)}
 				</div>
-				{stageContent}
+
+				<div className="flex flex-col gap-3">
+					{allBeatmaps.map((map) => (
+						<BeatmapListItem
+							key={map.id}
+							href={`https://osu.ppy.sh/beatmapsets/${map.beatmapsetId}#osu/${map.beatmapId}`}
+							title={map.title}
+							artist={map.artist}
+							version={map.version}
+							creator={map.creator}
+							modification={map.modification}
+							position={map.position}
+							isCustom={map.isCustom}
+							img={map.normalCover}
+							mapInformation={{
+								stars: map.beatmapStatistics.starRating,
+								time: map.beatmapStatistics.length,
+								bpm: map.beatmapStatistics.bpm,
+								ar: map.beatmapStatistics.ar,
+								hp: map.beatmapStatistics.hp,
+								od: map.beatmapStatistics.od,
+								cs: map.beatmapStatistics.cs,
+							}}
+							_tournamentAbbreviation={params.tournamentId}
+							_beatmapId={map.beatmapId}
+							_beatmapsetId={map.beatmapsetId}
+						/>
+					))}
+				</div>
 			</Section>
 		</>
 	);

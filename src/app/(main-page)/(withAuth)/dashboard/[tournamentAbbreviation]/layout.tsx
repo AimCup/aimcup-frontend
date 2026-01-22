@@ -1,7 +1,6 @@
 import React from "react";
-import { TournamentRequestDto, TournamentService } from "../../../../../../generated";
-import { executeFetch } from "@/lib/executeFetch";
-import tournamentType = TournamentRequestDto.tournamentType;
+import { cookies } from "next/headers";
+import { client, getTournamentByAbbreviation, tournamentType } from "../../../../../../client";
 
 export default async function Layout({
 	children,
@@ -12,13 +11,21 @@ export default async function Layout({
 		tournamentAbbreviation: string;
 	};
 }) {
-	const tournamentData = await executeFetch(
-		TournamentService.getTournamentByAbbreviation(tournamentAbbreviation),
-	);
-
-	if (!tournamentData.status) {
-		return <>{tournamentData.errorMessage}</>;
-	}
+	const cookie = cookies().get("JWT")?.value;
+	// configure internal service client
+	client.setConfig({
+		// set default base url for requests
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		// set default headers for requests
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { data: tournamentData } = await getTournamentByAbbreviation({
+		path: {
+			abbreviation: tournamentAbbreviation,
+		},
+	});
 
 	return (
 		<>
@@ -48,7 +55,7 @@ export default async function Layout({
 					<li>
 						<a href={`/dashboard/${tournamentAbbreviation}/matches`}>Matches</a>
 					</li>
-					{tournamentData?.response.tournamentType !== tournamentType.PARTICIPANT_VS ? (
+					{tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS ? (
 						<li>
 							<a href={`/dashboard/${tournamentAbbreviation}/teams`}>Teams</a>
 						</li>

@@ -2,7 +2,7 @@
 import React, { useRef } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { StageResponseDto } from "../../../../../../../generated";
+import { stageType } from "../../../../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
@@ -29,7 +29,7 @@ type StageModalType = AddNewStage | EditStage;
 
 interface IAddStageFormProps {
 	tournamentAbb: string;
-	alreadyAddedStages?: StageResponseDto.stageType[];
+	alreadyAddedStages?: stageType[];
 	modalType: StageModalType;
 }
 
@@ -72,48 +72,48 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 
 	const stageTypeSelectOptions: selectOptions[] = [
 		{
-			id: StageResponseDto.stageType.REGISTRATION,
-			label: stageTypeEnumToString(StageResponseDto.stageType.REGISTRATION),
+			id: stageType.REGISTRATION,
+			label: stageTypeEnumToString(stageType.REGISTRATION),
 		},
 		{
-			id: StageResponseDto.stageType.QUALIFICATION,
-			label: stageTypeEnumToString(StageResponseDto.stageType.QUALIFICATION),
+			id: stageType.QUALIFICATION,
+			label: stageTypeEnumToString(stageType.QUALIFICATION),
 		},
 		{
-			id: StageResponseDto.stageType.FINAL,
-			label: stageTypeEnumToString(StageResponseDto.stageType.FINAL),
+			id: stageType.FINAL,
+			label: stageTypeEnumToString(stageType.FINAL),
 		},
 		{
-			id: StageResponseDto.stageType.RO16,
-			label: stageTypeEnumToString(StageResponseDto.stageType.RO16),
+			id: stageType.RO16,
+			label: stageTypeEnumToString(stageType.RO16),
 		},
 		{
-			id: StageResponseDto.stageType.RO64,
-			label: stageTypeEnumToString(StageResponseDto.stageType.RO64),
+			id: stageType.RO64,
+			label: stageTypeEnumToString(stageType.RO64),
 		},
 		{
-			id: StageResponseDto.stageType.GRAND_FINAL,
-			label: stageTypeEnumToString(StageResponseDto.stageType.GRAND_FINAL),
+			id: stageType.GRAND_FINAL,
+			label: stageTypeEnumToString(stageType.GRAND_FINAL),
 		},
 		{
-			id: StageResponseDto.stageType.QUARTER_FINAL,
-			label: stageTypeEnumToString(StageResponseDto.stageType.QUARTER_FINAL),
+			id: stageType.QUARTER_FINAL,
+			label: stageTypeEnumToString(stageType.QUARTER_FINAL),
 		},
 		{
-			id: StageResponseDto.stageType.RO32,
-			label: stageTypeEnumToString(StageResponseDto.stageType.RO32),
+			id: stageType.RO32,
+			label: stageTypeEnumToString(stageType.RO32),
 		},
 		{
-			id: StageResponseDto.stageType.RO128,
-			label: stageTypeEnumToString(StageResponseDto.stageType.RO128),
+			id: stageType.RO128,
+			label: stageTypeEnumToString(stageType.RO128),
 		},
 		{
-			id: StageResponseDto.stageType.SEMI_FINAL,
-			label: stageTypeEnumToString(StageResponseDto.stageType.SEMI_FINAL),
+			id: stageType.SEMI_FINAL,
+			label: stageTypeEnumToString(stageType.SEMI_FINAL),
 		},
 		{
-			id: StageResponseDto.stageType.SCREENING,
-			label: stageTypeEnumToString(StageResponseDto.stageType.SCREENING),
+			id: stageType.SCREENING,
+			label: stageTypeEnumToString(stageType.SCREENING),
 		},
 	].filter((stage) => !alreadyAddedStages?.includes(stage.id));
 
