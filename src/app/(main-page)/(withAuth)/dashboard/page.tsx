@@ -22,6 +22,17 @@ const DashboardPage = async () => {
 			<h1 className={"my-2 text-lg"}>Select tournament</h1>
 			<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
 				<CreateTournamentModal />
+				<Link href="/dashboard/custom-maps" className={"w-full shadow-lg"}>
+					<div className={"relative flex h-64 w-full items-end overflow-hidden rounded-md bg-gradient-to-br from-[#1a0f0f] to-[#2a1515] transition-all hover:brightness-110"}>
+						<div
+							className={"absolute inset-0 bg-center bg-no-repeat opacity-10"}
+							style={{ backgroundImage: "url('/aim_logo.svg')", backgroundSize: "60%" }}
+						/>
+						<p className={"m-1 rounded-md p-4 text-lg font-semibold"} style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
+							Custom Maps
+						</p>
+					</div>
+				</Link>
 				{tournaments?.map((tournament) => (
 					<Link
 						href={`/dashboard/${tournament.abbreviation}`}

@@ -12,6 +12,7 @@
 		"prepare": "husky install",
 		"open:api": "curl https://api.aimcup.xyz/v3/api-docs -o openapi.json",
 		"open:api:local": "curl http://localhost:8080/v3/api-docs -o openapi.json",
+		"regen": "npm run open:api:local && npm run openapi-ts",
 		"open:generate": "openapi --input ./openapi.json --output ./generated",
 		"openapi-ts": "openapi-ts"
 	},
