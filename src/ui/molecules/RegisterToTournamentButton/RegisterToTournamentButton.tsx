@@ -1,17 +1,19 @@
 import React from "react";
-import { registerParticipant } from "../../../../client";
+import { registerParticipant, tournamentType } from "../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 
 interface RegisterToTournamentButtonProps {
 	tournamentId: string;
 	isTeamTournament: boolean;
+	tournamentType: tournamentType;
 	shouldDisplay: boolean;
 }
 
 const RegisterToTournamentButton = ({
 	tournamentId,
 	isTeamTournament,
+	tournamentType: type,
 	shouldDisplay,
 }: RegisterToTournamentButtonProps) => {
 	if (!shouldDisplay) {
@@ -39,9 +41,10 @@ const RegisterToTournamentButton = ({
 				<Button type={"submit"}>Join to the tournament</Button>
 			</form>
 		);
-	} else {
-		return <Button href={`/tournament/${tournamentId}/registration`}>Create team</Button>;
 	}
+
+	const label = type === tournamentType.AUCTION ? "Register" : "Create team";
+	return <Button href={`/tournament/${tournamentId}/registration`}>{label}</Button>;
 };
 
 export default RegisterToTournamentButton;

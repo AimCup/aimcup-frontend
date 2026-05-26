@@ -34,6 +34,7 @@ export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) 
 export const tournamentTeamShowEnumAvailable = [
 	tournamentType.TEAM_VS,
 	tournamentType.INTERNATIONAL,
+	tournamentType.AUCTION,
 ];
 
 export const resetFormValues = <T extends ZodObject<ZodRawShape>>({

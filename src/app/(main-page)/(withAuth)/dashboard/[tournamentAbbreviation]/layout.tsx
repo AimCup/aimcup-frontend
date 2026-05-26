@@ -70,6 +70,11 @@ export default async function Layout({
 					<li>
 						<a href={`/dashboard/${tournamentAbbreviation}/settings`}>Settings</a>
 					</li>
+					{tournamentData?.tournamentType === tournamentType.AUCTION && (
+						<li>
+							<a href={`/dashboard/${tournamentAbbreviation}/auction`}>Auction</a>
+						</li>
+					)}
 				</ul>
 			</nav>
 			{children}

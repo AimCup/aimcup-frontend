@@ -133,6 +133,22 @@ const SettingsPage = () => {
 							} as TournamentResponseDto));
 						}}
 					/>
+					{(tournamentData?.tournamentType === "TEAM_VS" ||
+						tournamentData?.tournamentType === "INTERNATIONAL" ||
+						tournamentData?.tournamentType === "AUCTION") && (
+						<Input
+							name={"matchSize"}
+							label={"Match size (e.g. 4 for 4v4)"}
+							type={"number"}
+							value={String(tournamentData?.matchSize || "")}
+							onChange={(e) => {
+								setTournamentData((prev) => ({
+									...prev,
+									matchSize: e.target.value ? Number(e.target.value) : undefined,
+								} as TournamentResponseDto));
+							}}
+						/>
+					)}
 					<h3 className={"mb-3  text-xl font-bold leading-relaxed"}>Prize pool</h3>
 					<div className="grid grid-cols-3 gap-4">
 						<Input

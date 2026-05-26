@@ -25,6 +25,7 @@ export async function editTournamentAction(formData: EditTournamentSchemaType, f
 			rules: formRules,
 			name: formData.name,
 			abbreviation: formData.abbreviation,
+			matchSize: formData.matchSize ? Number(formData.matchSize) : undefined,
 			prizePool: [
 				{ type: 0, prize: formData.prize0 },
 				{ type: 1, prize: formData.prize1 },
