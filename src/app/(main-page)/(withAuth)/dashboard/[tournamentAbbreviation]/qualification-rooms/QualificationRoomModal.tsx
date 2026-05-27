@@ -187,7 +187,7 @@ export const QualificationRoomModal = ({ tournamentAbb, modalType }: IAddStaffMe
 							}
 							selectedOption={
 								modalType.type === "edit"
-									? modalType.room.selectedRosterIds.map((roster) => roster.id)
+									? (modalType.room.selectedRosterIds ?? []).map((roster) => roster.id)
 									: undefined
 							}
 							type={modalType.type === "edit" ? undefined : "hidden"}

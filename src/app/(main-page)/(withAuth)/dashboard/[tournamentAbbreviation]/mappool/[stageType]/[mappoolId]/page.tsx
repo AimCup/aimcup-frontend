@@ -22,6 +22,12 @@ const StageTypePage = async ({
 		mappoolId: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: { Cookie: `token=${cookie}` },
+	});
+
 	const { data: getMappoolData, error } = await getMappool({
 		path: {
 			stageType,

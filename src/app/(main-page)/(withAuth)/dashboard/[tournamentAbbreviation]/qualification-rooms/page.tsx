@@ -153,12 +153,12 @@ const QRoomsPage = async ({
 									{room.tournamentType === tournamentType.PARTICIPANT_VS
 										? (
 												room as ParticipantBasedQualificationRoom
-											).participants.map((participant) => (
+											).participants?.map((participant) => (
 												<div key={participant.id}>
 													{participant.user.username}
 												</div>
 											))
-										: (room as TeamBasedQualificationRoom).teams.map((team) => (
+										: (room as TeamBasedQualificationRoom).teams?.map((team) => (
 												<div
 													key={team.id}
 													className={"flex gap-2 truncate"}
@@ -285,7 +285,7 @@ const QRoomsPage = async ({
 													tournamentType.PARTICIPANT_VS
 														? (
 																room as ParticipantBasedQualificationRoom
-															).participants.map((participant) => ({
+															).participants?.map((participant) => ({
 																id: participant.id,
 																label: participant.user.username,
 															}))

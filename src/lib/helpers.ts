@@ -26,6 +26,18 @@ export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) 
 			return "Semi Final";
 		case "SCREENING":
 			return "Screening";
+		case "SWISS_1":
+			return "Swiss Stage 1";
+		case "SWISS_2":
+			return "Swiss Stage 2";
+		case "SWISS_3":
+			return "Swiss Stage 3";
+		case "SWISS_4":
+			return "Swiss Stage 4";
+		case "SWISS_5":
+			return "Swiss Stage 5";
+		case "SWISS_6":
+			return "Swiss Stage 6";
 		default:
 			return "Unknown";
 	}
