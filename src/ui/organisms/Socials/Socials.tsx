@@ -24,14 +24,14 @@ export const Socials = () => {
 			<SocialItem
 				socialItem={{
 					name: "Discord",
-					link: "https://discord.gg/u2sMXwCtB9",
+					link: "https://discord.gg/ENTEpR8Ntv",
 					icon: <FaDiscord size={"32px"} color={"#151120"} />,
 				}}
 			/>
 			<SocialItem
 				socialItem={{
 					name: "Twitter",
-					link: "https://twitter.com/aim_cup",
+					link: "https://x.com/aim_cup",
 					icon: <FaXTwitter size={"32px"} color={"#151120"} />,
 				}}
 			/>
