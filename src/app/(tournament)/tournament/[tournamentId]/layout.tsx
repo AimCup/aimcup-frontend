@@ -25,6 +25,7 @@ const navbarRoutes: INavbarProps[] = [
 	{ name: "Rules", href: "/rules" },
 	{ name: "Qualification rooms", href: "/qualification-rooms" },
 	{ name: "Schedule", href: "/schedule" },
+	{ name: "Bracket", href: "/bracket" },
 	{
 		name: "Mappool",
 		href: "",

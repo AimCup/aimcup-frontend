@@ -55,6 +55,9 @@ export default async function Layout({
 					<li>
 						<a href={`/dashboard/${tournamentAbbreviation}/matches`}>Matches</a>
 					</li>
+					<li>
+						<a href={`/dashboard/${tournamentAbbreviation}/bracket`}>Bracket editor</a>
+					</li>
 					{tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS ? (
 						<li>
 							<a href={`/dashboard/${tournamentAbbreviation}/teams`}>Teams</a>
