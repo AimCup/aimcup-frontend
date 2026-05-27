@@ -4,8 +4,10 @@ import { format } from "date-fns";
 import Image from "next/image";
 import {
 	client,
+	getParticipants,
 	getQualificationRooms,
 	getTeamsByTournament,
+	getTournamentByAbbreviation,
 	type QualificationRoomResponseDto,
 	signInQualificationRoomAsCaptain,
 	tournamentType,
@@ -42,35 +44,48 @@ const QualificationRoomsPage = async ({
 	};
 }) => {
 	const cookie = cookies().get("JWT")?.value;
-	// configure internal service client
 	client.setConfig({
-		// set default base url for requests
 		baseUrl: process.env.NEXT_PUBLIC_API_URL,
-		// set default headers for requests
-		headers: {
-			Cookie: `token=${cookie}`,
-		},
+		headers: { Cookie: `token=${cookie}` },
 	});
 	const userData = await getUser();
 
-	const { data: getQualificationRoomsData } = await getQualificationRooms({
-		path: { abbreviation: tournamentId },
-	});
+	const [
+		{ data: getQualificationRoomsData },
+		{ data: getTeamFromTournamentData },
+		{ data: tournamentData },
+		{ data: participantsData },
+	] = await Promise.all([
+		getQualificationRooms({ path: { abbreviation: tournamentId } }),
+		getTeamsByTournament({ path: { abbreviation: tournamentId } }),
+		getTournamentByAbbreviation({ path: { abbreviation: tournamentId } }),
+		getParticipants({ path: { abbreviation: tournamentId } }),
+	]);
 
-	const { data: getTeamFromTournamentData } = await getTeamsByTournament({
-		path: { abbreviation: tournamentId },
-	});
+	const isAuction = tournamentData?.tournamentType === tournamentType.AUCTION;
 
 	const isUserCaptain = getTeamFromTournamentData?.some(
 		(team) => team.captain?.user.id === userData?.id,
 	);
 
-	const isTeamSignedIn = (
-		currentRoom: TeamBasedQualificationRoom | ParticipantBasedQualificationRoom,
+	const currentParticipant = participantsData?.find(
+		(p) => p.user.id === userData?.id,
+	);
+	const isRegisteredParticipant = !!currentParticipant;
+
+	const showActions = isAuction ? isRegisteredParticipant : isUserCaptain;
+
+	const isParticipantSignedIn = (
+		room: TeamBasedQualificationRoom | ParticipantBasedQualificationRoom,
 	) => {
+		if (isAuction) {
+			return (room as ParticipantBasedQualificationRoom).participants?.some(
+				(p) => p.user.id === userData?.id,
+			);
+		}
 		return (
-			currentRoom.tournamentType !== tournamentType.PARTICIPANT_VS &&
-			(currentRoom as TeamBasedQualificationRoom).teams?.some((team) =>
+			room.tournamentType !== tournamentType.PARTICIPANT_VS &&
+			(room as TeamBasedQualificationRoom).teams?.some((team) =>
 				team.participants.some((participant) => participant.id === userData?.id),
 			)
 		);
@@ -88,7 +103,7 @@ const QualificationRoomsPage = async ({
 								<th>Start date time (UTC+0)</th>
 								<th>Roster</th>
 								<th>Referee</th>
-								{isUserCaptain && <th>Actions</th>}
+								{showActions && <th>Actions</th>}
 							</tr>
 						</thead>
 						<tbody>
@@ -96,32 +111,25 @@ const QualificationRoomsPage = async ({
 								<tr key={room.id}>
 									<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
 									<td className={"flex flex-col gap-2"}>
-										{room.tournamentType === tournamentType.PARTICIPANT_VS
-											? (
-													room as ParticipantBasedQualificationRoom
-												).participants.map((participant) => (
+										{isAuction || room.tournamentType === tournamentType.PARTICIPANT_VS
+											? (room as ParticipantBasedQualificationRoom).participants?.map(
+												(participant) => (
 													<div key={participant.id}>
 														{participant.user.username}
 													</div>
-												))
-											: (room as TeamBasedQualificationRoom).teams.map(
-													(team) => (
-														<div
-															key={team.id}
-															className={"flex gap-2 truncate"}
-														>
-															<Image
-																src={
-																	team.logoUrl || "/aim_logo.svg"
-																}
-																alt={team.name}
-																width={20}
-																height={20}
-															/>
-															{team.name}
-														</div>
-													),
-												)}
+												),
+											)
+											: (room as TeamBasedQualificationRoom).teams?.map((team) => (
+												<div key={team.id} className={"flex gap-2 truncate"}>
+													<Image
+														src={team.logoUrl || "/aim_logo.svg"}
+														alt={team.name}
+														width={20}
+														height={20}
+													/>
+													{team.name}
+												</div>
+											))}
 									</td>
 									<td>
 										{room.staffMember ? (
@@ -142,32 +150,23 @@ const QualificationRoomsPage = async ({
 											"-"
 										)}
 									</td>
-									{isUserCaptain && (
+									{showActions && (
 										<td>
-											{isUserCaptain && !isTeamSignedIn(room) ? (
+											{!isParticipantSignedIn(room) ? (
 												<form
 													action={async (_e) => {
 														"use server";
 														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
 														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
+															baseUrl: process.env.NEXT_PUBLIC_API_URL,
+															headers: { Cookie: `token=${cookie}` },
+														});
+														await signInQualificationRoomAsCaptain({
+															path: {
+																abbreviation: tournamentId,
+																roomId: room.id,
 															},
 														});
-														const { data } =
-															await signInQualificationRoomAsCaptain({
-																path: {
-																	abbreviation: tournamentId,
-																	roomId: room.id,
-																},
-															});
-
-														console.log(data, "awd");
 														await multipleRevalidatePaths([
 															"/",
 															`/dashboard/${tournamentId}/qualification-rooms`,
@@ -175,11 +174,8 @@ const QualificationRoomsPage = async ({
 														]);
 													}}
 												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign in
+													<button className="btn btn-ghost btn-xs" type={"submit"}>
+														Sign in
 													</button>
 												</form>
 											) : (

@@ -89,7 +89,10 @@ const QRoomsPage = async ({
 			})) || [];
 
 	let rostersSelectOptions: selectOptions[] = [];
-	if (getTournament?.tournamentType !== tournamentType.PARTICIPANT_VS) {
+	const isParticipantBased =
+		getTournament?.tournamentType === tournamentType.PARTICIPANT_VS ||
+		getTournament?.tournamentType === tournamentType.AUCTION;
+	if (!isParticipantBased) {
 		const { data: getTeams } = await getTeamsByTournament({
 			path: {
 				abbreviation: tournamentAbbreviation,
