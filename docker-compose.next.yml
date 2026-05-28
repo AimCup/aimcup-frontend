@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  next:
+  frontend-next:
     container_name: aimcup-next
     build:
       context: .

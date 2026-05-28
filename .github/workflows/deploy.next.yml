@@ -28,7 +28,7 @@ jobs:
             - name: Generate API client
               run: npm run openapi-ts
             - name: Build and deploy to Next environment
-              run: docker-compose -f docker-compose.next.yml up -d --build
+              run: docker compose -p aimcup-frontend-next -f docker-compose.next.yml up -d --build
               env:
                 NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_API_URL }}
                 NEXT_PUBLIC_URL: ${{ secrets.NEXT_URL }}
