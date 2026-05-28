@@ -34,10 +34,10 @@ const BracketEditorPage = async ({
   const tournamentData = tournamentRes.ok ? await tournamentRes.json() : null;
   const hasSwiss = (stagesRes.data ?? []).some((s) => s.stageType?.startsWith("SWISS"));
   const teams = teamsRes.data ?? [];
-  const numSwissTeams = (tournamentData as any)?.swissTeams ?? (teams.length > 0 ? teams.length : 16);
-  const numTeams = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
-  const directSeeds = (tournamentData as any)?.numQualifiers ?? undefined;
-  const playInTeams = (tournamentData as any)?.playInTeams ?? undefined;
+  const numSwissTeams: number = tournamentData?.swissTeams ?? (teams.length > 0 ? teams.length : 16);
+  const numTeams: number = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
+  const directSeeds: number | undefined = tournamentData?.numQualifiers ?? undefined;
+  const playInTeams: number | undefined = tournamentData?.playInTeams ?? undefined;
 
   const swissRounds = getSwissConfig(numTeams);
   const R1_SLOTS = swissRounds[0].pools[0].matches.map((m, i) => ({
@@ -49,8 +49,9 @@ const BracketEditorPage = async ({
   // Build seed → team name map
   const seedMap = new Map<number, string>();
   for (const team of teams) {
-    if ((team as any).seed != null) {
-      seedMap.set((team as any).seed as number, team.name);
+    const teamSeed = (team as { seed?: number }).seed;
+    if (teamSeed != null) {
+      seedMap.set(teamSeed, team.name);
     }
   }
 

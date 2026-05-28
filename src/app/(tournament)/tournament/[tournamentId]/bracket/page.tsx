@@ -31,10 +31,10 @@ const BracketPage = async ({ params }: { params: { tournamentId: string } }) => 
   const teams = teamsRes.data ?? [];
 
   const hasSwiss = stages.some((s) => s.stageType?.startsWith("SWISS"));
-  const numSwissTeams = (tournamentData as any)?.swissTeams ?? (teams.length > 0 ? teams.length : 16);
-  const numTeams = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
-  const directSeeds = (tournamentData as any)?.numQualifiers ?? undefined;
-  const playInTeams = (tournamentData as any)?.playInTeams ?? undefined;
+  const numSwissTeams: number = tournamentData?.swissTeams ?? (teams.length > 0 ? teams.length : 16);
+  const numTeams: number = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
+  const directSeeds: number | undefined = tournamentData?.numQualifiers ?? undefined;
+  const playInTeams: number | undefined = tournamentData?.playInTeams ?? undefined;
 
   return (
     <Section id="bracket" className="flex-col">

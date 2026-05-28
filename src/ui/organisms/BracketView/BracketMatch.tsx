@@ -12,8 +12,8 @@ const BracketMatch = ({ config, entry, onEdit }: BracketMatchProps) => {
   const score1 = entry?.score1 ?? null;
   const score2 = entry?.score2 ?? null;
   const hasResult = score1 !== null && score2 !== null;
-  const team1Won = hasResult && score1! > score2!;
-  const team2Won = hasResult && score2! > score1!;
+  const team1Won = score1 !== null && score2 !== null && score1 > score2;
+  const team2Won = score1 !== null && score2 !== null && score2 > score1;
 
   const team1Name = entry?.team1Name ?? config.defaultLabel1;
   const team2Name = entry?.team2Name ?? config.defaultLabel2;

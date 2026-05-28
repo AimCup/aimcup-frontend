@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import type { BracketEntryDto } from "./bracketTypes";
 import BracketView from "./BracketView";
 import SwissBracketView from "../SwissBracketView/SwissBracketView";
 import { getSwissConfig } from "../SwissBracketView/swissBracketConfig";
 import { getDEConfig, getPlayInConfig } from "./bracketConfig";
 import PlayInView from "./PlayInView";
+import type { BracketEntryDto } from "./bracketTypes";
 
 type View = "swiss" | "playin" | "de";
 
