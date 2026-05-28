@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  next:
+  frontend:
     container_name: aimcup
     build:
       context: .
