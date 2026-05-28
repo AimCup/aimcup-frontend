@@ -1,7 +1,7 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { addCustomMap, deleteCustomMap, client, type modification } from "../../../client";
-import { revalidatePath } from "next/cache";
 
 export async function addCustomMapAction(
 	url: string,

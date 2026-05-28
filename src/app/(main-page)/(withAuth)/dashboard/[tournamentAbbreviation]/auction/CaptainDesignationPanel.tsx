@@ -2,9 +2,9 @@
 
 import React from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { type ParticipantResponseDto, type TeamResponseDto } from "../../../../../../../client";
 import { designateCaptainAction, removeCaptainAction, removeParticipantAction } from "@/actions/admin/auctionActions";
-import { useRouter } from "next/navigation";
 
 export default function CaptainDesignationPanel({
     participants,

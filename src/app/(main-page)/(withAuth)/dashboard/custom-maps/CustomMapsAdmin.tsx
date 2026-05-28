@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { modification } from "../../../../../../client";
-import type { CustomBeatmapResponseDto } from "../../../../../../client";
+import { modification, type CustomBeatmapResponseDto } from "../../../../../../client";
 import { addCustomMapAction, deleteCustomMapAction } from "@/actions/admin/adminCustomMapActions";
 import { Button } from "@ui/atoms/Button/Button";
 import { Input } from "@ui/atoms/Forms/Input/Input";
