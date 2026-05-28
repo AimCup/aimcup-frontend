@@ -27,6 +27,10 @@ jobs:
               run: npm run open:api:next
             - name: Generate API client
               run: npm run openapi-ts
+            - name: Prepare next stack
+              run: |
+                docker compose -p aimcup-frontend-next -f docker-compose.next.yml down --remove-orphans || true
+                docker rm -f aimcup-next 2>/dev/null || true
             - name: Build and deploy to Next environment
               run: docker compose -p aimcup-frontend-next -f docker-compose.next.yml up -d --build
               env:

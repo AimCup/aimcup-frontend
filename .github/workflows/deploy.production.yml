@@ -20,6 +20,10 @@ jobs:
         run: npm run open:api
       - name: Generate API client
         run: npm run openapi-ts
+      - name: Prepare production stack
+        run: |
+          docker compose -p aimcup-frontend-prod -f docker-compose.yml down --remove-orphans || true
+          docker rm -f aimcup 2>/dev/null || true
       - name: Build and deploy to Production environment
         run: docker compose -p aimcup-frontend-prod -f docker-compose.yml up -d --build
         env:
