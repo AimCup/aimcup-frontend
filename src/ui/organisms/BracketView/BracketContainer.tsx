@@ -4,23 +4,43 @@ import React, { useState } from "react";
 import type { BracketEntryDto } from "./bracketTypes";
 import BracketView from "./BracketView";
 import SwissBracketView from "../SwissBracketView/SwissBracketView";
+import { getSwissConfig } from "../SwissBracketView/swissBracketConfig";
+import { getDEConfig, getPlayInConfig } from "./bracketConfig";
+import PlayInView from "./PlayInView";
 
-type View = "swiss" | "de";
+type View = "swiss" | "playin" | "de";
 
 type BracketContainerProps = {
   entries: BracketEntryDto[];
   hasSwiss: boolean;
+  numTeams?: number;
+  numSwissTeams?: number;
+  directSeeds?: number;
+  playInTeams?: number;
   onEdit?: (slotId: string) => void;
 };
 
-const BracketContainer = ({ entries, hasSwiss, onEdit }: BracketContainerProps) => {
-  const [view, setView] = useState<View>(hasSwiss ? "swiss" : "de");
+const BracketContainer = ({ entries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams, onEdit }: BracketContainerProps) => {
+  const n = numTeams && numTeams > 0 ? numTeams : 16;
+  const sn = numSwissTeams && numSwissTeams > 0 ? numSwissTeams : n;
+  const swissRounds = getSwissConfig(sn);
+  const deConfig = getDEConfig(n);
+  const deFirstRound = deConfig.upperBracket[0]?.roundName ?? "Quarter Finals";
+  const playInConfig = (directSeeds != null && playInTeams != null)
+    ? getPlayInConfig(directSeeds, playInTeams, n)
+    : null;
+
+  const defaultView: View = hasSwiss ? "swiss" : playInConfig ? "playin" : "de";
+  const [view, setView] = useState<View>(defaultView);
 
   const views = [
     ...(hasSwiss
-      ? [{ id: "swiss" as View, label: "Swiss Stage", sub: "Rounds 1–5 · 16 teams" }]
+      ? [{ id: "swiss" as View, label: "Swiss Stage", sub: `Rounds 1–5 · ${sn} teams` }]
       : []),
-    { id: "de" as View, label: "Double Elimination", sub: "QF → Grand Final · 8 teams" },
+    ...(playInConfig
+      ? [{ id: "playin" as View, label: "Play-In", sub: `${playInTeams} teams · ${playInConfig.playInSpots} DE spot${playInConfig.playInSpots > 1 ? "s" : ""}` }]
+      : []),
+    { id: "de" as View, label: "Double Elimination", sub: `${deFirstRound} → Grand Final · ${n} teams` },
   ];
 
   return (
@@ -44,11 +64,11 @@ const BracketContainer = ({ entries, hasSwiss, onEdit }: BracketContainerProps) 
         </div>
       )}
 
-      {view === "swiss" ? (
-        <SwissBracketView entries={entries} onEdit={onEdit} />
-      ) : (
-        <BracketView entries={entries} onEdit={onEdit} />
+      {view === "swiss" && <SwissBracketView entries={entries} rounds={swissRounds} onEdit={onEdit} />}
+      {view === "playin" && playInConfig && (
+        <PlayInView config={playInConfig} entries={entries} bracketSize={n} onEdit={onEdit} />
       )}
+      {view === "de" && <BracketView entries={entries} onEdit={onEdit} deConfig={deConfig} />}
     </div>
   );
 };

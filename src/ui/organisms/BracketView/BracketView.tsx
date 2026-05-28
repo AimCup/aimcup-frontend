@@ -6,15 +6,14 @@ import {
   LOWER_BRACKET,
   GRAND_FINAL,
   type BracketRoundConfig,
+  type DEBracketConfig,
 } from "./bracketConfig";
 
 type BracketViewProps = {
   entries: BracketEntryDto[];
   onEdit?: (slotId: string) => void;
+  deConfig?: DEBracketConfig;
 };
-
-const UB_SLOT_COUNT = 4;
-const LB_SLOT_COUNT = 2;
 const MATCH_SLOT_H = 88;
 
 function RoundColumn({
@@ -47,8 +46,14 @@ function RoundColumn({
   );
 }
 
-const BracketView = ({ entries, onEdit }: BracketViewProps) => {
+const BracketView = ({ entries, onEdit, deConfig }: BracketViewProps) => {
   const entryMap = new Map<string, BracketEntryDto>(entries.map((e) => [e.slotId, e]));
+
+  const ub = deConfig?.upperBracket ?? UPPER_BRACKET;
+  const lb = deConfig?.lowerBracket ?? LOWER_BRACKET;
+  const gf = deConfig?.grandFinal ?? GRAND_FINAL;
+  const ubSlotCount = ub[0]?.matches.length ?? 4;
+  const lbSlotCount = lb[0]?.matches.length ?? 2;
 
   return (
     <div className="w-full overflow-x-auto pb-4">
@@ -58,8 +63,8 @@ const BracketView = ({ entries, onEdit }: BracketViewProps) => {
           Upper Bracket
         </h2>
         <div className="flex gap-8 items-stretch">
-          {UPPER_BRACKET.map((round) => (
-            <RoundColumn key={round.roundName} round={round} entryMap={entryMap} totalSlots={UB_SLOT_COUNT} onEdit={onEdit} />
+          {ub.map((round) => (
+            <RoundColumn key={round.roundName} round={round} entryMap={entryMap} totalSlots={ubSlotCount} onEdit={onEdit} />
           ))}
         </div>
       </div>
@@ -73,8 +78,8 @@ const BracketView = ({ entries, onEdit }: BracketViewProps) => {
             Lower Bracket
           </h2>
           <div className="flex gap-8 items-stretch">
-            {LOWER_BRACKET.map((round) => (
-              <RoundColumn key={round.roundName} round={round} entryMap={entryMap} totalSlots={LB_SLOT_COUNT} onEdit={onEdit} />
+            {lb.map((round) => (
+              <RoundColumn key={round.roundName} round={round} entryMap={entryMap} totalSlots={lbSlotCount} onEdit={onEdit} />
             ))}
           </div>
         </div>
@@ -83,7 +88,7 @@ const BracketView = ({ entries, onEdit }: BracketViewProps) => {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-4">
             Grand Final
           </p>
-          <BracketMatch config={GRAND_FINAL} entry={entryMap.get(GRAND_FINAL.matchId) ?? null} onEdit={onEdit} />
+          <BracketMatch config={gf} entry={entryMap.get(gf.matchId) ?? null} onEdit={onEdit} />
         </div>
       </div>
     </div>

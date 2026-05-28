@@ -5,6 +5,7 @@ import { SWISS_ROUNDS, type SwissPoolConfig, type SwissRoundConfig } from "./swi
 
 type SwissBracketViewProps = {
   entries: BracketEntryDto[];
+  rounds?: SwissRoundConfig[];
   onEdit?: (slotId: string) => void;
 };
 
@@ -94,14 +95,15 @@ function RoundColumn({
   );
 }
 
-const SwissBracketView = ({ entries, onEdit }: SwissBracketViewProps) => {
+const SwissBracketView = ({ entries, rounds: roundsProp, onEdit }: SwissBracketViewProps) => {
   const entryMap = new Map<string, BracketEntryDto>(entries.map((e) => [e.slotId, e]));
+  const rounds = roundsProp ?? SWISS_ROUNDS;
 
   return (
     <div className="w-full overflow-x-auto pb-4">
       <div className="flex gap-8 items-start min-w-max">
-        {SWISS_ROUNDS.map((round, i) => {
-          const prev = SWISS_ROUNDS[i - 1];
+        {rounds.map((round, i) => {
+          const prev = rounds[i - 1];
           const weekChanged = i > 0 && prev.week !== round.week;
           return (
             <RoundColumn

@@ -4,19 +4,22 @@ import React, { useRef, useState } from "react";
 import type { BracketEntryDto } from "@ui/organisms/BracketView/bracketTypes";
 import BracketContainer from "@ui/organisms/BracketView/BracketContainer";
 import { upsertBracketEntryAction } from "@/actions/admin/adminBracketEntryActions";
-import { SWISS_ROUNDS } from "@ui/organisms/SwissBracketView/swissBracketConfig";
+import { getSwissConfig, type SwissRoundConfig } from "@ui/organisms/SwissBracketView/swissBracketConfig";
+import { getDEConfig, type DEBracketConfig } from "@ui/organisms/BracketView/bracketConfig";
 
 type BracketEditorProps = {
   tournamentAbb: string;
   initialEntries: BracketEntryDto[];
   hasSwiss: boolean;
+  numTeams?: number;
+  numSwissTeams?: number;
+  directSeeds?: number;
+  playInTeams?: number;
 };
 
-// Build a map from "W AC-SWx" / "L AC-SWx" → {matchId, position: 1|2}
-// so we know where winners/losers advance to.
-const ADVANCEMENT_MAP = (() => {
+function buildAdvancementMap(rounds: SwissRoundConfig[]) {
   const map = new Map<string, { matchId: string; position: 1 | 2 }>();
-  for (const round of SWISS_ROUNDS) {
+  for (const round of rounds) {
     for (const pool of round.pools) {
       for (const match of pool.matches) {
         if (match.defaultLabel1) map.set(match.defaultLabel1, { matchId: match.matchId, position: 1 });
@@ -25,9 +28,33 @@ const ADVANCEMENT_MAP = (() => {
     }
   }
   return map;
-})();
+}
 
-export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss }: BracketEditorProps) => {
+function buildDEAdvancementMap(de: DEBracketConfig) {
+  const map = new Map<string, { matchId: string; position: 1 | 2 }>();
+  const allRounds = [
+    ...de.upperBracket,
+    ...de.lowerBracket,
+    { roundName: "Grand Final", matches: [de.grandFinal] },
+  ];
+  for (const round of allRounds) {
+    for (const match of round.matches) {
+      if (match.defaultLabel1) map.set(match.defaultLabel1, { matchId: match.matchId, position: 1 });
+      if (match.defaultLabel2) map.set(match.defaultLabel2, { matchId: match.matchId, position: 2 });
+    }
+  }
+  return map;
+}
+
+export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams }: BracketEditorProps) => {
+  const n = numTeams && numTeams > 0 ? numTeams : 16;
+  const sn = numSwissTeams && numSwissTeams > 0 ? numSwissTeams : n;
+  const swissRounds = getSwissConfig(sn);
+  const deConfig = getDEConfig(n);
+  const advancementMap = new Map([
+    ...buildAdvancementMap(swissRounds),
+    ...buildDEAdvancementMap(deConfig),
+  ]);
   const [entries, setEntries] = useState<BracketEntryDto[]>(initialEntries);
   const [selected, setSelected] = useState<BracketEntryDto | null>(null);
   const [form, setForm] = useState({ team1Name: "", team2Name: "", score1: "", score2: "", isFinished: false });
@@ -54,7 +81,7 @@ export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss }: Brack
 
     for (const { label, teamName } of targets) {
       if (!teamName) continue;
-      const target = ADVANCEMENT_MAP.get(label);
+      const target = advancementMap.get(label);
       if (!target) continue;
 
       const existing = currentEntries.find((e) => e.slotId === target.matchId);
@@ -122,7 +149,7 @@ export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss }: Brack
 
   return (
     <>
-      <BracketContainer entries={entries} hasSwiss={hasSwiss} onEdit={openEdit} />
+      <BracketContainer entries={entries} hasSwiss={hasSwiss} numTeams={n} numSwissTeams={sn} directSeeds={directSeeds} playInTeams={playInTeams} onEdit={openEdit} />
 
       <dialog ref={dialogRef} className="modal">
         <div className="modal-box max-w-sm">

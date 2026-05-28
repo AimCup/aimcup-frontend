@@ -3,15 +3,8 @@ import { cookies } from "next/headers";
 import { client, getStages, getTeamsByTournament } from "../../../../../../../client";
 import { BracketEditor } from "./BracketEditor";
 import type { BracketEntryDto } from "@ui/organisms/BracketView/bracketTypes";
-import { SWISS_ROUNDS } from "@ui/organisms/SwissBracketView/swissBracketConfig";
+import { getSwissConfig } from "@ui/organisms/SwissBracketView/swissBracketConfig";
 import { upsertBracketEntryAction } from "@/actions/admin/adminBracketEntryActions";
-
-// R1 seeding: index i → seed (i+1) vs seed (16-i), matches AC-SW1..AC-SW8
-const R1_SLOTS = SWISS_ROUNDS[0].pools[0].matches.map((m, i) => ({
-  matchId: m.matchId,
-  seed1: i + 1,
-  seed2: 16 - i,
-}));
 
 const BracketEditorPage = async ({
   params: { tournamentAbbreviation },
@@ -24,9 +17,13 @@ const BracketEditorPage = async ({
     headers: { Cookie: `token=${cookie}` },
   });
 
-  const [entriesRes, stagesRes, teamsRes] = await Promise.all([
+  const [entriesRes, tournamentRes, stagesRes, teamsRes] = await Promise.all([
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournamentAbbreviation}/bracket-entries`,
+      { headers: { Cookie: `token=${cookie}` }, cache: "no-store" },
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/tournaments/${tournamentAbbreviation}`,
       { headers: { Cookie: `token=${cookie}` }, cache: "no-store" },
     ),
     getStages({ path: { abbreviation: tournamentAbbreviation } }),
@@ -34,10 +31,22 @@ const BracketEditorPage = async ({
   ]);
 
   let entries: BracketEntryDto[] = entriesRes.ok ? await entriesRes.json() : [];
+  const tournamentData = tournamentRes.ok ? await tournamentRes.json() : null;
   const hasSwiss = (stagesRes.data ?? []).some((s) => s.stageType?.startsWith("SWISS"));
   const teams = teamsRes.data ?? [];
+  const numSwissTeams = (tournamentData as any)?.swissTeams ?? (teams.length > 0 ? teams.length : 16);
+  const numTeams = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
+  const directSeeds = (tournamentData as any)?.numQualifiers ?? undefined;
+  const playInTeams = (tournamentData as any)?.playInTeams ?? undefined;
 
-  // Build seed → team name map (seed field added in V1_40 era)
+  const swissRounds = getSwissConfig(numTeams);
+  const R1_SLOTS = swissRounds[0].pools[0].matches.map((m, i) => ({
+    matchId: m.matchId,
+    seed1: i + 1,
+    seed2: numTeams - i,
+  }));
+
+  // Build seed → team name map
   const seedMap = new Map<number, string>();
   for (const team of teams) {
     if ((team as any).seed != null) {
@@ -76,6 +85,10 @@ const BracketEditorPage = async ({
         tournamentAbb={tournamentAbbreviation}
         initialEntries={entries}
         hasSwiss={hasSwiss}
+        numTeams={numTeams}
+        numSwissTeams={numSwissTeams}
+        directSeeds={directSeeds}
+        playInTeams={playInTeams}
       />
     </div>
   );
