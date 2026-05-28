@@ -133,6 +133,72 @@ const SettingsPage = () => {
 							} as TournamentResponseDto));
 						}}
 					/>
+					{(tournamentData?.tournamentType === "TEAM_VS" ||
+						tournamentData?.tournamentType === "INTERNATIONAL" ||
+						tournamentData?.tournamentType === "AUCTION") && (
+						<>
+							<Input
+								name={"matchSize"}
+								label={"Match size (e.g. 4 for 4v4)"}
+								type={"number"}
+								value={String(tournamentData?.matchSize || "")}
+								onChange={(e) => {
+									setTournamentData((prev) => ({
+										...prev,
+										matchSize: e.target.value ? Number(e.target.value) : undefined,
+									} as TournamentResponseDto));
+								}}
+							/>
+							<Input
+								name={"swissTeams"}
+								label={"Swiss stage team count"}
+								type={"number"}
+								value={String((tournamentData as any)?.swissTeams || "")}
+								onChange={(e) => {
+									setTournamentData((prev) => ({
+										...prev,
+										swissTeams: e.target.value ? Number(e.target.value) : undefined,
+									} as any));
+								}}
+							/>
+							<Input
+								name={"bracketSize"}
+								label={"DE bracket size (8, 16, or 32)"}
+								type={"number"}
+								value={String((tournamentData as any)?.bracketSize || "")}
+								onChange={(e) => {
+									setTournamentData((prev) => ({
+										...prev,
+										bracketSize: e.target.value ? Number(e.target.value) : undefined,
+									} as any));
+								}}
+							/>
+							<Input
+								name={"numQualifiers"}
+								label={"Direct seeds (teams advancing straight to DE, e.g. 7)"}
+								type={"number"}
+								value={String((tournamentData as any)?.numQualifiers || "")}
+								onChange={(e) => {
+									setTournamentData((prev) => ({
+										...prev,
+										numQualifiers: e.target.value ? Number(e.target.value) : undefined,
+									} as any));
+								}}
+							/>
+							<Input
+								name={"playInTeams"}
+								label={"Play-In teams (bubble teams in SE bracket, e.g. 6)"}
+								type={"number"}
+								value={String((tournamentData as any)?.playInTeams || "")}
+								onChange={(e) => {
+									setTournamentData((prev) => ({
+										...prev,
+										playInTeams: e.target.value ? Number(e.target.value) : undefined,
+									} as any));
+								}}
+							/>
+						</>
+					)}
 					<h3 className={"mb-3  text-xl font-bold leading-relaxed"}>Prize pool</h3>
 					<div className="grid grid-cols-3 gap-4">
 						<Input

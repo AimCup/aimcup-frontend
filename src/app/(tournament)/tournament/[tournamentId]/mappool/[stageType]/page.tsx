@@ -104,6 +104,9 @@ const SingleTournamentMappool = async ({
 				</div>
 
 				<div className="flex flex-col gap-3">
+					{!getMappoolByStageData && (
+						<p className="text-gray-400">This mappool has not been released yet.</p>
+					)}
 					{allBeatmaps.map((map) => (
 						<BeatmapListItem
 							key={map.id}

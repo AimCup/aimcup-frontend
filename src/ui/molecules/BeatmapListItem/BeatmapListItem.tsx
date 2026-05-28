@@ -99,7 +99,12 @@ export const BeatmapListItem = ({
 	};
 
 	return (
-		<div className="group relative flex w-full overflow-hidden rounded-lg bg-gray-700/80 backdrop-blur-sm shadow-md transition-all hover:shadow-lg hover:bg-gray-700/90">
+		<Link
+			href={href}
+			target="_blank"
+			rel="noopener noreferrer"
+			className="group relative flex w-full overflow-hidden rounded-lg bg-gray-700/80 backdrop-blur-sm shadow-md transition-all hover:shadow-lg hover:bg-gray-700/90"
+		>
 			{/* Gradient overlay based on modification - starts from right edge of image */}
 			<div
 				className="absolute top-0 bottom-0 pointer-events-none z-10"
@@ -109,27 +114,15 @@ export const BeatmapListItem = ({
 					background: getModificationGradient(modification),
 				}}
 			/>
-			<Link
-				href={href}
-				target="_blank"
-				rel="noopener noreferrer"
-				className="absolute inset-0 z-0"
-			/>
 			{/* Left section with background image */}
-			<Link
-				href={href}
-				target="_blank"
-				rel="noopener noreferrer"
-				onClick={(e) => e.stopPropagation()}
-				className="relative flex-shrink-0 w-64 overflow-hidden rounded-l-lg"
-			>
+			<div className="relative flex-shrink-0 w-64 overflow-hidden rounded-l-lg">
 				<Image
 					src={img || "/placeholder.png"}
 					alt={title}
 					fill
 					className="object-cover brightness-70 group-hover:brightness-85 transition-all"
 				/>
-			</Link>
+			</div>
 
 			{/* Center section with song info */}
 			<div className="flex-1 flex flex-col justify-center px-6 py-4 min-w-0 relative z-0">
@@ -208,7 +201,7 @@ export const BeatmapListItem = ({
 					</div>
 				</div>
 			</div>
-		</div>
+		</Link>
 	);
 };
 

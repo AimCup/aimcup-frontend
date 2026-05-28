@@ -19,7 +19,15 @@ const DashboardPage = async () => {
 
 	return (
 		<div className={"w-full"}>
-			<h1 className={"my-2 text-lg"}>Select tournament</h1>
+			<div className={"mb-4 flex items-center gap-4"}>
+				<h1 className={"text-lg"}>Select tournament</h1>
+				<Link
+					href="/dashboard/custom-maps"
+					className={"rounded-md bg-base-300 px-3 py-1 text-sm font-medium transition-all hover:brightness-110"}
+				>
+					Custom Maps
+				</Link>
+			</div>
 			<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
 				<CreateTournamentModal />
 				{tournaments?.map((tournament) => (

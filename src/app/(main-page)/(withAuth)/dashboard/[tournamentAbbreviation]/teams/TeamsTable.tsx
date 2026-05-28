@@ -29,26 +29,18 @@ export const TeamsTable = ({
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 
-	// Filter out captain from participants for compact view
 	const getNonCaptainParticipants = (team: TeamResponseDto): ParticipantResponseDto[] => {
-		return team.participants.filter(
-			(participant) => participant.id !== team.captain.id,
-		);
+		return team.participants.filter((participant) => participant.id !== team.captain.id);
 	};
 
 	const handleChangeTeamStatus = async (teamId: string, status: "ACCEPTED" | "REJECTED") => {
 		startTransition(async () => {
 			const result = await changeTeamStatusAction(tournamentAbbreviation, teamId, status);
 			if (result.status) {
-				toast.success(`Team status changed to ${status}`, {
-					duration: 3000,
-				});
+				toast.success(`Team status changed to ${status}`, { duration: 3000 });
 				router.refresh();
 			} else {
-				const errorMsg: string = result.errorMessage || "Failed to change team status";
-				toast.error(errorMsg, {
-					duration: 3000,
-				});
+				toast.error(result.errorMessage || "Failed to change team status", { duration: 3000 });
 			}
 		});
 	};
@@ -120,12 +112,9 @@ export const TeamsTable = ({
 									</td>
 									<td>
 										{isCompact && nonCaptainParticipants.length > 0 ? (
-											<AvatarGroup
-												participants={nonCaptainParticipants}
-												max={4}
-											/>
+											<AvatarGroup participants={nonCaptainParticipants} max={4} />
 										) : (
-											<div className={"flex flex-col gap-2"}>
+											<div className={"flex flex-col gap-1"}>
 												{team.participants.map((participant) => (
 													<div key={participant.id} className={"flex items-center gap-2"}>
 														<div className="avatar">
@@ -138,7 +127,12 @@ export const TeamsTable = ({
 																/>
 															</div>
 														</div>
-														{participant.user.username}
+														<span>{participant.user.username}</span>
+														{participant.pricePaid != null && (
+															<span className="badge badge-outline badge-sm text-xs">
+																{participant.pricePaid.toLocaleString('en-US')} pts
+															</span>
+														)}
 													</div>
 												))}
 											</div>
@@ -166,10 +160,7 @@ export const TeamsTable = ({
 												</>
 											)}
 											{canUpdateTeam && (
-												<EditTeamModal
-													tournamentAbb={tournamentAbbreviation}
-													team={team}
-												/>
+												<EditTeamModal tournamentAbb={tournamentAbbreviation} team={team} />
 											)}
 											{canDeleteTeam && (
 												<DeleteTeamModal
@@ -189,4 +180,3 @@ export const TeamsTable = ({
 		</div>
 	);
 };
-

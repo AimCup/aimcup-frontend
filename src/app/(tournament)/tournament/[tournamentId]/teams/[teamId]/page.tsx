@@ -5,6 +5,7 @@ import {
 	client,
 	getTeamsById,
 	getTournamentByAbbreviation,
+	tournamentType,
 } from "../../../../../../../client";
 import Section from "@ui/atoms/Section/Section";
 import { getUser } from "@/actions/public/getUserAction";
@@ -44,6 +45,7 @@ const TeamPage = async ({
 
 	const isCaptain = getTeam?.captain.user.id === userData?.id;
 	const isRegistrationStage = tournament?.currentStage === "REGISTRATION";
+	const isAuction = tournament?.tournamentType === tournamentType.AUCTION;
 
 	return (
 		<Section className={"flex-col"}>
@@ -120,6 +122,7 @@ const TeamPage = async ({
 					<thead>
 						<tr>
 							<th>Username</th>
+							{isAuction && <th>Price Paid</th>}
 							{isCaptain && <th>actions</th>}
 						</tr>
 					</thead>
@@ -145,6 +148,9 @@ const TeamPage = async ({
 										</div>
 									</div>
 								</td>
+								{isAuction && (
+									<td>{participant.pricePaid ?? "—"}</td>
+								)}
 								{isCaptain && (
 									<th>
 										{participant.user.id !== userData?.id && ( // if not captain
