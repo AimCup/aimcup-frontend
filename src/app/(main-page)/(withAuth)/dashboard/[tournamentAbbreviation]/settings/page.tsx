@@ -5,6 +5,13 @@ import { toast } from "sonner";
 import ReactQuill from "react-quill";
 import Image from "next/image";
 import { type TournamentResponseDto } from "../../../../../../../client";
+
+type ExtendedTournament = TournamentResponseDto & {
+	swissTeams?: number;
+	bracketSize?: number;
+	numQualifiers?: number;
+	playInTeams?: number;
+};
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editTournamentSchema } from "@/formSchemas/editTournamentSchema";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -153,48 +160,48 @@ const SettingsPage = () => {
 								name={"swissTeams"}
 								label={"Swiss stage team count"}
 								type={"number"}
-								value={String((tournamentData as any)?.swissTeams || "")}
+								value={String((tournamentData as ExtendedTournament)?.swissTeams || "")}
 								onChange={(e) => {
 									setTournamentData((prev) => ({
 										...prev,
 										swissTeams: e.target.value ? Number(e.target.value) : undefined,
-									} as any));
+									} as ExtendedTournament));
 								}}
 							/>
 							<Input
 								name={"bracketSize"}
 								label={"DE bracket size (8, 16, or 32)"}
 								type={"number"}
-								value={String((tournamentData as any)?.bracketSize || "")}
+								value={String((tournamentData as ExtendedTournament)?.bracketSize || "")}
 								onChange={(e) => {
 									setTournamentData((prev) => ({
 										...prev,
 										bracketSize: e.target.value ? Number(e.target.value) : undefined,
-									} as any));
+									} as ExtendedTournament));
 								}}
 							/>
 							<Input
 								name={"numQualifiers"}
 								label={"Direct seeds (teams advancing straight to DE, e.g. 7)"}
 								type={"number"}
-								value={String((tournamentData as any)?.numQualifiers || "")}
+								value={String((tournamentData as ExtendedTournament)?.numQualifiers || "")}
 								onChange={(e) => {
 									setTournamentData((prev) => ({
 										...prev,
 										numQualifiers: e.target.value ? Number(e.target.value) : undefined,
-									} as any));
+									} as ExtendedTournament));
 								}}
 							/>
 							<Input
 								name={"playInTeams"}
 								label={"Play-In teams (bubble teams in SE bracket, e.g. 6)"}
 								type={"number"}
-								value={String((tournamentData as any)?.playInTeams || "")}
+								value={String((tournamentData as ExtendedTournament)?.playInTeams || "")}
 								onChange={(e) => {
 									setTournamentData((prev) => ({
 										...prev,
 										playInTeams: e.target.value ? Number(e.target.value) : undefined,
-									} as any));
+									} as ExtendedTournament));
 								}}
 							/>
 						</>
