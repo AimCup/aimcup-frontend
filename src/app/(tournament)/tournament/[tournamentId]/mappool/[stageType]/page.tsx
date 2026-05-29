@@ -118,6 +118,8 @@ const SingleTournamentMappool = async ({
 							modification={map.modification}
 							position={map.position}
 							isCustom={map.isCustom}
+							isCustomSong={map.isCustomSong}
+							playCount={map.playCount}
 							img={map.normalCover}
 							mapInformation={{
 								stars: map.beatmapStatistics.starRating,

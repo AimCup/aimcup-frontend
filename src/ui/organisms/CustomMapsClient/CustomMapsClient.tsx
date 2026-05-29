@@ -23,6 +23,7 @@ export const CustomMapsClient = ({ maps }: CustomMapsClientProps) => {
 	const [search, setSearch] = useState("");
 	const [selectedEditions, setSelectedEditions] = useState<Set<string>>(new Set());
 	const [selectedMods, setSelectedMods] = useState<Set<string>>(new Set());
+	const [customSongOnly, setCustomSongOnly] = useState(false);
 	const [starSort, setStarSort] = useState<"asc" | "desc" | null>(null);
 
 	const editions = useMemo(() => {
@@ -71,6 +72,10 @@ export const CustomMapsClient = ({ maps }: CustomMapsClientProps) => {
 			result = result.filter((m) => m.modification && selectedMods.has(m.modification));
 		}
 
+		if (customSongOnly) {
+			result = result.filter((m) => m.isCustomSong);
+		}
+
 		if (starSort !== null) {
 			result = [...result].sort((a, b) => {
 				const aStars = a.beatmapStatistics?.starRating ?? 0;
@@ -80,7 +85,7 @@ export const CustomMapsClient = ({ maps }: CustomMapsClientProps) => {
 		}
 
 		return result;
-	}, [maps, search, selectedEditions, selectedMods, starSort]);
+	}, [maps, search, selectedEditions, selectedMods, customSongOnly, starSort]);
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -132,6 +137,18 @@ export const CustomMapsClient = ({ maps }: CustomMapsClientProps) => {
 						))}
 					</div>
 
+					{/* Custom song filter */}
+					<button
+						onClick={() => setCustomSongOnly((v) => !v)}
+						className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
+							customSongOnly
+								? "bg-mintGreen text-black"
+								: "bg-gray-700 text-gray-300 hover:bg-gray-600"
+						}`}
+					>
+						🎵 Original only
+					</button>
+
 					{/* Star sort */}
 					<button
 						onClick={cycleStarSort}
@@ -164,6 +181,8 @@ export const CustomMapsClient = ({ maps }: CustomMapsClientProps) => {
 						modification={map.modification}
 						position={map.position}
 						isCustom={map.isCustom}
+						isCustomSong={map.isCustomSong}
+						playCount={map.playCount}
 						img={map.normalCover}
 						mapInformation={{
 							stars: map.beatmapStatistics.starRating,

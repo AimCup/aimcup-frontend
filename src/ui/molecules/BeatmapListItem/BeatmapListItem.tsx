@@ -14,6 +14,8 @@ interface BeatmapListItemProps {
 	modification?: BeatmapModificationResponseDto["modification"];
 	position: number;
 	isCustom: boolean;
+	isCustomSong?: boolean;
+	playCount?: number;
 	img?: string;
 	mapInformation: {
 		stars: number;
@@ -38,9 +40,17 @@ export const BeatmapListItem = ({
 	modification,
 	position,
 	isCustom,
+	isCustomSong,
+	playCount,
 	img,
 	mapInformation,
 }: BeatmapListItemProps) => {
+	const formatPlayCount = (count: number) => {
+		if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+		if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+		return count.toString();
+	};
+
 	const formatTime = (seconds: number) => {
 		const minutes = Math.floor(seconds / 60);
 		const remainingSeconds = seconds % 60;
@@ -126,8 +136,13 @@ export const BeatmapListItem = ({
 
 			{/* Center section with song info */}
 			<div className="flex-1 flex flex-col justify-center px-6 py-4 min-w-0 relative z-0">
-				<h3 className="text-white font-semibold text-lg truncate mb-0.5 relative z-10" title={title}>
-					{title}
+				<h3 className="text-white font-semibold text-lg truncate mb-0.5 relative z-10 flex items-center gap-2" title={title}>
+					<span className="truncate">{title}</span>
+					{isCustomSong && (
+						<span className="shrink-0 rounded bg-mintGreen px-1.5 py-0.5 text-xs font-bold text-black">
+							ORIGINAL
+						</span>
+					)}
 				</h3>
 				<p className="text-gray-400 text-xs truncate mb-1 relative z-10" title={`[${version}]`}>
 					[{version}]
@@ -138,6 +153,11 @@ export const BeatmapListItem = ({
 				<p className="text-gray-400 text-xs truncate relative z-10" title={`Mapped by ${creator}`}>
 					Mapped by <span className="text-gray-300">{creator}</span>
 				</p>
+				{playCount != null && (
+					<p className="text-gray-400 text-xs truncate relative z-10" title={`${playCount.toLocaleString()} plays`}>
+						▶ <span className="text-gray-300">{formatPlayCount(playCount)}</span> plays
+					</p>
+				)}
 			</div>
 
 			{/* Custom beatmap logo background - between title and modification badge */}

@@ -121,7 +121,11 @@ export const AddBeatMap = ({ tournamentAbb, mappoolId, stageType }: IAddStageFor
 						/>
 						<label className="label flex max-w-max cursor-pointer">
 							<input type="checkbox" className="checkbox mr-5" name={"isCustom"} />
-							<span className="label-text mr-auto">Is custom?</span>
+							<span className="label-text mr-auto">Is custom map?</span>
+						</label>
+						<label className="label flex max-w-max cursor-pointer">
+							<input type="checkbox" className="checkbox mr-5" name={"isCustomSong"} />
+							<span className="label-text mr-auto">Original song? <span className="text-gray-400 font-normal text-xs">(music made for this tournament)</span></span>
 						</label>
 						<Input
 							name={"tournamentAbb"}

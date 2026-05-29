@@ -5,11 +5,14 @@ import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
 import Section from "@ui/atoms/Section/Section";
 import { registerForAuctionAction } from "@/actions/public/registerForAuctionAction";
+import { discordVerifyAction } from "@/actions/public/discordVerifyAction";
 
 const AuctionRegistrationForm = ({
     tournamentId,
+    hasDiscord,
 }: {
     tournamentId: string;
+    hasDiscord: boolean;
 }) => {
     const [pending, setPending] = React.useState(false);
     const [registered, setRegistered] = React.useState(false);
@@ -103,7 +106,20 @@ const AuctionRegistrationForm = ({
                     </label>
                 </div>
 
-                <Button className="mt-2 w-max" type="submit" disabled={pending}>
+                {!hasDiscord && (
+                    <div className="flex items-center gap-3 rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-400">
+                        <span>You must connect your Discord account before registering.</span>
+                        <button
+                            type="button"
+                            onClick={() => discordVerifyAction()}
+                            className="font-semibold underline hover:text-yellow-300"
+                        >
+                            Connect Discord
+                        </button>
+                    </div>
+                )}
+
+                <Button className="mt-2 w-max" type="submit" disabled={pending || !hasDiscord}>
                     {pending ? "Registering..." : "Register"}
                 </Button>
             </form>

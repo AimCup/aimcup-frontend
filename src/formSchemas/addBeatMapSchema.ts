@@ -7,6 +7,7 @@ export const addBeatMapSchema = zod.object({
 	tournamentAbb: zod.string(),
 	mappoolId: zod.string(),
 	isCustom: zod.string().optional(),
+	isCustomSong: zod.string().optional(),
 });
 
 export type AddBeatMapSchemaType = zod.infer<typeof addBeatMapSchema>;
