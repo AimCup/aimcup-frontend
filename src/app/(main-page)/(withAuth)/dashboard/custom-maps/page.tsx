@@ -1,13 +1,9 @@
-import { cookies } from "next/headers";
-import { client, getStandaloneCustomMaps, getCustomMappoolBeatmaps } from "../../../../../../client";
+import { getCustomMappoolBeatmaps, getStandaloneCustomMaps } from "../../../../../../client";
 import { CustomMapsAdmin } from "./CustomMapsAdmin";
+import { configureApiClient } from "@/lib/guards/staffMemberGuard";
 
 const CustomMapsAdminPage = async () => {
-	const cookie = cookies().get("JWT")?.value;
-	client.setConfig({
-		baseUrl: process.env.NEXT_PUBLIC_API_URL,
-		headers: { Cookie: `token=${cookie}` },
-	});
+	configureApiClient();
 
 	const [{ data: maps }, { data: mappoolMaps }] = await Promise.all([
 		getStandaloneCustomMaps(),

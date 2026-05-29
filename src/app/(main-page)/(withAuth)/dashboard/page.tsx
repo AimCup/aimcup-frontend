@@ -1,35 +1,33 @@
 import React from "react";
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { client, getTournaments } from "../../../../../client";
+import { getUserTournamentStaffMember } from "../../../../../client";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
+import { configureApiClient, isGlobalAdmin } from "@/lib/guards/staffMemberGuard";
 
 const DashboardPage = async () => {
-	const cookie = cookies().get("JWT")?.value;
-	// configure internal service client
-	client.setConfig({
-		// set default base url for requests
-		baseUrl: process.env.NEXT_PUBLIC_API_URL,
-		// set default headers for requests
-		headers: {
-			Cookie: `token=${cookie}`,
-		},
-	});
-	const { data: tournaments } = await getTournaments();
+	configureApiClient();
+	const [{ data: tournaments }, isAdmin] = await Promise.all([
+		getUserTournamentStaffMember(),
+		isGlobalAdmin(),
+	]);
 
 	return (
 		<div className={"w-full"}>
 			<div className={"mb-4 flex items-center gap-4"}>
 				<h1 className={"text-lg"}>Select tournament</h1>
-				<Link
-					href="/dashboard/custom-maps"
-					className={"rounded-md bg-base-300 px-3 py-1 text-sm font-medium transition-all hover:brightness-110"}
-				>
-					Custom Maps
-				</Link>
+				{isAdmin && (
+					<Link
+						href="/dashboard/custom-maps"
+						className={
+							"rounded-md bg-base-300 px-3 py-1 text-sm font-medium transition-all hover:brightness-110"
+						}
+					>
+						Custom Maps
+					</Link>
+				)}
 			</div>
 			<div className={"grid gap-4 sm:grid-cols-1 lg:grid-cols-3"}>
-				<CreateTournamentModal />
+				{isAdmin && <CreateTournamentModal />}
 				{tournaments?.map((tournament) => (
 					<Link
 						href={`/dashboard/${tournament.abbreviation}`}
