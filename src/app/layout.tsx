@@ -1,14 +1,11 @@
 import "./globals.css";
-import type { Metadata } from "next";
 import { Montserrat } from "@next/font/google";
 import { Toaster } from "sonner";
 import { cookies } from "next/headers";
 import { client } from "../../client";
+import { buildDefaultMetadata } from "@/lib/metadata/site";
 
-export const metadata: Metadata = {
-	title: "AimCup",
-	description: "description",
-};
+export const metadata = buildDefaultMetadata();
 
 const monserrat = Montserrat({
 	weight: ["400", "500", "600", "700"],

@@ -7,6 +7,9 @@ import { client } from "../../../client";
 import { TournamentList } from "@ui/organisms/TournamentList/TournamentList";
 import { Loading } from "@ui/atoms/Loading/Loading";
 import Section from "@ui/atoms/Section/Section";
+import { buildHomeMetadata } from "@/lib/metadata/site";
+
+export const metadata = buildHomeMetadata();
 
 const Main = async () => {
 	const cookie = cookies().get("JWT")?.value;

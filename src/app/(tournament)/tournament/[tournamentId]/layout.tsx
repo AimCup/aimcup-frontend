@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import { cookies } from "next/headers";
 import {
@@ -13,6 +14,24 @@ import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
+import { buildTournamentMetadata } from "@/lib/metadata/site";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: { tournamentId: string };
+}): Promise<Metadata> {
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+	});
+	const { data } = await getTournamentByAbbreviation({
+		path: { abbreviation: params.tournamentId },
+	});
+	if (!data) {
+		return { title: "Tournament" };
+	}
+	return buildTournamentMetadata(data, params.tournamentId);
+}
 
 type ITournamentLayout = {
 	children: React.ReactNode;
