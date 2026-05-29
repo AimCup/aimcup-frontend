@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { client, verify } from "../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
 import { getUser } from "@/actions/public/getUserAction";
+import { canAccessDashboard } from "@/lib/guards/staffMemberGuard";
 import { Avatar } from "@ui/atoms/Avatar/Avatar";
 import { LogoutButton } from "@ui/atoms/LogoutButton/LogoutButton";
 
@@ -32,7 +33,7 @@ export const LoginAvatar = async () => {
 		);
 	}
 
-	const isUserRoleAdmin = userData.roles.some((role) => role.name === "ROLE_ADMIN");
+	const showDashboard = await canAccessDashboard();
 
 	return (
 		<div className="m dropdown dropdown-end dropdown-hover">
@@ -59,7 +60,7 @@ export const LoginAvatar = async () => {
 						</form>
 					</li>
 				)}
-				{isUserRoleAdmin && (
+				{showDashboard && (
 					<li>
 						<Link href={"/dashboard"}>Dashboard</Link>
 					</li>
