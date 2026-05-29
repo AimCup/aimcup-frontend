@@ -6,6 +6,7 @@ import {
 	deleteBeatmap,
 	getMappool,
 	releaseMappool,
+	updateMappoolBeatmap,
 	type stageType,
 } from "../../../../../../../../../client";
 import { stageTypeEnumToString } from "@/lib/helpers";
@@ -22,6 +23,12 @@ const StageTypePage = async ({
 		mappoolId: string;
 	};
 }) => {
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: { Cookie: `token=${cookie}` },
+	});
+
 	const { data: getMappoolData, error } = await getMappool({
 		path: {
 			stageType,
@@ -91,6 +98,7 @@ const StageTypePage = async ({
 							<th>Length</th>
 							<th>Creator</th>
 							<th>Is custom</th>
+							<th>Original song</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
@@ -132,6 +140,33 @@ const StageTypePage = async ({
 													height={20}
 												/>
 											)}
+										</td>
+										<td>
+											<form
+												action={async (_e) => {
+													"use server";
+													const cookie = cookies().get("JWT")?.value;
+													client.setConfig({
+														baseUrl: process.env.NEXT_PUBLIC_API_URL,
+														headers: { Cookie: `token=${cookie}` },
+													});
+													await updateMappoolBeatmap({
+														path: { beatmapId: beatmap.id },
+														body: { isCustomSong: !beatmap.isCustomSong },
+													});
+													await multipleRevalidatePaths([
+														"/",
+														`/dashboard/${tournamentAbbreviation}/mappool/${stageType}/${mappoolId}`,
+													]);
+												}}
+											>
+												<button
+													className={`btn btn-xs ${beatmap.isCustomSong ? "btn-success" : "btn-ghost"}`}
+													type="submit"
+												>
+													{beatmap.isCustomSong ? "Original ✓" : "Mark"}
+												</button>
+											</form>
 										</td>
 										<td>
 											<form

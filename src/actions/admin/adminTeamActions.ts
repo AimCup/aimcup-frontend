@@ -36,8 +36,8 @@ export async function updateTeamAction(formDataToSend: FormData) {
 	const apiFormData = new FormData();
 	apiFormData.append("name", name);
 	const logo = formDataToSend.get("logo");
-	if (logo instanceof File && logo.size > 0) {
-		apiFormData.append("logo", logo);
+	if (logo != null && typeof logo !== "string" && (logo as Blob).size > 0) {
+		apiFormData.append("logo", logo as Blob);
 	}
 
 	// Use fetch directly for multipart/form-data

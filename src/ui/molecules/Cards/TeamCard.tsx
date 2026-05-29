@@ -45,9 +45,19 @@ export const TeamCard = ({
 							)}
 						</div>
 
-						<span className={"overflow-hidden truncate"}>
-							{participant.user?.username}
-						</span>
+						<div className={"flex min-w-0 flex-col"}>
+							<span className={"overflow-hidden truncate font-medium"}>
+								{participant.user?.username}
+							</span>
+							<div className={"flex items-center gap-2 text-xs text-gray-400"}>
+								{participant.user?.globalRank != null && (
+									<span>#{participant.user.globalRank.toLocaleString()}</span>
+								)}
+								{participant.pricePaid != null && participant.pricePaid > 0 && (
+									<span className={"text-mintGreen font-semibold"}>{participant.pricePaid}p</span>
+								)}
+							</div>
+						</div>
 					</div>
 				))}
 			</div>

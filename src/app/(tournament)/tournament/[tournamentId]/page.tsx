@@ -9,11 +9,13 @@ import { cookies } from "next/headers";
 import {
 	client,
 	getMappoolsByTournament,
+	getParticipants,
 	getQualificationRooms,
 	getStaffMembers1,
 	getStages,
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
+	type ParticipantResponseDto,
 	type StageResponseDto,
 	type stageType,
 	type TeamResponseDto,
@@ -66,20 +68,29 @@ const SingleTournament = async ({
 	});
 
 	let teams: TeamResponseDto[] = [];
+	let participants: ParticipantResponseDto[] = [];
 	let teamSize = "1vs1"; // 1vs1 for participants
 	if (
 		tournamentTeamShowEnumAvailable.includes(
 			getTournamentByAbbreviationData?.tournamentType as tournamentType,
 		)
 	) {
-		teamSize = `${getTournamentByAbbreviationData?.minimumTeamSize}vs${getTournamentByAbbreviationData?.minimumTeamSize}`;
+		const ms = getTournamentByAbbreviationData?.matchSize;
+		teamSize = ms ? `${ms}v${ms}` : `${getTournamentByAbbreviationData?.minimumTeamSize}v${getTournamentByAbbreviationData?.minimumTeamSize}`;
 
 		const { data: teamsData } = await getTeamsByTournament({
-			path: {
-				abbreviation: params.tournamentId,
-			},
+			path: { abbreviation: params.tournamentId },
 		});
 		teams = teamsData || [];
+
+		if (getTournamentByAbbreviationData?.tournamentType === "AUCTION") {
+			const { data: participantsData } = await getParticipants({
+				path: { abbreviation: params.tournamentId },
+			});
+			participants = [...(participantsData || [])].sort(
+				(a, b) => (a.user.globalRank ?? 999999999) - (b.user.globalRank ?? 999999999),
+			);
+		}
 	}
 
 	const { data: mappools } = await getMappoolsByTournament({
@@ -121,6 +132,7 @@ const SingleTournament = async ({
 								isTeamTournament={tournamentTeamShowEnumAvailable.includes(
 									getTournamentByAbbreviationData?.tournamentType as tournamentType,
 								)}
+								tournamentType={getTournamentByAbbreviationData?.tournamentType as tournamentType}
 								shouldDisplay={
 									getTournamentByAbbreviationData?.canRegister || false
 								}
@@ -289,6 +301,41 @@ const SingleTournament = async ({
 					</div>
 				</Section>
 			) : undefined}
+			{getTournamentByAbbreviationData?.tournamentType === "AUCTION" && participants.length > 0 && (
+				<Section id="players" className={"flex-col"}>
+					<div className={"flex"}>
+						<Link
+							href={`${params.tournamentId}/players`}
+							className={"group flex cursor-pointer items-center gap-4"}
+						>
+							<h2 className={"text-4xl font-bold leading-relaxed transition-all group-hover:underline"}>
+								Players
+							</h2>
+							<LiaLongArrowAltRightSolid size={45} className={"transition-all group-hover:-rotate-45 group-hover:transform"} />
+						</Link>
+					</div>
+					<div className={"grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"}>
+						{participants.slice(0, 6).map((p) => (
+							<div key={p.id} className={"flex items-center gap-3 rounded-xl bg-tuned p-3"}>
+								<div className="avatar">
+									<div className="mask mask-squircle h-10 w-10">
+										<img src={`https://a.ppy.sh/${p.user.osuId}`} alt={p.user.username} />
+									</div>
+								</div>
+								<div className="flex flex-col">
+									<span className="font-bold">{p.user.username}</span>
+									{p.user.globalRank ? (
+										<span className="text-xs text-gray-400">#{p.user.globalRank.toLocaleString('en-US')}</span>
+									) : null}
+								</div>
+							</div>
+						))}
+					</div>
+					<Link href={`${params.tournamentId}/players`} className={"text-flatRed hover:underline"}>
+						See all players ({participants.length})
+					</Link>
+				</Section>
+			)}
 			{getTournamentByAbbreviationData?.tournamentType === "TEAM_VS" && teams.length > 0 && (
 				<Section id="teams" className={"flex-col"}>
 					<div className={"flex"}>

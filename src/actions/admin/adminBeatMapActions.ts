@@ -26,6 +26,7 @@ export async function addBeatMapAction(formData: AddBeatMapSchemaType, stageType
 			url: formData.url,
 			position: +formData.position,
 			isCustom: formData?.isCustom === "on",
+			isCustomSong: formData?.isCustomSong === "on",
 		},
 	});
 

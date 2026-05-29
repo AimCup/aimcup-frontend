@@ -25,6 +25,7 @@ const navbarRoutes: INavbarProps[] = [
 	{ name: "Rules", href: "/rules" },
 	{ name: "Qualification rooms", href: "/qualification-rooms" },
 	{ name: "Schedule", href: "/schedule" },
+	{ name: "Bracket", href: "/bracket" },
 	{
 		name: "Mappool",
 		href: "",
@@ -98,7 +99,16 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		};
 	}) as INavbarProps[];
 
-	if (tournamentData && tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS) {
+	if (tournamentData?.tournamentType === tournamentType.AUCTION) {
+		tournamentNavbarRoutes.push({
+			name: "Players",
+			href: `/tournament/${params.tournamentId}/players`,
+		});
+		tournamentNavbarRoutes.push({
+			name: "Teams",
+			href: `/tournament/${params.tournamentId}/teams`,
+		});
+	} else if (tournamentData?.tournamentType !== tournamentType.PARTICIPANT_VS) {
 		tournamentNavbarRoutes.push({
 			name: "Teams",
 			href: `/tournament/${params.tournamentId}/teams`,

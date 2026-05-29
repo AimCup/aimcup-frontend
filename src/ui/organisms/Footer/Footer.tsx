@@ -46,35 +46,46 @@ export const Footer = async () => {
 						))}
 					</div>
 					<div className={"flex flex-wrap justify-center gap-14"}>
-						<div
+						<a
+							href="https://ko-fi.com/aimcup"
+							target="_blank"
+							rel="noreferrer noopener"
 							className={
 								"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
 							}
 						>
 							<SiKofi size={"32px"} color={"#151120"} />
-						</div>
-						<div
+						</a>
+						<a
+							href="https://www.twitch.tv/aimcup"
+							target="_blank"
+							rel="noreferrer noopener"
 							className={
 								"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
 							}
 						>
 							<FaTwitch size={"32px"} color={"#151120"} />
-						</div>
-
-						<div
+						</a>
+						<a
+							href="https://discord.gg/ENTEpR8Ntv"
+							target="_blank"
+							rel="noreferrer noopener"
 							className={
 								"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
 							}
 						>
 							<FaDiscord size={"32px"} color={"#151120"} />
-						</div>
-						<div
+						</a>
+						<a
+							href="https://x.com/aim_cup"
+							target="_blank"
+							rel="noreferrer noopener"
 							className={
 								"flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary-light transition-opacity hover:opacity-80"
 							}
 						>
 							<FaXTwitter size={"32px"} color={"#151120"} />
-						</div>
+						</a>
 					</div>
 				</div>
 				<div className={"flex flex-nowrap content-center items-center py-10"}>
