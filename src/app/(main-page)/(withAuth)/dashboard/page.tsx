@@ -1,21 +1,12 @@
 import React from "react";
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { client, getTournaments } from "../../../../../client";
+import { getUserTournamentStaffMember } from "../../../../../client";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
+import { configureApiClient } from "@/lib/guards/staffMemberGuard";
 
 const DashboardPage = async () => {
-	const cookie = cookies().get("JWT")?.value;
-	// configure internal service client
-	client.setConfig({
-		// set default base url for requests
-		baseUrl: process.env.NEXT_PUBLIC_API_URL,
-		// set default headers for requests
-		headers: {
-			Cookie: `token=${cookie}`,
-		},
-	});
-	const { data: tournaments } = await getTournaments();
+	configureApiClient();
+	const { data: tournaments } = await getUserTournamentStaffMember();
 
 	return (
 		<div className={"w-full"}>
@@ -23,7 +14,9 @@ const DashboardPage = async () => {
 				<h1 className={"text-lg"}>Select tournament</h1>
 				<Link
 					href="/dashboard/custom-maps"
-					className={"rounded-md bg-base-300 px-3 py-1 text-sm font-medium transition-all hover:brightness-110"}
+					className={
+						"rounded-md bg-base-300 px-3 py-1 text-sm font-medium transition-all hover:brightness-110"
+					}
 				>
 					Custom Maps
 				</Link>
