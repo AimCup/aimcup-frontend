@@ -70,6 +70,21 @@ export async function removeParticipantAction(abbreviation: string, osuId: strin
     return { status: true as const };
 }
 
+export async function syncParticipantsSpreadsheetAction(abbreviation: string) {
+    configureClient();
+    // Called via the low-level client because this endpoint is newer than the committed generated client.
+    // `npm run regen` against a backend exposing it will produce a `syncParticipantsSpreadsheet` helper.
+    const { data, error } = await client.post<{ participantCount: number; message: string }>({
+        url: "/admin/tournaments/{abbreviation}/spreadsheet-sync",
+        path: { abbreviation },
+    });
+    if (error) {
+        const joined = (error as { errors?: string[] }).errors?.filter(Boolean).join(", ");
+        return { status: false as const, errorMessage: joined && joined.length > 0 ? joined : "Failed to start spreadsheet sync" };
+    }
+    return { status: true as const, response: data };
+}
+
 export async function applyAuctionResultsAction(abbreviation: string, formData: FormData) {
     configureClient();
     const file = formData.get("file") as File;

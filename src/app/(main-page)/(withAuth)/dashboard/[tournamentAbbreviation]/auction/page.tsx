@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { client, getAuctionCaptains, getParticipants1 } from "../../../../../../../client";
 import CaptainDesignationPanel from "./CaptainDesignationPanel";
 import AuctionResultsUploadPanel from "./AuctionResultsUploadPanel";
+import SyncSpreadsheetButton from "./SyncSpreadsheetButton";
 
 const AuctionPage = async ({
     params: { tournamentAbbreviation },
@@ -27,7 +28,10 @@ const AuctionPage = async ({
 
     return (
         <div className="flex flex-col gap-12 p-8">
-            <h1 className="text-3xl font-bold">Auction Management</h1>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <h1 className="text-3xl font-bold">Auction Management</h1>
+                <SyncSpreadsheetButton tournamentAbbreviation={tournamentAbbreviation} />
+            </div>
             <CaptainDesignationPanel
                 participants={participants ?? []}
                 captainTeams={captainTeams ?? []}
