@@ -1,10 +1,10 @@
 import React from "react";
 import { getTournamentByAbbreviation } from "../../../../../../client";
+import DashboardSidebar from "./DashboardSidebar";
 import {
 	configureApiClient,
 	requireStaffMember,
 } from "@/lib/guards/staffMemberGuard";
-import DashboardSidebar from "./DashboardSidebar";
 
 export default async function Layout({
 	children,

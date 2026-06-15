@@ -1,11 +1,11 @@
 import React from "react";
 import Link from "next/link";
+import { FiMap } from "react-icons/fi";
 import { getUserTournamentStaffMember } from "../../../../../client";
 import CreateTournamentModal from "@/app/(main-page)/(withAuth)/dashboard/CreateTournamentModal";
 import { configureApiClient, isGlobalAdmin } from "@/lib/guards/staffMemberGuard";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
 import { Card } from "@ui/atoms/Card/Card";
-import { FiMap } from "react-icons/fi";
 
 const DashboardPage = async () => {
 	configureApiClient();

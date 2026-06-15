@@ -4,6 +4,7 @@ import { IoTime } from "react-icons/io5";
 import { RiBarChartFill } from "react-icons/ri";
 import { LiaLongArrowAltRightSolid } from "react-icons/lia";
 import Link from "next/link";
+import Image from "next/image";
 import { format } from "date-fns";
 import { cookies } from "next/headers";
 import {
@@ -309,7 +310,12 @@ const SingleTournament = async ({
 							<div key={p.id} className={"flex items-center gap-3 rounded-xl bg-tuned p-3"}>
 								<div className="avatar">
 									<div className="mask mask-squircle h-10 w-10">
-										<img src={`https://a.ppy.sh/${p.user.osuId}`} alt={p.user.username} />
+										<Image
+											src={`https://a.ppy.sh/${p.user.osuId}`}
+											alt={p.user.username}
+											width={40}
+											height={40}
+										/>
 									</div>
 								</div>
 								<div className="flex flex-col">
