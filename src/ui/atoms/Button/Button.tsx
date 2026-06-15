@@ -6,6 +6,8 @@ export interface ButtonProps {
 	children: React.ReactNode;
 	onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
 	disabled?: boolean;
+	/** When true, shows a spinner and disables the button (use while a request is in flight). */
+	loading?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
 	href?: string;
@@ -21,10 +23,11 @@ export const Button = ({
 	href,
 	type = "button",
 	disabled = false,
+	loading = false,
 	...props
 }: ButtonProps) => {
 	const buttonClassNames = twMerge(
-		`text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 flex items-center justify-center max-w-max`,
+		`text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 max-w-max`,
 		className,
 	);
 
@@ -38,13 +41,14 @@ export const Button = ({
 
 	return (
 		<button
-			disabled={disabled}
+			disabled={disabled || loading}
 			onClick={onClick}
 			className={buttonClassNames}
 			style={style}
 			type={type}
 			{...props}
 		>
+			{loading && <span className="loading loading-spinner loading-sm" />}
 			{children}
 		</button>
 	);

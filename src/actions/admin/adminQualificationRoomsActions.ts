@@ -1,10 +1,60 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { client, createQualificationRooms, updateQualificationRoom } from "../../../client";
+import {
+	client,
+	createQualificationRooms,
+	deleteQualificationRoom,
+	signInOutQualificationRoom,
+	updateQualificationRoom,
+} from "../../../client";
 import { type CreateQualificationRoomsSchemaType } from "@/formSchemas/createQualificationRoomsSchema";
 import { type EditQualificationRoomsSchemaType } from "@/formSchemas/editQualificationRoomSchema";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+
+function configureClient() {
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: { Cookie: `token=${cookie}` },
+	});
+}
+
+function qualificationRoomPaths(tournamentAbbreviation: string) {
+	return [
+		`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
+		`/tournament/${tournamentAbbreviation}/qualification-rooms`,
+	];
+}
+
+export async function signInOutQualificationRoomAction(
+	tournamentAbbreviation: string,
+	roomId: string,
+	signIn: boolean,
+) {
+	configureClient();
+	const { error } = await signInOutQualificationRoom({
+		path: { abbreviation: tournamentAbbreviation, roomId },
+		query: { in: signIn },
+	});
+	if (error) {
+		return { status: false as const, errorMessage: error.errors?.join(", ") ?? "Failed to update referee" };
+	}
+	await multipleRevalidatePaths(qualificationRoomPaths(tournamentAbbreviation));
+	return { status: true as const };
+}
+
+export async function deleteQualificationRoomAction(tournamentAbbreviation: string, roomId: string) {
+	configureClient();
+	const { error } = await deleteQualificationRoom({
+		path: { abbreviation: tournamentAbbreviation, roomId },
+	});
+	if (error) {
+		return { status: false as const, errorMessage: error.errors?.join(", ") ?? "Failed to delete room" };
+	}
+	await multipleRevalidatePaths(qualificationRoomPaths(tournamentAbbreviation));
+	return { status: true as const };
+}
 
 export async function createQualificationRoomsAction(formData: CreateQualificationRoomsSchemaType) {
 	"use server";

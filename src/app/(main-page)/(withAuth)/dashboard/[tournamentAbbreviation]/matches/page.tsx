@@ -10,16 +10,19 @@ import {
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
 	getTournamentStaffMember,
-	signInMatchStaffMember,
 	type StaffMemberResponseDto,
 	tournamentType,
 } from "../../../../../../../client";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
-import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
 import { MatchesModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchesModal";
 import { EditMatchModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/EditMatchModal";
-import { deleteMatchAction } from "@/actions/admin/adminDeleteMatchActions";
+import {
+	StaffSignButton,
+	DeleteMatchButton,
+} from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchRowActions";
+import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
+import { Card } from "@ui/atoms/Card/Card";
 
 const MatchesPage = async ({
 	params: { tournamentAbbreviation },
@@ -38,24 +41,21 @@ const MatchesPage = async ({
 			Cookie: `token=${cookie}`,
 		},
 	});
-	const userData = await getUser();
-	const { data: getStaffForATournamentUser } = await getTournamentStaffMember({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
 
-	const { data: getStaffMembers } = await getStaffMembers1({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
-
-	const { data: getTournament } = await getTournamentByAbbreviation({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
+	// Fetch all independent data in parallel
+	const [
+		userData,
+		{ data: getStaffForATournamentUser },
+		{ data: getStaffMembers },
+		{ data: getTournament },
+		{ data },
+	] = await Promise.all([
+		getUser(),
+		getTournamentStaffMember({ path: { abbreviation: tournamentAbbreviation } }),
+		getStaffMembers1({ path: { abbreviation: tournamentAbbreviation } }),
+		getTournamentByAbbreviation({ path: { abbreviation: tournamentAbbreviation } }),
+		getMatches({ path: { abbreviation: tournamentAbbreviation } }),
+	]);
 
 	const staffMemberSelectOptions: selectOptions[] =
 		getStaffMembers
@@ -90,12 +90,6 @@ const MatchesPage = async ({
 			})) || [];
 	}
 
-	const { data } = await getMatches({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
-
 	const canSignIn =
 		getStaffForATournamentUser?.permissions?.some((permission) => {
 			const b = permission === "MATCH_STAFF_MEMBER_SIGN_IN";
@@ -125,26 +119,42 @@ const MatchesPage = async ({
 		);
 	};
 
+	const unfinishedMatches =
+		data
+			?.filter((match) => match.matchResult === null)
+			?.sort((a, b) => (a.startDate > b.startDate ? 1 : -1)) ?? [];
+
+	const finishedMatches =
+		data
+			?.filter((match) => match.matchResult !== null)
+			?.sort((a, b) => (a.startDate > b.startDate ? 1 : -1)) ?? [];
 
 	return (
-		<div className={"flex w-full flex-col !px-3 !py-2"}>
-			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Matches</h2>
-			<MatchesModal
-				tournamentAbb={tournamentAbbreviation}
-				modalType={{
-					type: "add",
-				}}
-				teams={rostersSelectOptions}
-				staffMembers={staffMemberSelectOptions}
+		<div className="flex w-full flex-col gap-6">
+			<PageHeader
+				title="Matches"
+				subtitle="Schedule matches, manage staff sign-in/out and results."
+				actions={
+					<MatchesModal
+						tournamentAbb={tournamentAbbreviation}
+						modalType={{ type: "add" }}
+						teams={rostersSelectOptions}
+						staffMembers={staffMemberSelectOptions}
+					/>
+				}
 			/>
 
-			<div className={"flex w-full flex-col !px-3 !py-2"}>
-				<div className="mt-3 overflow-x-auto">
+			{/* Unfinished matches */}
+			<Card className="p-0">
+				<div className="px-5 py-4 sm:px-6">
+					<h2 className="text-lg font-bold text-white">Upcoming matches</h2>
+				</div>
+				<div className="overflow-x-auto">
 					<table className="table">
 						<thead>
 							<tr>
 								<th>Match ID</th>
-								<th>Start date time (UTC+0)</th>
+								<th>Start date (UTC+0)</th>
 								<th>Stage</th>
 								<th>Team blue</th>
 								<th>Team red</th>
@@ -155,12 +165,17 @@ const MatchesPage = async ({
 							</tr>
 						</thead>
 						<tbody>
-							{data
-								?.filter((match) => match.matchResult === null)
-								?.sort((a, b) => {
-									return a.startDate > b.startDate ? 1 : -1;
-								})
-								.map((match) => (
+							{unfinishedMatches.length === 0 ? (
+								<tr>
+									<td
+										colSpan={isHost ? 9 : 8}
+										className="py-8 text-center text-white/40"
+									>
+										No upcoming matches yet.
+									</td>
+								</tr>
+							) : (
+								unfinishedMatches.map((match) => (
 									<tr key={match.id}>
 										<td>{match.matchId}</td>
 										<td>
@@ -169,10 +184,12 @@ const MatchesPage = async ({
 										<td>{match.stage?.stageType}</td>
 										<td>{match.teamBlue.name}</td>
 										<td>{match.teamRed.name}</td>
+
+										{/* Referee column */}
 										<td>
-											<div className={"flex flex-col gap-2"}>
+											<div className="flex flex-col gap-2">
 												{match.referees?.map((referee) => (
-													<div key={referee.id} className={"flex gap-2"}>
+													<div key={referee.id} className="flex gap-2">
 														<div className="avatar">
 															<div className="mask mask-squircle h-5 w-5">
 																<Image
@@ -188,97 +205,33 @@ const MatchesPage = async ({
 												))}
 											</div>
 											{showSignOut(match.referees) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: false,
-																type: "REFEREE",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs mt-2"
-														type={"submit"}
-													>
-														sign out
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={false}
+													type="REFEREE"
+												/>
 											)}
 											{showSignIn(match.referees) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: true,
-																type: "REFEREE",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign in
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={true}
+													type="REFEREE"
+												/>
 											)}
 										</td>
+
+										{/* Commentators column */}
 										<td>
-											<div className={"flex flex-col gap-2"}>
+											<div className="flex flex-col gap-2">
 												{match.commentators?.map((com) => (
-													<div key={com.id} className={"flex gap-2"}>
+													<div key={com.id} className="flex gap-2">
 														<div className="avatar">
 															<div className="mask mask-squircle h-5 w-5">
 																<Image
 																	src={`https://a.ppy.sh/${com.user?.osuId}`}
-																	alt="referee"
+																	alt="commentator"
 																	width={20}
 																	height={20}
 																/>
@@ -289,97 +242,33 @@ const MatchesPage = async ({
 												))}
 											</div>
 											{showSignOut(match.commentators) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: false,
-																type: "COMMENTATOR",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign out
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={false}
+													type="COMMENTATOR"
+												/>
 											)}
 											{showSignIn(match.commentators) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: true,
-																type: "COMMENTATOR",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign in
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={true}
+													type="COMMENTATOR"
+												/>
 											)}
 										</td>
+
+										{/* Streamers column */}
 										<td>
-											<div className={"flex flex-col gap-2"}>
+											<div className="flex flex-col gap-2">
 												{match.streamers?.map((str) => (
-													<div key={str.id} className={"flex gap-2"}>
+													<div key={str.id} className="flex gap-2">
 														<div className="avatar">
 															<div className="mask mask-squircle h-5 w-5">
 																<Image
 																	src={`https://a.ppy.sh/${str.user?.osuId}`}
-																	alt="referee"
+																	alt="streamer"
 																	width={20}
 																	height={20}
 																/>
@@ -390,91 +279,26 @@ const MatchesPage = async ({
 												))}
 											</div>
 											{showSignOut(match.streamers) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: false,
-																type: "STREAMER",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign out
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={false}
+													type="STREAMER"
+												/>
 											)}
 											{showSignIn(match.streamers) && (
-												<form
-													action={async (_e) => {
-														"use server";
-														const cookie = cookies().get("JWT")?.value;
-														// configure internal service client
-														client.setConfig({
-															// set default base url for requests
-															baseUrl:
-																process.env.NEXT_PUBLIC_API_URL,
-															// set default headers for requests
-															headers: {
-																Cookie: `token=${cookie}`,
-															},
-														});
-														await signInMatchStaffMember({
-															path: {
-																abbreviation:
-																	tournamentAbbreviation,
-																matchId: match.id,
-															},
-															query: {
-																in: true,
-																type: "STREAMER",
-															},
-														});
-														await multipleRevalidatePaths([
-															"/",
-															`/dashboard/${tournamentAbbreviation}/qualification-rooms`,
-															`/tournament/${tournamentAbbreviation}/schedule`,
-														]);
-													}}
-												>
-													<button
-														className="btn btn-ghost btn-xs"
-														type={"submit"}
-													>
-														sign in
-													</button>
-												</form>
+												<StaffSignButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													matchId={match.id}
+													signIn={true}
+													type="STREAMER"
+												/>
 											)}
 										</td>
+
 										{isHost && (
 											<td>
-												<div className="flex gap-2">
+												<div className="flex items-center gap-1">
 													<EditMatchModal
 														tournamentAbb={tournamentAbbreviation}
 														modalType={{
@@ -482,43 +306,32 @@ const MatchesPage = async ({
 															staffMembers: staffMemberSelectOptions,
 														}}
 													/>
-													<form
-														action={async () => {
-															"use server";
-															const result = await deleteMatchAction(
-																tournamentAbbreviation,
-																match.id,
-															);
-															if (!result.status) {
-																throw new Error(result.errorMessage);
-															}
-														}}
-													>
-														<button
-															className="btn btn-ghost btn-xs text-error"
-															type={"submit"}
-														>
-															Delete
-														</button>
-													</form>
+													<DeleteMatchButton
+														tournamentAbbreviation={tournamentAbbreviation}
+														matchId={match.id}
+														matchLabel={match.matchId}
+													/>
 												</div>
 											</td>
 										)}
 									</tr>
-								))}
+								))
+							)}
 						</tbody>
 					</table>
 				</div>
-			</div>
+			</Card>
 
-			<div className={"flex w-full flex-col !px-3 !py-2"}>
-				<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Finished matches</h2>
-
-				<div className="mt-3 overflow-x-auto">
+			{/* Finished matches */}
+			<Card className="p-0">
+				<div className="px-5 py-4 sm:px-6">
+					<h2 className="text-lg font-bold text-white">Finished matches</h2>
+				</div>
+				<div className="overflow-x-auto">
 					<table className="table">
 						<thead>
 							<tr>
-								<th>Start date time (UTC+0)</th>
+								<th>Start date (UTC+0)</th>
 								<th>Stage</th>
 								<th>Team blue</th>
 								<th>Team red</th>
@@ -528,12 +341,14 @@ const MatchesPage = async ({
 							</tr>
 						</thead>
 						<tbody>
-							{data
-								?.filter((match) => match.matchResult !== null)
-								?.sort((a, b) => {
-									return a.startDate > b.startDate ? 1 : -1;
-								})
-								.map((match) => (
+							{finishedMatches.length === 0 ? (
+								<tr>
+									<td colSpan={7} className="py-8 text-center text-white/40">
+										No finished matches yet.
+									</td>
+								</tr>
+							) : (
+								finishedMatches.map((match) => (
 									<tr key={match.id}>
 										<td>
 											{format(new Date(match.startDate), "dd/MM/yyyy HH:mm")}
@@ -563,11 +378,12 @@ const MatchesPage = async ({
 											))}
 										</td>
 									</tr>
-								))}
+								))
+							)}
 						</tbody>
 					</table>
 				</div>
-			</div>
+			</Card>
 		</div>
 	);
 };

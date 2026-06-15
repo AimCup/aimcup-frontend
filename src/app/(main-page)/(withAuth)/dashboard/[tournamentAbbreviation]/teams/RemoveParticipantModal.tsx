@@ -52,10 +52,10 @@ export const RemoveParticipantModal = ({
 					<Button
 						type="button"
 						onClick={handleConfirmRemove}
-						disabled={isRemoving}
+						loading={isRemoving}
 						className="btn-error"
 					>
-						{isRemoving ? "Removing..." : "Yes, Remove Participant"}
+						Yes, Remove Participant
 					</Button>
 					<Button
 						type="button"
@@ -70,4 +70,3 @@ export const RemoveParticipantModal = ({
 		</Modal>
 	);
 };
-

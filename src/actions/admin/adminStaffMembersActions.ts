@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { addStaffMembers, client, updateStaffMembers } from "../../../client";
+import { addStaffMembers, client, deleteStaffMembers, updateStaffMembers } from "../../../client";
 import { type AddStaffMembersSchemaType } from "@/formSchemas/addEditStaffMembersSchema";
 import { type AddUserLessStaffMembersSchemaType } from "@/formSchemas/addEditUserLessStaffMembersSchema";
 import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
@@ -87,6 +87,39 @@ export async function addStaffMemberAction(formData: AddStaffMembersSchemaType) 
 	return {
 		status: true as const,
 		response: data,
+	};
+}
+
+export async function deleteStaffMemberAction(abbreviation: string, staffMemberId: string) {
+	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+	const { error } = await deleteStaffMembers({
+		path: {
+			abbreviation,
+			staffMemberId,
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: "Failed to delete staff member.",
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${abbreviation}/staff-members`,
+	]);
+
+	return {
+		status: true as const,
 	};
 }
 

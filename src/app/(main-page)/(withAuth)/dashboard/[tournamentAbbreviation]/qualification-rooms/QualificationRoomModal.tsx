@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
+import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -200,11 +201,14 @@ export const QualificationRoomModal = ({ tournamentAbb, modalType }: IAddStaffMe
 							}
 						/>
 					</div>
-					<Button className="mt-4 w-max" type={"submit"}>
+					<SubmitButton
+						className="mt-4 rounded-md bg-deepRed px-6 py-2 text-white hover:opacity-80 disabled:opacity-50"
+						pendingText={modalType.type === "add" ? "Adding…" : "Saving…"}
+					>
 						{modalType.type === "add"
 							? "Add qualification rooms"
 							: "Edit qualification rooms"}
-					</Button>
+					</SubmitButton>
 				</form>
 			</Modal>
 		</>

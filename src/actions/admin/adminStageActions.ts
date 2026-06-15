@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { client, createStage, type stageType, updateStage } from "../../../client";
+import { client, createStage, deleteStage, type stageType, updateStage } from "../../../client";
 import {
 	type CreateStageSchemaType,
 	type EditStageSchemaType,
@@ -88,5 +88,41 @@ export async function editStageAction(formData: EditStageSchemaType) {
 	return {
 		status: true as const,
 		response: data,
+	};
+}
+
+export async function deleteStageAction(tournamentAbb: string, stageTypeValue: stageType) {
+	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+
+	const { error } = await deleteStage({
+		path: {
+			abbreviation: tournamentAbb,
+			stageType: stageTypeValue,
+		},
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.map((e) => e).join(", ") ?? "Failed to delete stage",
+		};
+	}
+
+	await multipleRevalidatePaths([
+		"/",
+		`/dashboard/${tournamentAbb}/stages`,
+		`/dashboard/${tournamentAbb}`,
+		`/tournament/${tournamentAbb}`,
+	]);
+
+	return {
+		status: true as const,
 	};
 }

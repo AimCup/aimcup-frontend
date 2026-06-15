@@ -10,6 +10,10 @@ import { DeleteTeamModal } from "./DeleteTeamModal";
 import { AvatarGroup } from "@ui/atoms/AvatarGroup/AvatarGroup";
 import { changeTeamStatusAction } from "@/actions/admin/adminTeamActions";
 
+function Spinner() {
+	return <span className="loading loading-spinner loading-xs" />;
+}
+
 interface TeamsTableProps {
 	teams: TeamResponseDto[];
 	tournamentAbbreviation: string;
@@ -26,7 +30,8 @@ export const TeamsTable = ({
 	canChangeTeamStatus,
 }: TeamsTableProps) => {
 	const [isCompact, setIsCompact] = useState(false);
-	const [isPending, startTransition] = useTransition();
+	const [pendingTeamId, setPendingTeamId] = useState<string | null>(null);
+	const [, startTransition] = useTransition();
 	const router = useRouter();
 
 	const getNonCaptainParticipants = (team: TeamResponseDto): ParticipantResponseDto[] => {
@@ -34,23 +39,24 @@ export const TeamsTable = ({
 	};
 
 	const handleChangeTeamStatus = async (teamId: string, status: "ACCEPTED" | "REJECTED") => {
+		setPendingTeamId(teamId);
 		startTransition(async () => {
 			const result = await changeTeamStatusAction(tournamentAbbreviation, teamId, status);
+			setPendingTeamId(null);
 			if (result.status) {
-				toast.success(`Team status changed to ${status}`, { duration: 3000 });
+				toast.success(`Team status changed to ${status}`, { duration: 2500 });
 				router.refresh();
 			} else {
-				toast.error(result.errorMessage || "Failed to change team status", { duration: 3000 });
+				toast.error(result.errorMessage || "Failed to change team status", { duration: 4000 });
 			}
 		});
 	};
 
 	return (
-		<div className={"flex w-full flex-col !px-3 !py-2"}>
-			<div className="mb-3 flex items-center justify-between">
-				<h2 className={"text-3xl font-bold leading-relaxed"}>Teams</h2>
+		<div className="overflow-x-auto">
+			<div className="flex items-center justify-end px-5 py-4 sm:px-6">
 				<label className="flex cursor-pointer items-center gap-2">
-					<span className="label-text">Compact</span>
+					<span className="label-text text-white/60">Compact</span>
 					<input
 						type="checkbox"
 						className="toggle toggle-primary"
@@ -59,20 +65,27 @@ export const TeamsTable = ({
 					/>
 				</label>
 			</div>
-			<div className="mt-10 overflow-x-auto">
-				<table className="table w-full">
-					<thead>
+			<table className="table w-full">
+				<thead>
+					<tr>
+						<th>Team name</th>
+						<th>Captain</th>
+						<th>Roster</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{teams.length === 0 ? (
 						<tr>
-							<th>Team name</th>
-							<th>Captain</th>
-							<th>Roster</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<td colSpan={5} className="py-8 text-center text-white/40">
+								No teams yet.
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						{teams.map((team) => {
+					) : (
+						teams.map((team) => {
 							const nonCaptainParticipants = getNonCaptainParticipants(team);
+							const isThisTeamPending = pendingTeamId === team.id;
 							return (
 								<tr key={team.id}>
 									<td>
@@ -130,7 +143,7 @@ export const TeamsTable = ({
 														<span>{participant.user.username}</span>
 														{participant.pricePaid != null && (
 															<span className="badge badge-outline badge-sm text-xs">
-																{participant.pricePaid.toLocaleString('en-US')} pts
+																{participant.pricePaid.toLocaleString("en-US")} pts
 															</span>
 														)}
 													</div>
@@ -144,17 +157,19 @@ export const TeamsTable = ({
 											{canChangeTeamStatus && (
 												<>
 													<button
-														className="btn btn-ghost btn-xs"
+														className="btn btn-ghost btn-xs gap-1"
 														onClick={() => handleChangeTeamStatus(team.id, "ACCEPTED")}
-														disabled={isPending}
+														disabled={isThisTeamPending}
 													>
+														{isThisTeamPending && <Spinner />}
 														ACCEPT
 													</button>
 													<button
-														className="btn btn-ghost btn-xs"
+														className="btn btn-ghost btn-xs gap-1"
 														onClick={() => handleChangeTeamStatus(team.id, "REJECTED")}
-														disabled={isPending}
+														disabled={isThisTeamPending}
 													>
+														{isThisTeamPending && <Spinner />}
 														REJECT
 													</button>
 												</>
@@ -173,10 +188,10 @@ export const TeamsTable = ({
 									</td>
 								</tr>
 							);
-						})}
-					</tbody>
-				</table>
-			</div>
+						})
+					)}
+				</tbody>
+			</table>
 		</div>
 	);
 };

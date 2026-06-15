@@ -2,7 +2,7 @@
 import React, { useRef, useEffect } from "react";
 import { toast } from "sonner";
 import type { MatchResponseDto } from "../../../../../../../client";
-import { Button } from "@ui/atoms/Button/Button";
+import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { StaffMemberAutocomplete } from "@ui/atoms/Forms/Select/StaffMemberAutocomplete";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
@@ -188,9 +188,12 @@ export const EditMatchModal = ({
 							}
 						/>
 					</div>
-					<Button className="mt-4 w-max" type={"submit"}>
+					<SubmitButton
+						className="mt-4 rounded-md bg-deepRed px-6 py-2 text-white hover:opacity-80 disabled:opacity-50"
+						pendingText="Updating…"
+					>
 						Update match
-					</Button>
+					</SubmitButton>
 				</form>
 			</Modal>
 		</>

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { stageType } from "../../../../../../../client";
 import { Button } from "@ui/atoms/Button/Button";
+import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
@@ -47,6 +48,7 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 				});
 			}
 
+			toast.success("Stage created.", { duration: 2500 });
 			modalRef.current?.close();
 			resetFormValues({
 				formRef,
@@ -66,6 +68,7 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 				});
 			}
 
+			toast.success("Stage updated.", { duration: 2500 });
 			modalRef.current?.close();
 		},
 	);
@@ -239,9 +242,12 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 							value={tournamentAbb}
 						/>
 					</div>
-					<Button className="mt-4 w-max" type={"submit"}>
+					<SubmitButton
+						className="mt-4 text-white rounded-md bg-deepRed px-6 py-2 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 max-w-max"
+						pendingText={modalType.type === "add" ? "Creating…" : "Saving…"}
+					>
 						{modalType.type === "add" ? "Create stage" : "Edit stage"}
-					</Button>
+					</SubmitButton>
 				</form>
 			</Modal>
 		</>

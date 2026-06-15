@@ -31,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	return (
 		<html
 			lang="en"
+			data-theme="aimcup"
 			className="scroll-smooth bg-primary-dark text-primary-light"
 			style={{ scrollBehavior: "smooth" }}
 		>

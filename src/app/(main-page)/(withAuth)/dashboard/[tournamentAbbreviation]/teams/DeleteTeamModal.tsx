@@ -36,14 +36,14 @@ export const DeleteTeamModal = ({
 		if (!result.status) {
 			const errorMsg: string = result.errorMessage || "Failed to delete team";
 			toast.error(errorMsg, {
-				duration: 3000,
+				duration: 4000,
 			});
 			setShowConfirm(false);
 			return;
 		}
 
 		toast.success("Team deleted successfully", {
-			duration: 3000,
+			duration: 2500,
 		});
 		modalRef.current?.close();
 		setShowConfirm(false);
@@ -63,7 +63,7 @@ export const DeleteTeamModal = ({
 				type={"button"}
 				disabled={isDeleting}
 			>
-				{isDeleting ? "Deleting..." : "DELETE"}
+				DELETE
 			</button>
 
 			<Modal ref={modalRef}>
@@ -125,10 +125,10 @@ export const DeleteTeamModal = ({
 								<Button
 									type="button"
 									onClick={handleConfirmDelete}
-									disabled={isDeleting}
+									loading={isDeleting}
 									className="btn-error"
 								>
-									{isDeleting ? "Deleting..." : "Yes, Delete Team"}
+									Yes, Delete Team
 								</Button>
 								<Button
 									type="button"
@@ -146,4 +146,3 @@ export const DeleteTeamModal = ({
 		</>
 	);
 };
-
