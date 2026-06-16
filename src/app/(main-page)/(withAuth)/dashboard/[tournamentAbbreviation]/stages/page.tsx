@@ -1,11 +1,15 @@
 import React from "react";
 import { format } from "date-fns";
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { client, deleteStage, getStages, stageType } from "../../../../../../../client";
+import { client, getStages, stageType } from "../../../../../../../client";
 import { StageForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageForm";
 import { stageTypeEnumToString } from "@/lib/helpers";
-import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
+import { Card } from "@ui/atoms/Card/Card";
+import {
+	DeleteStageButton,
+	ViewMappoolButton,
+} from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/stages/StageRowActions";
 
 const StagePage = async ({
 	params: { tournamentAbbreviation },
@@ -24,6 +28,7 @@ const StagePage = async ({
 			Cookie: `token=${cookie}`,
 		},
 	});
+
 	const { data: getStagesData } = await getStages({
 		path: {
 			abbreviation: tournamentAbbreviation,
@@ -32,110 +37,84 @@ const StagePage = async ({
 
 	const stageWithoutMappool = [stageType.REGISTRATION, stageType.SCREENING];
 
+	const sortedStages = (getStagesData ?? []).sort(
+		(a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+	);
+
 	return (
-		<div className={"flex w-full flex-col !px-3 !py-2"}>
-			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Stages</h2>
-			<StageForm
-				modalType={{
-					type: "add",
-				}}
-				tournamentAbb={tournamentAbbreviation}
-				alreadyAddedStages={
-					getStagesData?.map((stage) => {
-						return stage.stageType as stageType;
-					}) || []
+		<div className="flex w-full flex-col gap-6">
+			<PageHeader
+				title="Stages"
+				subtitle="Manage tournament stages, dates and mappools."
+				actions={
+					<StageForm
+						modalType={{ type: "add" }}
+						tournamentAbb={tournamentAbbreviation}
+						alreadyAddedStages={
+							getStagesData?.map((stage) => stage.stageType as stageType) || []
+						}
+					/>
 				}
 			/>
 
-			<div className="mt-10 overflow-x-auto">
-				<table className="table w-full">
-					{/* head */}
-					<thead>
-						<tr>
-							<th>Stage type</th>
-							<th>Date start</th>
-							<th>Date end</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{getStagesData
-							?.sort((a, b) => {
-								return (
-									new Date(a.startDate).getTime() -
-									new Date(b.startDate).getTime()
-								);
-							})
-							.map((stage) => {
-								return (
+			<Card className="p-0">
+				<div className="overflow-x-auto">
+					<table className="table w-full">
+						<thead>
+							<tr>
+								<th>Stage type</th>
+								<th>Date start</th>
+								<th>Date end</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{sortedStages.length === 0 ? (
+								<tr>
+									<td colSpan={4} className="py-8 text-center text-white/40">
+										No stages yet. Add the first stage above.
+									</td>
+								</tr>
+							) : (
+								sortedStages.map((stage) => (
 									<tr key={stage.id}>
 										<td>{stageTypeEnumToString(stage.stageType)}</td>
 										<td>{format(new Date(stage.startDate), "dd/MM/yyyy")}</td>
 										<td>{format(new Date(stage.endDate), "dd/MM/yyyy")}</td>
 										<td>
-											<StageForm
-												modalType={{
-													type: "edit",
-													stage: {
-														stageType: stage.stageType,
-														dateStart: stage.startDate,
-														dateEnd: stage.endDate,
-													},
-												}}
-												tournamentAbb={tournamentAbbreviation}
-											/>
-											<form
-												action={async (_e) => {
-													"use server";
-													const cookie = cookies().get("JWT")?.value;
-													// configure internal service client
-													client.setConfig({
-														// set default base url for requests
-														baseUrl: process.env.NEXT_PUBLIC_API_URL,
-														// set default headers for requests
-														headers: {
-															Cookie: `token=${cookie}`,
-														},
-													});
-													await deleteStage({
-														path: {
-															abbreviation: tournamentAbbreviation,
+											<div className="flex items-center gap-1">
+												<StageForm
+													modalType={{
+														type: "edit",
+														stage: {
 															stageType: stage.stageType,
+															dateStart: stage.startDate,
+															dateEnd: stage.endDate,
 														},
-													});
-													await multipleRevalidatePaths([
-														"/",
-														`/dashboard/${tournamentAbbreviation}/stages`,
-													]);
-												}}
-											>
-												<button
-													className="btn btn-ghost btn-xs"
-													type={"submit"}
-												>
-													Delete
-												</button>
-											</form>
-											{stageWithoutMappool.includes(
-												stage?.stageType as stageType,
-											) ? null : (
-												<button className="btn btn-ghost btn-xs">
-													<Link
-														href={`
-													/dashboard/${tournamentAbbreviation}/mappool/${stage.stageType}/${stage.mappool?.id}
-												`}
-													>
-														View
-													</Link>
-												</button>
-											)}
+													}}
+													tournamentAbb={tournamentAbbreviation}
+												/>
+												<DeleteStageButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													stageTypeValue={stage.stageType as stageType}
+													stageLabel={stageTypeEnumToString(stage.stageType)}
+												/>
+												{!stageWithoutMappool.includes(stage?.stageType as stageType) && (
+													<ViewMappoolButton
+														tournamentAbbreviation={tournamentAbbreviation}
+														stageTypeValue={stage.stageType}
+														mappoolId={stage.mappool?.id}
+													/>
+												)}
+											</div>
 										</td>
 									</tr>
-								);
-							})}
-					</tbody>
-				</table>
-			</div>
+								))
+							)}
+						</tbody>
+					</table>
+				</div>
+			</Card>
 		</div>
 	);
 };

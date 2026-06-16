@@ -79,6 +79,7 @@ const QualificationRoomsPage = async ({
 		room: TeamBasedQualificationRoom | ParticipantBasedQualificationRoom,
 	) => {
 		if (isAuction) {
+
 			return (room as ParticipantBasedQualificationRoom).participants?.some(
 				(p) => p.user.id === userData?.id,
 			);
@@ -91,10 +92,27 @@ const QualificationRoomsPage = async ({
 		);
 	};
 
+	const rooms = qualificationRooms(getQualificationRoomsData || []);
+	const myRooms = rooms.filter((room) => isParticipantSignedIn(room));
+
 	return (
 		<Section id="qualifocation-rooms" className={"flex-col"}>
 			<div className={"flex w-full flex-col !px-3 !py-2"}>
 				<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Qualification rooms</h2>
+					{showActions && (
+						<div className="mb-3 rounded-xl border border-white/[0.06] bg-tuned p-3 text-sm">
+							{myRooms.length > 0 ? (
+								<span>
+									<span className="text-white/50">You are signed into: </span>
+									<span className="font-semibold text-mintGreen">
+										{myRooms.map((r) => `Room #${r.number}`).join(", ")}
+									</span>
+								</span>
+							) : (
+								<span className="text-white/50">You are not signed into a qualification room yet.</span>
+							)}
+						</div>
+					)}
 
 				<div className="mt-3 overflow-x-auto">
 					<table className="table">
@@ -107,29 +125,38 @@ const QualificationRoomsPage = async ({
 							</tr>
 						</thead>
 						<tbody>
-							{qualificationRooms(getQualificationRoomsData || []).map((room) => (
+								{rooms.map((room) => (
 								<tr key={room.id}>
 									<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
-									<td className={"flex flex-col gap-2"}>
-										{isAuction || room.tournamentType === tournamentType.PARTICIPANT_VS
-											? (room as ParticipantBasedQualificationRoom).participants?.map(
-												(participant) => (
-													<div key={participant.id}>
-														{participant.user.username}
-													</div>
-												),
-											)
-											: (room as TeamBasedQualificationRoom).teams?.map((team) => (
-												<div key={team.id} className={"flex gap-2 truncate"}>
-													<Image
-														src={team.logoUrl || "/aim_logo.svg"}
-														alt={team.name}
-														width={20}
-														height={20}
-													/>
-													{team.name}
+									<td>
+										{isAuction || room.tournamentType === tournamentType.PARTICIPANT_VS ? (
+											<details className="text-sm">
+												<summary className="cursor-pointer text-white/70">
+													{(room as ParticipantBasedQualificationRoom).participants?.length ?? 0} players
+												</summary>
+												<div className="mt-2 flex flex-col gap-1">
+													{(room as ParticipantBasedQualificationRoom).participants?.map((participant) => (
+														<span key={participant.id} className="truncate">
+															{participant.user.username}
+														</span>
+													))}
 												</div>
-											))}
+											</details>
+										) : (
+											<details className="text-sm">
+												<summary className="cursor-pointer text-white/70">
+													{(room as TeamBasedQualificationRoom).teams?.length ?? 0} teams
+												</summary>
+												<div className="mt-2 flex flex-col gap-1">
+													{(room as TeamBasedQualificationRoom).teams?.map((team) => (
+														<div key={team.id} className="flex items-center gap-2 truncate">
+															<Image src={team.logoUrl || "/aim_logo.svg"} alt={team.name} width={18} height={18} />
+															{team.name}
+														</div>
+													))}
+												</div>
+											</details>
+										)}
 									</td>
 									<td>
 										{room.staffMember ? (

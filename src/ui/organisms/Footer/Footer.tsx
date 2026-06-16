@@ -14,7 +14,7 @@ export const Footer = async () => {
 	const { data } = await getTournaments();
 
 	return (
-		<footer className={"md:px-18 md:py-18 px-8 py-10 lg:px-20 lg:py-20"}>
+		<footer className={"px-4 py-8 md:px-6 lg:px-8"}>
 			<div className={"container mx-auto"}>
 				<div className={"flex content-center items-center"}>
 					<Image

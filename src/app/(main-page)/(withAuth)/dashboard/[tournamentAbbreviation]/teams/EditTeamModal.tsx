@@ -18,6 +18,10 @@ import {
 	changeCaptainAction,
 } from "@/actions/admin/adminTeamActions";
 
+function Spinner() {
+	return <span className="loading loading-spinner loading-xs" />;
+}
+
 interface IEditTeamModalProps {
 	tournamentAbb: string;
 	team: TeamResponseDto;
@@ -36,7 +40,8 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 	const [selectedLogo, setSelectedLogo] = useState<File | null>(null);
 	const [logoPreview, setLogoPreview] = useState<string | null>(null);
 	const [logoError, setLogoError] = useState<string | null>(null);
-	
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
 	// Create refs for remove participant modals
 	const removeModalRefs = useMemo(() => {
 		const refs: Record<string, React.RefObject<HTMLDialogElement>> = {};
@@ -116,6 +121,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 	};
 
 	const [state, formAction] = useTypeSafeFormState(updateTeamSchema, async (data) => {
+		setIsSubmitting(true);
 		// Create FormData from form data and logo file
 		const formDataToSend = new FormData();
 		formDataToSend.append("tournamentAbbreviation", data.tournamentAbbreviation);
@@ -126,14 +132,15 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		}
 
 		const updateTeamResponse = await updateTeamAction(formDataToSend);
+		setIsSubmitting(false);
 		if (!updateTeamResponse.status) {
 			const errorMsg: string = updateTeamResponse.errorMessage || "Failed to update team";
 			return toast.error(errorMsg, {
-				duration: 3000,
+				duration: 4000,
 			});
 		}
 		toast.success("Team updated successfully", {
-			duration: 3000,
+			duration: 2500,
 		});
 		setSelectedLogo(null);
 		setLogoPreview(null);
@@ -145,7 +152,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 	const handleAddParticipant = async () => {
 		if (!osuIdToAdd.trim()) {
 			toast.error("Please enter an osu! ID", {
-				duration: 3000,
+				duration: 4000,
 			});
 			return;
 		}
@@ -157,7 +164,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		if (!result.status) {
 			const errorMsg: string = result.errorMessage || "Failed to add participant";
 			toast.error(errorMsg, {
-				duration: 3000,
+				duration: 4000,
 			});
 			return;
 		}
@@ -171,7 +178,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		}
 
 		toast.success("Participant added successfully", {
-			duration: 3000,
+			duration: 2500,
 		});
 		setOsuIdToAdd("");
 		router.refresh();
@@ -180,7 +187,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 	const handleRemoveParticipant = async (participant: ParticipantResponseDto) => {
 		if (participant.id === captain.id) {
 			toast.error("Cannot remove team captain. Change captain first.", {
-				duration: 3000,
+				duration: 4000,
 			});
 			return;
 		}
@@ -196,7 +203,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		if (!result.status) {
 			const errorMsg: string = result.errorMessage || "Failed to remove participant";
 			toast.error(errorMsg, {
-				duration: 3000,
+				duration: 4000,
 			});
 			return;
 		}
@@ -210,7 +217,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		}
 
 		toast.success("Participant removed successfully", {
-			duration: 3000,
+			duration: 2500,
 		});
 		router.refresh();
 	};
@@ -231,7 +238,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		if (!result.status) {
 			const errorMsg: string = result.errorMessage || "Failed to change captain";
 			toast.error(errorMsg, {
-				duration: 3000,
+				duration: 4000,
 			});
 			return;
 		}
@@ -245,7 +252,7 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		}
 
 		toast.success("Captain changed successfully", {
-			duration: 3000,
+			duration: 2500,
 		});
 		router.refresh();
 	};
@@ -337,10 +344,10 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 							<Button
 								type="button"
 								onClick={handleAddParticipant}
-								disabled={isAddingParticipant}
+								loading={isAddingParticipant}
 								className="self-end"
 							>
-								{isAddingParticipant ? "Adding..." : "Add"}
+								Add
 							</Button>
 						</div>
 
@@ -357,86 +364,92 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 									</tr>
 								</thead>
 								<tbody>
-									{participants.map((participant) => (
-										<tr key={participant.id}>
-											<td>
-												<div className="avatar">
-													<div className="mask mask-squircle h-10 w-10">
-														<Image
-															src={`https://a.ppy.sh/${participant.user.osuId}`}
-															alt={participant.user.username}
-															width={40}
-															height={40}
-														/>
-													</div>
-												</div>
-											</td>
-											<td>
-												<div className="font-semibold">{participant.user.username}</div>
-											</td>
-											<td>
-												<div className="text-sm text-gray-500">{participant.user.osuId}</div>
-											</td>
-											<td>
-												{participant.id === captain.id ? (
-													<span className="badge badge-primary">Captain</span>
-												) : (
-													<span className="text-sm text-gray-400">Member</span>
-												)}
-											</td>
-											<td>
-												<div className="flex gap-2">
-													{participant.id !== captain.id ? (
-														<>
-															<button
-																type="button"
-																className="btn btn-sm btn-error"
-																onClick={() => {
-																	removeModalRefs[participant.id]?.current?.showModal();
-																}}
-																disabled={isRemovingParticipant === participant.id}
-															>
-																{isRemovingParticipant === participant.id
-																	? "Removing..."
-																	: "Remove"}
-															</button>
-															<button
-																type="button"
-																className="btn btn-sm btn-outline"
-																onClick={() => handleChangeCaptain(participant)}
-																disabled={isChangingCaptain === participant.id}
-															>
-																{isChangingCaptain === participant.id
-																	? "Changing..."
-																	: "Make captain"}
-															</button>
-														</>
-													) : (
-														<span className="text-sm text-gray-400 italic">
-															Captain cannot be removed
-														</span>
-													)}
-												</div>
+									{participants.length === 0 ? (
+										<tr>
+											<td colSpan={5} className="py-6 text-center text-white/40">
+												No participants yet.
 											</td>
 										</tr>
-									))}
+									) : (
+										participants.map((participant) => (
+											<tr key={participant.id}>
+												<td>
+													<div className="avatar">
+														<div className="mask mask-squircle h-10 w-10">
+															<Image
+																src={`https://a.ppy.sh/${participant.user.osuId}`}
+																alt={participant.user.username}
+																width={40}
+																height={40}
+															/>
+														</div>
+													</div>
+												</td>
+												<td>
+													<div className="font-semibold">{participant.user.username}</div>
+												</td>
+												<td>
+													<div className="text-sm text-gray-500">{participant.user.osuId}</div>
+												</td>
+												<td>
+													{participant.id === captain.id ? (
+														<span className="badge badge-primary">Captain</span>
+													) : (
+														<span className="text-sm text-gray-400">Member</span>
+													)}
+												</td>
+												<td>
+													<div className="flex gap-2">
+														{participant.id !== captain.id ? (
+															<>
+																<button
+																	type="button"
+																	className="btn btn-sm btn-error gap-1"
+																	onClick={() => {
+																		removeModalRefs[participant.id]?.current?.showModal();
+																	}}
+																	disabled={isRemovingParticipant === participant.id}
+																>
+																	{isRemovingParticipant === participant.id && <Spinner />}
+																	Remove
+																</button>
+																<button
+																	type="button"
+																	className="btn btn-sm btn-outline gap-1"
+																	onClick={() => handleChangeCaptain(participant)}
+																	disabled={isChangingCaptain === participant.id}
+																>
+																	{isChangingCaptain === participant.id && <Spinner />}
+																	Make captain
+																</button>
+															</>
+														) : (
+															<span className="text-sm text-gray-400 italic">
+																Captain cannot be removed
+															</span>
+														)}
+													</div>
+												</td>
+											</tr>
+										))
+									)}
 								</tbody>
 							</table>
 						</div>
-				</div>
-				<div className="mt-4 flex gap-2">
-					<Button type={"submit"}>Update Team</Button>
-					<Button
-						type="button"
-						onClick={() => modalRef.current?.close()}
-						className="btn-outline"
-					>
-						Cancel
-					</Button>
-				</div>
-			</form>
+					</div>
+					<div className="mt-4 flex gap-2">
+						<Button type={"submit"} loading={isSubmitting}>Update Team</Button>
+						<Button
+							type="button"
+							onClick={() => modalRef.current?.close()}
+							className="btn-outline"
+						>
+							Cancel
+						</Button>
+					</div>
+				</form>
 			</Modal>
-			
+
 			{/* Render remove participant modals outside the main modal to avoid nested forms */}
 			{participants.map((participant) => (
 				participant.id !== captain.id && removeModalRefs[participant.id] && (
@@ -452,4 +465,3 @@ export const EditTeamModal = ({ tournamentAbb, team }: IEditTeamModalProps) => {
 		</>
 	);
 };
-

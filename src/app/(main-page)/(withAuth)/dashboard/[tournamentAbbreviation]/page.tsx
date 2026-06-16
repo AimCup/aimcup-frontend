@@ -1,68 +1,187 @@
 import React from "react";
-import Section from "@ui/atoms/Section/Section";
+import Link from "next/link";
+import { cookies } from "next/headers";
+import {
+	FiAward,
+	FiCalendar,
+	FiCheckSquare,
+	FiDollarSign,
+	FiGitMerge,
+	FiLayers,
+	FiUser,
+	FiUsers,
+} from "react-icons/fi";
+import {
+	client,
+	getMatches,
+	getStaffMembers,
+	getStages,
+	getTournamentByAbbreviation,
+	tournamentType,
+} from "../../../../../../client";
+import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
+import { Card } from "@ui/atoms/Card/Card";
 
 const DashboardHome = async ({
-	params,
+	params: { tournamentAbbreviation },
 }: {
 	params: {
 		tournamentAbbreviation: string;
 	};
 }) => {
-	// todo Promise.allSettled
-	// const tournamentData = await TournamentService.getTournamentByAbbreviation(
-	// 	params.tournamentAbbreviation,
-	// );
-	// const getStagesData = await StageService.getStages(params.tournamentAbbreviation);
-	// //
-	//
-	// const stageWithoutMappool = [
-	// 	StageResponseDto.stageType.REGISTRATION,
-	// 	StageResponseDto.stageType.SCREENING,
-	// ];
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
 
-	console.log(params);
+	const [
+		{ data: tournament },
+		{ data: matches },
+		{ data: staffMembers },
+		{ data: stages },
+	] = await Promise.all([
+		getTournamentByAbbreviation({ path: { abbreviation: tournamentAbbreviation } }),
+		getMatches({ path: { abbreviation: tournamentAbbreviation } }),
+		getStaffMembers({ path: { abbreviation: tournamentAbbreviation } }),
+		getStages({ path: { abbreviation: tournamentAbbreviation } }),
+	]);
+
+	const isParticipantBased =
+		tournament?.tournamentType === tournamentType.PARTICIPANT_VS;
+	// "AUCTION" is not yet in the generated client enum (stale client); cast to string to compare safely.
+	const isAuction = (tournament?.tournamentType as string | undefined) === "AUCTION";
+
+	const base = `/dashboard/${tournamentAbbreviation}`;
+
+	const matchesWithoutReferee = (matches ?? []).filter(
+		(m) => !m.referees || m.referees.length === 0,
+	);
+
+	const uniqueStaffCount = staffMembers?.length ?? 0;
+	const matchCount = matches?.length ?? 0;
+	const currentStageName = tournament?.currentStage ?? null;
+
+	interface QuickLink {
+		href: string;
+		label: string;
+		description: string;
+		icon: React.ElementType;
+	}
+
+	const quickLinks: QuickLink[] = [
+		{
+			href: `${base}/staff-members`,
+			label: "Staff members",
+			description: `${uniqueStaffCount} member${uniqueStaffCount !== 1 ? "s" : ""} registered`,
+			icon: FiUsers,
+		},
+		{
+			href: `${base}/stages`,
+			label: "Stages",
+			description: `${stages?.length ?? 0} stage${(stages?.length ?? 0) !== 1 ? "s" : ""} configured`,
+			icon: FiLayers,
+		},
+		{
+			href: `${base}/qualification-rooms`,
+			label: "Qualification rooms",
+			description: "Manage rooms and referees",
+			icon: FiCheckSquare,
+		},
+		{
+			href: `${base}/qualification-results`,
+			label: "Qualification results",
+			description: "View seeding results",
+			icon: FiAward,
+		},
+		{
+			href: `${base}/matches`,
+			label: "Matches",
+			description: `${matchCount} match${matchCount !== 1 ? "es" : ""} · ${matchesWithoutReferee.length} without referee`,
+			icon: FiCalendar,
+		},
+		{
+			href: `${base}/bracket`,
+			label: "Bracket editor",
+			description: "Edit tournament bracket",
+			icon: FiGitMerge,
+		},
+		...(isParticipantBased
+			? [
+					{
+						href: `${base}/participants`,
+						label: "Participants",
+						description: "Manage individual participants",
+						icon: FiUser,
+					} satisfies QuickLink,
+				]
+			: [
+					{
+						href: `${base}/teams`,
+						label: "Teams",
+						description: "Manage registered teams",
+						icon: FiUsers,
+					} satisfies QuickLink,
+				]),
+		...(isAuction
+			? [
+					{
+						href: `${base}/auction`,
+						label: "Auction",
+						description: "Run the live auction",
+						icon: FiDollarSign,
+					} satisfies QuickLink,
+				]
+			: []),
+	];
 
 	return (
-		<Section className={"!py-0"}>
-			{`1. current stage -> NIE MA :) // jak null to nie ma kafelka
-				2. wszystkie mecze MatchService.getMatches(params.tournamentAbbreviation) jako liczba -> klikalne do /matches, pofiltrować w stage z pkt 1.
-				3. liczba meczy jak wyżej ale teraz bez references (sędziego)
-				4. unikalna liczba staff membersów -> klikalne do /staff-members StaffMemberService.getStaffMembers(params.tournamentAbbreviation)
-			`}
-			{/*<div className={"flex w-full flex-col gap-4"}>*/}
-			{/*	<h1 className={"my-2 text-3xl"}>{tournamentData.name}</h1>*/}
-			{/*	<div className={"flex flex-col"}>*/}
-			{/*<AddStageForm*/}
-			{/*	tournamentAbb={params.tournamentAbbreviation}*/}
-			{/*	alreadyAddedStages={getStagesData.map((stage) => {*/}
-			{/*		return stage.stageType;*/}
-			{/*	})}*/}
-			{/*/>*/}
-			{/*	</div>*/}
-			{/*	<div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}>*/}
-			{/*		{getStagesData.map((stage) => {*/}
-			{/*			return (*/}
-			{/*				<div*/}
-			{/*					key={stage.id}*/}
-			{/*					className={"bg-gray-200 flex flex-col gap-2 rounded-md p-4"}*/}
-			{/*				>*/}
-			{/*					<p>{stageTypeEnumToString(stage.stageType)}</p>*/}
-			{/*					<p>Start date: {stage.startDate}</p>*/}
-			{/*					<p>End date: {stage.endDate}</p>*/}
-			{/*					{stageWithoutMappool.includes(stage.stageType) ? null : (*/}
-			{/*						<Mappool*/}
-			{/*							tournamentAbb={params.tournamentAbbreviation}*/}
-			{/*							stageType={stage.stageType}*/}
-			{/*							isMappoolCreated={stage.mappool !== null}*/}
-			{/*							mappoolId={stage?.mappool?.id}*/}
-			{/*						/>*/}
-			{/*					)}*/}
-			{/*				</div>*/}
-			{/*			);*/}
-			{/*		})}*/}
-			{/*	</div>*/}
-			{/*</div>*/}
-		</Section>
+		<div className="flex w-full flex-col gap-6">
+			<PageHeader
+				title={tournament?.name ?? tournamentAbbreviation}
+				subtitle={
+					currentStageName
+						? `Current stage: ${currentStageName.replace(/_/g, " ")}`
+						: "Tournament overview"
+				}
+			/>
+
+			<Card
+				title="Welcome to the admin dashboard"
+				className="pb-2"
+			>
+				<p className="mb-6 text-sm text-white/50">
+					Use the sidebar or the quick-links below to manage every aspect of{" "}
+					<span className="font-semibold text-white/80">
+						{tournament?.name ?? tournamentAbbreviation}
+					</span>
+					.
+				</p>
+
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{quickLinks.map((link) => {
+						const Icon = link.icon;
+						return (
+							<Link
+								key={link.href}
+								href={link.href}
+								className="group flex items-start gap-3 rounded-xl border border-white/5 bg-white/[0.03] p-4 transition hover:border-white/10 hover:bg-white/[0.06]"
+							>
+								<span className="mt-0.5 shrink-0 rounded-lg bg-deepRed/20 p-2 text-deepRed transition group-hover:bg-deepRed/30">
+									<Icon size={16} />
+								</span>
+								<div className="min-w-0">
+									<p className="text-sm font-semibold text-white">{link.label}</p>
+									<p className="mt-0.5 truncate text-xs text-white/40">{link.description}</p>
+								</div>
+							</Link>
+						);
+					})}
+				</div>
+			</Card>
+		</div>
 	);
 };
 

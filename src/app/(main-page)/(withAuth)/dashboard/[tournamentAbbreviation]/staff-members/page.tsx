@@ -3,7 +3,6 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import {
 	client,
-	deleteStaffMembers,
 	getStaffMembers1,
 	getTournamentPermissions,
 	getTournamentRoles,
@@ -11,7 +10,9 @@ import {
 import { StaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberModal";
 import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { UserLessStaffMemberModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/UserLessStaffMemberModal";
-import { multipleRevalidatePaths } from "@/lib/multipleRevalidatePaths";
+import { DeleteStaffMemberButton } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/staff-members/StaffMemberRowActions";
+import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
+import { Card } from "@ui/atoms/Card/Card";
 
 const StaffMembersPage = async ({
 	params: { tournamentAbbreviation },
@@ -30,22 +31,17 @@ const StaffMembersPage = async ({
 			Cookie: `token=${cookie}`,
 		},
 	});
-	const { data: getRoles } = await getTournamentRoles({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
-	const { data: getPermissions } = await getTournamentPermissions({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
 
-	const { data: getStaffMembers } = await getStaffMembers1({
-		path: {
-			abbreviation: tournamentAbbreviation,
-		},
-	});
+	// Fetch all independent data in parallel.
+	const [
+		{ data: getRoles },
+		{ data: getPermissions },
+		{ data: getStaffMembers },
+	] = await Promise.all([
+		getTournamentRoles({ path: { abbreviation: tournamentAbbreviation } }),
+		getTournamentPermissions({ path: { abbreviation: tournamentAbbreviation } }),
+		getStaffMembers1({ path: { abbreviation: tournamentAbbreviation } }),
+	]);
 
 	const rolesSelectOptions: selectOptions[] =
 		getRoles?.map((role) => ({
@@ -60,145 +56,139 @@ const StaffMembersPage = async ({
 		})) || [];
 
 	return (
-		<div className={"flex w-full flex-col !px-3 !py-2"}>
-			<h2 className={"mb-3  text-3xl font-bold leading-relaxed"}>Staff members</h2>
-			<div className={"flex items-center gap-3"}>
-				<StaffMemberModal
-					rolesSelectOptions={rolesSelectOptions}
-					permissionsSelectOptions={permissionsSelectOptions}
-					tournamentAbb={tournamentAbbreviation}
-					modalType={{
-						type: "add",
-					}}
-				/>
-				<UserLessStaffMemberModal
-					tournamentAbb={tournamentAbbreviation}
-					rolesSelectOptions={rolesSelectOptions}
-					modalType={{ type: "add" }}
-				/>
-			</div>
+		<div className="flex w-full flex-col gap-6">
+			<PageHeader
+				title="Staff members"
+				subtitle="Manage tournament staff: add, edit roles, permissions, and remove members."
+				actions={
+					<>
+						<StaffMemberModal
+							rolesSelectOptions={rolesSelectOptions}
+							permissionsSelectOptions={permissionsSelectOptions}
+							tournamentAbb={tournamentAbbreviation}
+							modalType={{
+								type: "add",
+							}}
+						/>
+						<UserLessStaffMemberModal
+							tournamentAbb={tournamentAbbreviation}
+							rolesSelectOptions={rolesSelectOptions}
+							modalType={{ type: "add" }}
+						/>
+					</>
+				}
+			/>
 
-			<div className="mt-10 overflow-x-auto">
-				<table className="table">
-					{/* head */}
-					<thead>
-						<tr>
-							<th>Osu ID</th>
-							<th>User name</th>
-							<th>Discord ID</th>
-							<th>Roles</th>
-							<th>Permissions</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{getStaffMembers?.map((s) => (
-							<tr key={s.id}>
-								<td>{s.user ? s.user.osuId : "-"}</td>
-								<td className={"flex items-center gap-4"}>
-									<div className="avatar">
-										<div className="mask mask-squircle h-12 w-12">
-											<Image
-												src={
-													(s.user
-														? `https://a.ppy.sh/${s.user.osuId}`
-														: s?.imageUrl) || ""
-												}
-												alt="Avatar Tailwind CSS Component"
-												width={48}
-												height={48}
-											/>
-										</div>
-									</div>
-									{s.user ? s.user.username : s.username}
-								</td>
-								<td>{s.user ? s.discordId : "-"}</td>
-								<td>
-									{s.roles?.map((role) => (
-										<span
-											key={role.id}
-											className="badge badge-ghost badge-sm block"
-										>
-											{role.name}
-										</span>
-									))}
-								</td>
-								<td>
-									{s.user
-										? s.permissions?.map((permission) => (
+			<Card className="p-0">
+				<div className="overflow-x-auto">
+					<table className="table">
+						<thead>
+							<tr>
+								<th>Osu ID</th>
+								<th>User name</th>
+								<th>Discord ID</th>
+								<th>Roles</th>
+								<th>Permissions</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!getStaffMembers || getStaffMembers.length === 0 ? (
+								<tr>
+									<td colSpan={6} className="py-8 text-center text-white/40">
+										No staff members yet.
+									</td>
+								</tr>
+							) : (
+								getStaffMembers.map((s) => (
+									<tr key={s.id}>
+										<td>{s.user ? s.user.osuId : "-"}</td>
+										<td>
+											<div className="flex items-center gap-2">
+												<div className="avatar">
+													<div className="mask mask-squircle h-7 w-7">
+														<Image
+															src={
+																(s.user
+																	? `https://a.ppy.sh/${s.user.osuId}`
+																	: s?.imageUrl) || ""
+															}
+															alt="Avatar"
+															width={28}
+															height={28}
+														/>
+													</div>
+												</div>
+												<span className="truncate">{s.user ? s.user.username : s.username}</span>
+											</div>
+										</td>
+										<td>{s.user ? s.discordId : "-"}</td>
+										<td>
+											{s.roles?.map((role) => (
 												<span
-													key={permission}
+													key={role.id}
 													className="badge badge-ghost badge-sm block"
 												>
-													{permission}
+													{role.name}
 												</span>
-											))
-										: "-"}
-								</td>
-								<td>
-									{s.user && (
-										<StaffMemberModal
-											rolesSelectOptions={rolesSelectOptions}
-											permissionsSelectOptions={permissionsSelectOptions}
-											tournamentAbb={tournamentAbbreviation}
-											modalType={{
-												type: "edit",
-												user: {
-													osuId: "" + s.id,
-													discordId: "" + s.discordId,
-													roles:
-														s.roles?.map((role) => {
-															return {
-																id: role.id,
-																label: role.name,
-															};
-														}) || [],
-													permissions:
-														s.permissions?.map((permission) => {
-															return {
-																id: permission,
-																label: permission,
-															};
-														}) || [],
-												},
-											}}
-										/>
-									)}
-									<form
-										action={async (_e) => {
-											"use server";
-											const cookie = cookies().get("JWT")?.value;
-											// configure internal service client
-											client.setConfig({
-												// set default base url for requests
-												baseUrl: process.env.NEXT_PUBLIC_API_URL,
-												// set default headers for requests
-												headers: {
-													Cookie: `token=${cookie}`,
-												},
-											});
-											await deleteStaffMembers({
-												path: {
-													abbreviation: tournamentAbbreviation,
-													staffMemberId: s.id,
-												},
-											});
-											await multipleRevalidatePaths([
-												"/",
-												`/dashboard/${tournamentAbbreviation}/staff-members`,
-											]);
-										}}
-									>
-										<button className="btn btn-ghost btn-xs" type={"submit"}>
-											delete
-										</button>
-									</form>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
+											))}
+										</td>
+										<td>
+											{s.user
+												? s.permissions?.map((permission) => (
+														<span
+															key={permission}
+															className="badge badge-ghost badge-sm block"
+														>
+															{permission}
+														</span>
+													))
+												: "-"}
+										</td>
+										<td>
+											<div className="flex items-center gap-1">
+												{s.user && (
+													<StaffMemberModal
+														rolesSelectOptions={rolesSelectOptions}
+														permissionsSelectOptions={permissionsSelectOptions}
+														tournamentAbb={tournamentAbbreviation}
+														modalType={{
+															type: "edit",
+															user: {
+																osuId: "" + s.id,
+																discordId: "" + s.discordId,
+																roles:
+																	s.roles?.map((role) => {
+																		return {
+																			id: role.id,
+																			label: role.name,
+																		};
+																	}) || [],
+																permissions:
+																	s.permissions?.map((permission) => {
+																		return {
+																			id: permission,
+																			label: permission,
+																		};
+																	}) || [],
+															},
+														}}
+													/>
+												)}
+												<DeleteStaffMemberButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													staffMemberId={s.id}
+													displayName={s.user ? s.user.username : s.username || s.id}
+												/>
+											</div>
+										</td>
+									</tr>
+								))
+							)}
+						</tbody>
+					</table>
+				</div>
+			</Card>
 		</div>
 	);
 };

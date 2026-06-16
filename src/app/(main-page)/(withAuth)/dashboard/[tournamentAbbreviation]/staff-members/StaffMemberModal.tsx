@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
+import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -57,10 +58,11 @@ export const StaffMemberModal = ({
 		async (data) => {
 			const addStaffMemberResponse = await addStaffMemberAction(data);
 			if (!addStaffMemberResponse.status) {
-				return toast.error("Error", {
-					duration: 3000,
+				return toast.error("Failed to add staff member.", {
+					duration: 4000,
 				});
 			}
+			toast.success("Staff member added.", { duration: 2500 });
 			modalRef.current?.close();
 			resetFormValues({
 				formRef,
@@ -75,10 +77,11 @@ export const StaffMemberModal = ({
 		async (data) => {
 			const editMemberResponse = await editStaffMemberAction(data);
 			if (!editMemberResponse.status) {
-				return toast.error("error", {
-					duration: 3000,
+				return toast.error("Failed to edit staff member.", {
+					duration: 4000,
 				});
 			}
+			toast.success("Staff member updated.", { duration: 2500 });
 			modalRef.current?.close();
 			resetFormValues({
 				formRef,
@@ -184,9 +187,9 @@ export const StaffMemberModal = ({
 							}
 						/>
 					</div>
-					<Button className="mt-4 w-max" type={"submit"}>
+					<SubmitButton className="mt-4 w-max rounded-md bg-deepRed px-6 py-2 text-white hover:opacity-80 disabled:opacity-50">
 						{modalType.type === "add" ? "Add staff member" : "Edit staff member"}
-					</Button>
+					</SubmitButton>
 				</form>
 			</Modal>
 		</>

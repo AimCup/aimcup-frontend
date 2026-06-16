@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/atoms/Button/Button";
+import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { Input } from "@ui/atoms/Forms/Input/Input";
@@ -46,10 +47,11 @@ export const UserLessStaffMemberModal = ({
 		async (data) => {
 			const addStaffMemberResponse = await addUserLessStaffMemberAction(data);
 			if (!addStaffMemberResponse.status) {
-				return toast.error("error", {
-					duration: 3000,
+				return toast.error("Failed to add staff member.", {
+					duration: 4000,
 				});
 			}
+			toast.success("Staff member added.", { duration: 2500 });
 			modalRef.current?.close();
 			resetForm(["tournamentAbbreviation"]);
 		},
@@ -90,7 +92,11 @@ export const UserLessStaffMemberModal = ({
 
 			<Modal ref={modalRef}>
 				<h1>{modalType.type === "add" ? "Add staff members" : `Edit staff member`}</h1>
-				<form action={formActionAddNewMemberStaff} ref={formRef} id={"staff-members"}>
+				<form
+					action={formActionAddNewMemberStaff}
+					ref={formRef}
+					id={"staff-members"}
+				>
 					<div className={"grid w-full max-w-5xl grid-cols-1 gap-4 rounded-lg p-4"}>
 						<Input
 							name={"tournamentAbbreviation"}
@@ -137,9 +143,9 @@ export const UserLessStaffMemberModal = ({
 							}
 						/>
 					</div>
-					<Button className="mt-4 w-max" type={"submit"}>
+					<SubmitButton className="mt-4 w-max rounded-md bg-deepRed px-6 py-2 text-white hover:opacity-80 disabled:opacity-50">
 						{modalType.type === "add" ? "Add staff member" : "Edit staff member"}
-					</Button>
+					</SubmitButton>
 				</form>
 			</Modal>
 		</>
