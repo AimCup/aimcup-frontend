@@ -56,6 +56,23 @@ export async function deleteQualificationRoomAction(tournamentAbbreviation: stri
 	return { status: true as const };
 }
 
+export async function exportQualificationRoomsAction(tournamentAbbreviation: string) {
+	configureClient();
+	// Called via the low-level client because this endpoint is newer than the committed generated client.
+	// `npm run regen` against a backend exposing it will produce an `exportQualificationRooms` helper.
+	const { data, error } = await client.post<{ participantCount: number; message: string }>({
+		url: "/admin/tournaments/{abbreviation}/qualification-rooms/spreadsheet-sync",
+		path: { abbreviation: tournamentAbbreviation },
+	});
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: (error as { errors?: string[] }).errors?.join(", ") ?? "Failed to start export",
+		};
+	}
+	return { status: true as const, response: data };
+}
+
 export async function createQualificationRoomsAction(formData: CreateQualificationRoomsSchemaType) {
 	"use server";
 	const cookie = cookies().get("JWT")?.value;

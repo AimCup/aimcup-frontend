@@ -18,6 +18,7 @@ import {
 	DeleteRoomButton,
 	RefereeSignButton,
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomRowActions";
+import ExportQualificationRoomsButton from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/ExportQualificationRoomsButton";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
@@ -133,12 +134,15 @@ const QRoomsPage = async ({
 				title="Qualification rooms"
 				subtitle="Schedule rooms, assign rosters and referees."
 				actions={
-					<QualificationRoomModal
-						tournamentAbb={tournamentAbbreviation}
-						modalType={{
-							type: "add",
-						}}
-					/>
+					<>
+						<ExportQualificationRoomsButton tournamentAbbreviation={tournamentAbbreviation} />
+						<QualificationRoomModal
+							tournamentAbb={tournamentAbbreviation}
+							modalType={{
+								type: "add",
+							}}
+						/>
+					</>
 				}
 			/>
 
