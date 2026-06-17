@@ -152,7 +152,12 @@ const QRoomsPage = async ({
 						<p className="text-sm">
 							<span className="text-white/50">You are refereeing: </span>
 							<span className="font-semibold text-mintGreen">
-								{myRooms.map((room) => `Room #${room.number}`).join(", ")}
+								{myRooms
+									.map(
+										(room) =>
+											`Room #${room.number} (${format(new Date(room.startDate), "dd/MM/yyyy HH:mm")})`,
+									)
+									.join(", ")}
 							</span>
 						</p>
 					) : (
