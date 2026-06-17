@@ -105,7 +105,12 @@ const QualificationRoomsPage = async ({
 								<span>
 									<span className="text-white/50">You are signed into: </span>
 									<span className="font-semibold text-mintGreen">
-										{myRooms.map((r) => `Room #${r.number}`).join(", ")}
+										{myRooms
+											.map(
+												(r) =>
+													`Room #${r.number} (${format(new Date(r.startDate), "dd/MM/yyyy HH:mm")})`,
+											)
+											.join(", ")}
 									</span>
 								</span>
 							) : (
@@ -118,6 +123,7 @@ const QualificationRoomsPage = async ({
 					<table className="table">
 						<thead>
 							<tr>
+								<th>Number</th>
 								<th>Start date time (UTC+0)</th>
 								<th>Roster</th>
 								<th>Referee</th>
@@ -127,6 +133,7 @@ const QualificationRoomsPage = async ({
 						<tbody>
 								{rooms.map((room) => (
 								<tr key={room.id}>
+									<td>{room.number}</td>
 									<td>{format(new Date(room.startDate), "dd/MM/yyyy HH:mm")}</td>
 									<td>
 										{isAuction || room.tournamentType === tournamentType.PARTICIPANT_VS ? (
