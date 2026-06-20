@@ -186,7 +186,18 @@ const QualificationRoomsPage = async ({
 									</td>
 									{showActions && (
 										<td>
-											{!isParticipantSignedIn(room) ? (
+											{isParticipantSignedIn(room) ? (
+												"-"
+											) : room.isClosed ? (
+												<div className="flex flex-col gap-1">
+													<button className="btn btn-ghost btn-xs" type={"button"} disabled>
+														Sign in
+													</button>
+													<span className="text-xs text-white/40">
+														Sign-in time has passed
+													</span>
+												</div>
+											) : (
 												<form
 													action={async (_e) => {
 														"use server";
@@ -212,8 +223,6 @@ const QualificationRoomsPage = async ({
 														Sign in
 													</button>
 												</form>
-											) : (
-												"-"
 											)}
 										</td>
 									)}

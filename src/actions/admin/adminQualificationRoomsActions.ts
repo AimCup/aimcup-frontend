@@ -56,6 +56,27 @@ export async function deleteQualificationRoomAction(tournamentAbbreviation: stri
 	return { status: true as const };
 }
 
+export async function updateQualificationSignInLockAction(
+	tournamentAbbreviation: string,
+	signInLockHours: number,
+) {
+	configureClient();
+	// Low-level client call because this endpoint is newer than the committed generated client.
+	const { data, error } = await client.put<{ signInLockHours: number }>({
+		url: "/admin/tournaments/{abbreviation}/qualification-rooms/sign-in-lock",
+		path: { abbreviation: tournamentAbbreviation },
+		body: { signInLockHours },
+	});
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: (error as { errors?: string[] }).errors?.join(", ") ?? "Failed to update sign-in lock",
+		};
+	}
+	await multipleRevalidatePaths(qualificationRoomPaths(tournamentAbbreviation));
+	return { status: true as const, response: data };
+}
+
 export async function exportQualificationRoomsAction(tournamentAbbreviation: string) {
 	configureClient();
 	// Called via the low-level client because this endpoint is newer than the committed generated client.
