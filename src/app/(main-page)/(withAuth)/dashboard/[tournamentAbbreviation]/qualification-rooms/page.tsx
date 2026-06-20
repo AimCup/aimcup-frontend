@@ -19,6 +19,7 @@ import {
 	RefereeSignButton,
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomRowActions";
 import ExportQualificationRoomsButton from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/ExportQualificationRoomsButton";
+import SignInLockSetting from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/SignInLockSetting";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
@@ -128,6 +129,12 @@ const QRoomsPage = async ({
 		(room) => userData?.id && room.staffMember?.user?.id === userData.id,
 	);
 
+	// TODO: after `npm run regen` adds qualificationSignInLockHours to TournamentResponseDto,
+	// drop this cast and read getTournament?.qualificationSignInLockHours directly.
+	const signInLockHours =
+		(getTournament as unknown as { qualificationSignInLockHours?: number })
+			?.qualificationSignInLockHours ?? 1;
+
 	return (
 		<div className="flex w-full flex-col gap-6">
 			<PageHeader
@@ -144,6 +151,11 @@ const QRoomsPage = async ({
 						/>
 					</>
 				}
+			/>
+
+			<SignInLockSetting
+				tournamentAbbreviation={tournamentAbbreviation}
+				currentHours={signInLockHours}
 			/>
 
 			{canSignIn && (
