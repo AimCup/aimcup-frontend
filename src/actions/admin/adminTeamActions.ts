@@ -251,6 +251,33 @@ export async function deleteTeamAction(
 	};
 }
 
+export async function exportTeamsAction(tournamentAbbreviation: string) {
+	"use server";
+	const cookie = cookies().get("JWT")?.value;
+	client.setConfig({
+		baseUrl: process.env.NEXT_PUBLIC_API_URL,
+		headers: {
+			Cookie: `token=${cookie}`,
+		},
+	});
+
+	// Called via the low-level client because this endpoint is newer than the committed generated client.
+	// `npm run regen` against a backend exposing it will produce an `exportTeams` helper.
+	const { data, error } = await client.post<{ participantCount: number; message: string }>({
+		url: "/admin/tournaments/{abbreviation}/teams/spreadsheet-sync",
+		path: { abbreviation: tournamentAbbreviation },
+	});
+
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: (error as { errors?: string[] }).errors?.join(", ") ?? "Failed to start export",
+		};
+	}
+
+	return { status: true as const, response: data };
+}
+
 export async function changeTeamStatusAction(
 	tournamentAbbreviation: string,
 	teamId: string,
