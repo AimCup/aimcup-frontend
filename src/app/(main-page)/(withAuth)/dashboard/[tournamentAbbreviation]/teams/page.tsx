@@ -6,6 +6,7 @@ import {
 	getTournamentStaffMember,
 } from "../../../../../../../client";
 import { TeamsTable } from "./TeamsTable";
+import ExportTeamsButton from "./ExportTeamsButton";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
 import { Card } from "@ui/atoms/Card/Card";
 
@@ -75,6 +76,11 @@ const TeamsPage = async ({
 			<PageHeader
 				title="Teams"
 				subtitle="Manage tournament teams and rosters."
+				actions={
+					canUpdateTeam ? (
+						<ExportTeamsButton tournamentAbbreviation={tournamentAbbreviation} />
+					) : undefined
+				}
 			/>
 
 			<Card className="p-0">
