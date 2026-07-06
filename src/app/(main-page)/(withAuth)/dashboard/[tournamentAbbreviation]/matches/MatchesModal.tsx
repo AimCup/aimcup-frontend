@@ -51,6 +51,30 @@ export const MatchesModal = ({
 
 	const stageTypeSelectOptions: selectOptions[] = [
 		{
+			id: stageType.SWISS_1,
+			label: stageTypeEnumToString(stageType.SWISS_1),
+		},
+		{
+			id: stageType.SWISS_2,
+			label: stageTypeEnumToString(stageType.SWISS_2),
+		},
+		{
+			id: stageType.SWISS_3,
+			label: stageTypeEnumToString(stageType.SWISS_3),
+		},
+		{
+			id: stageType.SWISS_4,
+			label: stageTypeEnumToString(stageType.SWISS_4),
+		},
+		{
+			id: stageType.SWISS_5,
+			label: stageTypeEnumToString(stageType.SWISS_5),
+		},
+		{
+			id: stageType.SWISS_6,
+			label: stageTypeEnumToString(stageType.SWISS_6),
+		},
+		{
 			id: stageType.FINAL,
 			label: stageTypeEnumToString(stageType.FINAL),
 		},
