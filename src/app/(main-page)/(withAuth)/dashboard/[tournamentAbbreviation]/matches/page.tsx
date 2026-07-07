@@ -10,6 +10,7 @@ import {
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
 	getTournamentStaffMember,
+	type MatchResultDto,
 	type StaffMemberResponseDto,
 	tournamentType,
 } from "../../../../../../../client";
@@ -21,6 +22,9 @@ import {
 	StaffSignButton,
 	DeleteMatchButton,
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchRowActions";
+import { MatchResultModal } from "./MatchResultModal";
+import { RevertResultButton } from "./RevertResultButton";
+import ExportScheduleButton from "./ExportScheduleButton";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
 import { Card } from "@ui/atoms/Card/Card";
 
@@ -102,6 +106,34 @@ const MatchesPage = async ({
 	const isHost =
 		getStaffForATournamentUser?.roles?.some((role) => role.name === "Host") || false;
 
+	const isDeveloper =
+		getStaffForATournamentUser?.roles?.some((role) => role.name === "Developer") || false;
+
+	// A staff member counts as a referee of a match when their user is among the match's referees.
+	const isRefereeOfMatch = (referees: StaffMemberResponseDto[] | undefined) =>
+		referees?.some((referee) => referee.user?.id === userData?.id) ?? false;
+
+	const REFEREE_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+	// createdAt is exposed by the result DTO (added server-side); cast until the generated client is regenerated.
+	const withinRefereeEditWindow = (matchResult: MatchResultDto | null | undefined) => {
+		const createdAt = (matchResult as { createdAt?: string } | null | undefined)?.createdAt;
+		// Mirror the backend: an unknown createdAt is treated as outside the window (referee edit denied).
+		return !!createdAt && Date.now() - new Date(createdAt).getTime() < REFEREE_EDIT_WINDOW_MS;
+	};
+
+	// Add a result: assigned referee, Host or Developer.
+	const canAddResult = (referees: StaffMemberResponseDto[] | undefined) =>
+		isHost || isDeveloper || isRefereeOfMatch(referees);
+
+	// Edit an existing result: Host/Developer any time; the referee only within 24h of first entry.
+	const canEditResult = (
+		referees: StaffMemberResponseDto[] | undefined,
+		matchResult: MatchResultDto | null | undefined,
+	) =>
+		isHost ||
+		isDeveloper ||
+		(isRefereeOfMatch(referees) && withinRefereeEditWindow(matchResult));
+
 	const showSignOut = (staffMembers: StaffMemberResponseDto[] | undefined) => {
 		return (
 			staffMembers?.some((staffMember) => {
@@ -129,18 +161,27 @@ const MatchesPage = async ({
 			?.filter((match) => match.matchResult !== null)
 			?.sort((a, b) => (a.startDate > b.startDate ? 1 : -1)) ?? [];
 
+	const showUpcomingActions =
+		isHost || isDeveloper || unfinishedMatches.some((match) => isRefereeOfMatch(match.referees));
+
+	const showFinishedActions =
+		isHost || isDeveloper || finishedMatches.some((match) => isRefereeOfMatch(match.referees));
+
 	return (
 		<div className="flex w-full flex-col gap-6">
 			<PageHeader
 				title="Matches"
 				subtitle="Schedule matches, manage staff sign-in/out and results."
 				actions={
-					<MatchesModal
-						tournamentAbb={tournamentAbbreviation}
-						modalType={{ type: "add" }}
-						teams={rostersSelectOptions}
-						staffMembers={staffMemberSelectOptions}
-					/>
+					<div className="flex items-center gap-2">
+						<ExportScheduleButton tournamentAbbreviation={tournamentAbbreviation} />
+						<MatchesModal
+							tournamentAbb={tournamentAbbreviation}
+							modalType={{ type: "add" }}
+							teams={rostersSelectOptions}
+							staffMembers={staffMemberSelectOptions}
+						/>
+					</div>
 				}
 			/>
 
@@ -161,14 +202,14 @@ const MatchesPage = async ({
 								<th>Referee</th>
 								<th>Commentators</th>
 								<th>Streamers</th>
-								{isHost && <th>Actions</th>}
+								{showUpcomingActions && <th>Actions</th>}
 							</tr>
 						</thead>
 						<tbody>
 							{unfinishedMatches.length === 0 ? (
 								<tr>
 									<td
-										colSpan={isHost ? 9 : 8}
+										colSpan={showUpcomingActions ? 9 : 8}
 										className="py-8 text-center text-white/40"
 									>
 										No upcoming matches yet.
@@ -296,21 +337,32 @@ const MatchesPage = async ({
 											)}
 										</td>
 
-										{isHost && (
+										{showUpcomingActions && (
 											<td>
 												<div className="flex items-center gap-1">
-													<EditMatchModal
-														tournamentAbb={tournamentAbbreviation}
-														modalType={{
-															match: match,
-															staffMembers: staffMemberSelectOptions,
-														}}
-													/>
-													<DeleteMatchButton
-														tournamentAbbreviation={tournamentAbbreviation}
-														matchId={match.id}
-														matchLabel={match.matchId}
-													/>
+													{canAddResult(match.referees) && (
+														<MatchResultModal
+															tournamentAbbreviation={tournamentAbbreviation}
+															match={match}
+															mode="add"
+														/>
+													)}
+													{isHost && (
+														<>
+															<EditMatchModal
+																tournamentAbb={tournamentAbbreviation}
+																modalType={{
+																	match: match,
+																	staffMembers: staffMemberSelectOptions,
+																}}
+															/>
+															<DeleteMatchButton
+																tournamentAbbreviation={tournamentAbbreviation}
+																matchId={match.id}
+																matchLabel={match.matchId}
+															/>
+														</>
+													)}
 												</div>
 											</td>
 										)}
@@ -338,12 +390,16 @@ const MatchesPage = async ({
 								<th>Referee</th>
 								<th>Commentators</th>
 								<th>Streamers</th>
+								{showFinishedActions && <th>Actions</th>}
 							</tr>
 						</thead>
 						<tbody>
 							{finishedMatches.length === 0 ? (
 								<tr>
-									<td colSpan={7} className="py-8 text-center text-white/40">
+									<td
+										colSpan={showFinishedActions ? 8 : 7}
+										className="py-8 text-center text-white/40"
+									>
 										No finished matches yet.
 									</td>
 								</tr>
@@ -377,6 +433,25 @@ const MatchesPage = async ({
 												</div>
 											))}
 										</td>
+										{showFinishedActions && (
+											<td>
+												<div className="flex items-center gap-1">
+													{canEditResult(match.referees, match.matchResult) && (
+														<MatchResultModal
+															tournamentAbbreviation={tournamentAbbreviation}
+															match={match}
+															mode="edit"
+														/>
+													)}
+													{(isHost || isDeveloper) && (
+														<RevertResultButton
+															tournamentAbbreviation={tournamentAbbreviation}
+															matchId={match.id}
+														/>
+													)}
+												</div>
+											</td>
+										)}
 									</tr>
 								))
 							)}

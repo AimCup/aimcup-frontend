@@ -152,7 +152,7 @@ export const MatchesModal = ({
 					onClick={() => modalRef?.current?.showModal()}
 					type={"button"}
 				>
-					Add qualification rooms
+					Create new match
 				</Button>
 			) : (
 				<button
