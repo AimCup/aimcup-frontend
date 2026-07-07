@@ -14,6 +14,9 @@ import {
 	type StaffMemberResponseDto,
 	tournamentType,
 } from "../../../../../../../client";
+import { MatchResultModal } from "./MatchResultModal";
+import { RevertResultButton } from "./RevertResultButton";
+import ExportScheduleButton from "./ExportScheduleButton";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { MatchesModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchesModal";
@@ -22,9 +25,6 @@ import {
 	StaffSignButton,
 	DeleteMatchButton,
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchRowActions";
-import { MatchResultModal } from "./MatchResultModal";
-import { RevertResultButton } from "./RevertResultButton";
-import ExportScheduleButton from "./ExportScheduleButton";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
 import { Card } from "@ui/atoms/Card/Card";
 
