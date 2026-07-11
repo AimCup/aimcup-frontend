@@ -1,9 +1,9 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { client, getMatches, type MatchResponseDto } from "../../../../../../client";
+import { ScheduleTable } from "./ScheduleTable";
 import Section from "@ui/atoms/Section/Section";
 import { getUser } from "@/actions/public/getUserAction";
-import { ScheduleTable } from "./ScheduleTable";
 
 // The schedule must reflect admin edits/deletes immediately, so never serve it (or its match fetches)
 // from a cached server render.

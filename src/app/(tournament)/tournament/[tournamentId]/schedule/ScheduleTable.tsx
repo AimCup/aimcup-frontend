@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { type MatchResponseDto } from "../../../../../../client";
@@ -87,14 +87,17 @@ export const ScheduleTable = ({
 
 	// The only public action is a captain rescheduling their own match. Non-captains (regular
 	// viewers, host/staff) have no action here — staff actions live in the dashboard instead.
-	const isViewerCaptain = (match: MatchResponseDto) =>
-		!!currentUserId &&
-		(match.teamRed?.captain?.user?.id === currentUserId ||
-			match.teamBlue?.captain?.user?.id === currentUserId);
+	const isViewerCaptain = useCallback(
+		(match: MatchResponseDto) =>
+			!!currentUserId &&
+			(match.teamRed?.captain?.user?.id === currentUserId ||
+				match.teamBlue?.captain?.user?.id === currentUserId),
+		[currentUserId],
+	);
 
 	const hasActions = useMemo(
 		() => upcomingMatches.some(isViewerCaptain),
-		[upcomingMatches, currentUserId],
+		[upcomingMatches, isViewerCaptain],
 	);
 
 	const sortedMatches = useMemo(() => {
