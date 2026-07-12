@@ -22,6 +22,12 @@ export const StageNavigation = ({
 			// Sort stages in tournament order
 			const order = [
 				"QUALIFICATION",
+				"SWISS_1",
+				"SWISS_2",
+				"SWISS_3",
+				"SWISS_4",
+				"SWISS_5",
+				"SWISS_6",
 				"RO128",
 				"RO64",
 				"RO32",
