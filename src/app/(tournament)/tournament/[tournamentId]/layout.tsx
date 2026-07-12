@@ -12,7 +12,7 @@ import {
 } from "../../../../../client";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { compareStageTypes, stageTypeEnumToString } from "@/lib/helpers";
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
 import { buildTournamentMetadata } from "@/lib/metadata/site";
 
@@ -87,6 +87,7 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 			.filter((stage) => !!stage.mappool)
 			.filter((stage) => stage.stageType !== "REGISTRATION")
 			.filter((stage) => stage.stageType !== "SCREENING")
+			.sort((a, b) => compareStageTypes(a.stageType, b.stageType))
 			.map((stage) => stage.stageType);
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
