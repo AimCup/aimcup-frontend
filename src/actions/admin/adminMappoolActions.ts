@@ -69,6 +69,28 @@ export async function toggleOriginalSongAction(
 	return { status: true as const };
 }
 
+export async function toggleCustomMapAction(
+	tournamentAbbreviation: string,
+	stageType: stageType,
+	mappoolId: string,
+	beatmapId: string,
+	isCustom: boolean,
+) {
+	configureClient();
+	const { error } = await updateMappoolBeatmap({
+		path: { beatmapId },
+		body: { isCustom },
+	});
+	if (error) {
+		return {
+			status: false as const,
+			errorMessage: error.errors?.join(", ") ?? "Failed to update beatmap",
+		};
+	}
+	await multipleRevalidatePaths(mappoolPaths(tournamentAbbreviation, stageType, mappoolId));
+	return { status: true as const };
+}
+
 export async function deleteBeatmapAction(
 	tournamentAbbreviation: string,
 	stageType: stageType,
