@@ -9,9 +9,11 @@ import {
 } from "../../../../../../../../../client";
 import { stageTypeEnumToString } from "@/lib/helpers";
 import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
+import { BulkAddBeatMaps } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/BulkAddBeatMaps";
 import {
 	DeleteBeatmapButton,
 	ReleaseMappoolButton,
+	ToggleCustomMapButton,
 	ToggleOriginalSongButton,
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/MappoolRowActions";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
@@ -67,11 +69,18 @@ const StageTypePage = async ({
 			<Card
 				title="Beatmaps"
 				headerAction={
-					<AddBeatMap
-						tournamentAbb={tournamentAbbreviation}
-						mappoolId={mappoolId}
-						stageType={stageType}
-					/>
+					<div className="flex gap-2">
+						<BulkAddBeatMaps
+							tournamentAbb={tournamentAbbreviation}
+							mappoolId={mappoolId}
+							stageType={stageType}
+						/>
+						<AddBeatMap
+							tournamentAbb={tournamentAbbreviation}
+							mappoolId={mappoolId}
+							stageType={stageType}
+						/>
+					</div>
 				}
 				className="p-0"
 			>
@@ -132,14 +141,13 @@ const StageTypePage = async ({
 											<td>{beatmap.beatmapStatistics.length}</td>
 											<td>{beatmap.creator}</td>
 											<td>
-												{beatmap.isCustom && (
-													<Image
-														src="/aim_logo.svg"
-														alt="custom"
-														width={20}
-														height={20}
-													/>
-												)}
+												<ToggleCustomMapButton
+													tournamentAbbreviation={tournamentAbbreviation}
+													stageType={stageType}
+													mappoolId={mappoolId}
+													beatmapId={beatmap.id}
+													isCustom={beatmap.isCustom ?? false}
+												/>
 											</td>
 											<td>
 												<ToggleOriginalSongButton

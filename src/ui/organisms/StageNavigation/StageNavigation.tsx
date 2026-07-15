@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { type StageResponseDto } from "../../../../client";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { compareStageTypes, stageTypeEnumToString } from "@/lib/helpers";
 
 interface StageNavigationProps {
 	stages: StageResponseDto[];
@@ -18,29 +18,7 @@ export const StageNavigation = ({
 		.filter((stage) => !!stage.mappool)
 		.filter((stage) => stage.stageType !== "REGISTRATION")
 		.filter((stage) => stage.stageType !== "SCREENING")
-		.sort((a, b) => {
-			// Sort stages in tournament order
-			const order = [
-				"QUALIFICATION",
-				"SWISS_1",
-				"SWISS_2",
-				"SWISS_3",
-				"SWISS_4",
-				"SWISS_5",
-				"SWISS_6",
-				"RO128",
-				"RO64",
-				"RO32",
-				"RO16",
-				"QUARTER_FINAL",
-				"SEMI_FINAL",
-				"FINAL",
-				"GRAND_FINAL",
-			];
-			const aIndex = order.indexOf(a.stageType);
-			const bIndex = order.indexOf(b.stageType);
-			return aIndex - bIndex;
-		});
+		.sort((a, b) => compareStageTypes(a.stageType, b.stageType));
 
 	return (
 		<div className="w-full bg-gray-800 border-b border-gray-700">

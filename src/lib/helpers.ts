@@ -43,6 +43,33 @@ export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) 
 	}
 };
 
+// Canonical tournament order for stage types (mirrors the backend StageType enum).
+// Use this everywhere stages are listed so the ordering can't diverge between components.
+export const stageTypeOrder: StageResponseDto["stageType"][] = [
+	"REGISTRATION",
+	"SCREENING",
+	"QUALIFICATION",
+	"SWISS_1",
+	"SWISS_2",
+	"SWISS_3",
+	"SWISS_4",
+	"SWISS_5",
+	"SWISS_6",
+	"RO128",
+	"RO64",
+	"RO32",
+	"RO16",
+	"QUARTER_FINAL",
+	"SEMI_FINAL",
+	"FINAL",
+	"GRAND_FINAL",
+];
+
+export const compareStageTypes = (
+	a: StageResponseDto["stageType"],
+	b: StageResponseDto["stageType"],
+) => stageTypeOrder.indexOf(a) - stageTypeOrder.indexOf(b);
+
 export const tournamentTeamShowEnumAvailable = [
 	tournamentType.TEAM_VS,
 	tournamentType.INTERNATIONAL,

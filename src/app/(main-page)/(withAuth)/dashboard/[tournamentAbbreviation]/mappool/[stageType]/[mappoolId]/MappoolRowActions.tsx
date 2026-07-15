@@ -6,6 +6,7 @@ import { type modification, type stageType } from "../../../../../../../../../cl
 import {
 	deleteBeatmapAction,
 	releaseMappoolAction,
+	toggleCustomMapAction,
 	toggleOriginalSongAction,
 } from "@/actions/admin/adminMappoolActions";
 import { Button } from "@ui/atoms/Button/Button";
@@ -103,6 +104,56 @@ export function ToggleOriginalSongButton({
 		>
 			{isPending && <Spinner />}
 			{isCustomSong ? "Original ✓" : "Mark"}
+		</button>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Toggle "custom map" flag
+// ---------------------------------------------------------------------------
+
+export function ToggleCustomMapButton({
+	tournamentAbbreviation,
+	stageType,
+	mappoolId,
+	beatmapId,
+	isCustom,
+}: {
+	tournamentAbbreviation: string;
+	stageType: stageType;
+	mappoolId: string;
+	beatmapId: string;
+	isCustom: boolean;
+}) {
+	const [isPending, startTransition] = useTransition();
+
+	const handle = () => {
+		startTransition(async () => {
+			const result = await toggleCustomMapAction(
+				tournamentAbbreviation,
+				stageType,
+				mappoolId,
+				beatmapId,
+				!isCustom,
+			);
+			if (result.status) {
+				toast.success(isCustom ? "Removed custom map mark." : "Marked as custom map.", {
+					duration: 2500,
+				});
+			} else {
+				toast.error(result.errorMessage, { duration: 4000 });
+			}
+		});
+	};
+
+	return (
+		<button
+			className={`btn btn-xs ${isCustom ? "btn-success" : "btn-ghost"}`}
+			onClick={handle}
+			disabled={isPending}
+		>
+			{isPending && <Spinner />}
+			{isCustom ? "Custom ✓" : "Mark"}
 		</button>
 	);
 }
