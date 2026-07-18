@@ -103,8 +103,12 @@ const MatchesPage = async ({
 			role.permissions.some((permission) => permission === "MATCH_STAFF_MEMBER_SIGN_IN"),
 		);
 
+	// Host-level access. Co-Host is intentionally treated the same as Host: it ships with
+	// identical permissions, so it must not be locked out of match/result management.
 	const isHost =
-		getStaffForATournamentUser?.roles?.some((role) => role.name === "Host") || false;
+		getStaffForATournamentUser?.roles?.some(
+			(role) => role.name === "Host" || role.name === "Co-Host",
+		) || false;
 
 	const isDeveloper =
 		getStaffForATournamentUser?.roles?.some((role) => role.name === "Developer") || false;
@@ -121,11 +125,11 @@ const MatchesPage = async ({
 		return !!createdAt && Date.now() - new Date(createdAt).getTime() < REFEREE_EDIT_WINDOW_MS;
 	};
 
-	// Add a result: assigned referee, Host or Developer.
+	// Add a result: assigned referee, Host/Co-Host or Developer.
 	const canAddResult = (referees: StaffMemberResponseDto[] | undefined) =>
 		isHost || isDeveloper || isRefereeOfMatch(referees);
 
-	// Edit an existing result: Host/Developer any time; the referee only within 24h of first entry.
+	// Edit an existing result: Host/Co-Host/Developer any time; the referee only within 24h of first entry.
 	const canEditResult = (
 		referees: StaffMemberResponseDto[] | undefined,
 		matchResult: MatchResultDto | null | undefined,
