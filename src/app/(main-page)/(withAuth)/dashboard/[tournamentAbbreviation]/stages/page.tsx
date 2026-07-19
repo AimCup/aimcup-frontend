@@ -65,13 +65,14 @@ const StagePage = async ({
 								<th>Stage type</th>
 								<th>Date start</th>
 								<th>Date end</th>
+								<th>Own stage</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							{sortedStages.length === 0 ? (
 								<tr>
-									<td colSpan={4} className="py-8 text-center text-white/40">
+									<td colSpan={5} className="py-8 text-center text-white/40">
 										No stages yet. Add the first stage above.
 									</td>
 								</tr>
@@ -82,6 +83,13 @@ const StagePage = async ({
 										<td>{format(new Date(stage.startDate), "dd/MM/yyyy")}</td>
 										<td>{format(new Date(stage.endDate), "dd/MM/yyyy")}</td>
 										<td>
+											{stage.showInSchedule ? (
+												"Yes"
+											) : (
+												<span className="text-white/40">Hidden</span>
+											)}
+										</td>
+										<td>
 											<div className="flex items-center gap-1">
 												<StageForm
 													modalType={{
@@ -90,6 +98,7 @@ const StagePage = async ({
 															stageType: stage.stageType,
 															dateStart: stage.startDate,
 															dateEnd: stage.endDate,
+															showInSchedule: stage.showInSchedule,
 														},
 													}}
 													tournamentAbb={tournamentAbbreviation}

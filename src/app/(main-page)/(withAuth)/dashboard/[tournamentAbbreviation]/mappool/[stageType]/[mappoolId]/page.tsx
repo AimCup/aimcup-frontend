@@ -7,7 +7,8 @@ import {
 	type stageType,
 	type modification,
 } from "../../../../../../../../../client";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { mappoolLabel, stageTypeEnumToString } from "@/lib/helpers";
+import { MappoolNameForm } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/MappoolNameForm";
 import { AddBeatMap } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/AddBeatMap";
 import { BulkAddBeatMaps } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/mappool/[stageType]/[mappoolId]/BulkAddBeatMaps";
 import {
@@ -54,15 +55,26 @@ const StageTypePage = async ({
 	return (
 		<div className="flex w-full flex-col gap-6">
 			<PageHeader
-				title={stageTypeEnumToString(stageType)}
-				subtitle="Manage beatmaps and release state for this mappool."
+				title={mappoolLabel(stageType, getMappoolData.displayName)}
+				subtitle={
+					getMappoolData.displayName
+						? `Shown as "${getMappoolData.displayName}" — ${stageTypeEnumToString(stageType)} mappool.`
+						: "Manage beatmaps and release state for this mappool."
+				}
 				actions={
-					<ReleaseMappoolButton
-						tournamentAbbreviation={tournamentAbbreviation}
-						stageType={stageType}
-						mappoolId={mappoolId}
-						isReleased={getMappoolData.isReleased}
-					/>
+					<div className="flex items-center gap-2">
+						<MappoolNameForm
+							tournamentAbbreviation={tournamentAbbreviation}
+							stageTypeValue={stageType}
+							displayName={getMappoolData.displayName}
+						/>
+						<ReleaseMappoolButton
+							tournamentAbbreviation={tournamentAbbreviation}
+							stageType={stageType}
+							mappoolId={mappoolId}
+							isReleased={getMappoolData.isReleased}
+						/>
+					</div>
 				}
 			/>
 

@@ -43,6 +43,15 @@ export const stageTypeEnumToString = (stageType: StageResponseDto["stageType"]) 
 	}
 };
 
+// How a mappool is labelled wherever it's listed. Pools default to their stage's name, but can carry
+// an override for tournaments where pools and rounds aren't the same thing (Swiss rounds 1 and 2
+// holding what organisers call "Pool A" and "Pool B", say). Use this everywhere a pool is named so
+// the fallback rule can't diverge between components.
+export const mappoolLabel = (
+	stageType: StageResponseDto["stageType"],
+	displayName?: string | null,
+) => displayName?.trim() || stageTypeEnumToString(stageType);
+
 // Canonical tournament order for stage types (mirrors the backend StageType enum).
 // Use this everywhere stages are listed so the ordering can't diverge between components.
 export const stageTypeOrder: StageResponseDto["stageType"][] = [

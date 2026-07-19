@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { type StageResponseDto } from "../../../../client";
-import { compareStageTypes, stageTypeEnumToString } from "@/lib/helpers";
+import { compareStageTypes, mappoolLabel } from "@/lib/helpers";
 
 interface StageNavigationProps {
 	stages: StageResponseDto[];
@@ -16,6 +16,10 @@ export const StageNavigation = ({
 }: StageNavigationProps) => {
 	const availableStages = stages
 		.filter((stage) => !!stage.mappool)
+		// Stages flagged off the schedule are rounds that borrow another stage's pool (Swiss 3-5, say),
+		// so they get no pool entry of their own. Must stay in sync with the navbar Mappool dropdown
+		// in tournament/[tournamentId]/layout.tsx.
+		.filter((stage) => stage.showInSchedule !== false)
 		.filter((stage) => stage.stageType !== "REGISTRATION")
 		.filter((stage) => stage.stageType !== "SCREENING")
 		.sort((a, b) => compareStageTypes(a.stageType, b.stageType));
@@ -36,7 +40,7 @@ export const StageNavigation = ({
 										: "border-transparent hover:border-gray-500 hover:text-gray-300"
 								}`}
 							>
-								{stageTypeEnumToString(stage.stageType)}
+								{mappoolLabel(stage.stageType, stage.mappool?.displayName)}
 							</Link>
 						);
 					})}

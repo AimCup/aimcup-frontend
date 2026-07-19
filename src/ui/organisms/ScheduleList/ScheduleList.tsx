@@ -5,7 +5,10 @@ import { stageTypeEnumToString } from "@/lib/helpers";
 
 export const ScheduleList = ({ scheduleList }: { scheduleList: StageResponseDto[] }) => {
 	const scheduleListContent = scheduleList
-		?.sort((a, b) => {
+		// Stages that exist only to hold matches (e.g. Swiss rounds sharing another round's mappool)
+		// are flagged off so the schedule isn't cluttered with a row per round.
+		?.filter((stage) => stage.showInSchedule !== false)
+		.sort((a, b) => {
 			return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
 		})
 		.map((stage) => {

@@ -12,7 +12,7 @@ import {
 } from "../../../../../client";
 import { type INavbarProps, Navbar } from "@ui/organisms/Navbar/Navbar";
 import { Footer } from "@ui/organisms/Footer/Footer";
-import { compareStageTypes, stageTypeEnumToString } from "@/lib/helpers";
+import { compareStageTypes, mappoolLabel } from "@/lib/helpers";
 import { LoginAvatar } from "@ui/molecules/LoginAvatar/LoginAvatar";
 import { buildTournamentMetadata } from "@/lib/metadata/site";
 
@@ -85,10 +85,16 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 		getStagesData &&
 		getStagesData
 			.filter((stage) => !!stage.mappool)
+			// Stages flagged off the schedule borrow another stage's pool, so they get no entry here.
+			// Must stay in sync with StageNavigation.
+			.filter((stage) => stage.showInSchedule !== false)
 			.filter((stage) => stage.stageType !== "REGISTRATION")
 			.filter((stage) => stage.stageType !== "SCREENING")
 			.sort((a, b) => compareStageTypes(a.stageType, b.stageType))
-			.map((stage) => stage.stageType);
+			.map((stage) => ({
+				stageType: stage.stageType,
+				label: mappoolLabel(stage.stageType, stage.mappool?.displayName),
+			}));
 
 	const tournamentNavbarRoutes: INavbarProps[] = navbarRoutes.map((item) => {
 		if (
@@ -108,8 +114,8 @@ export default async function Layout({ children, params }: ITournamentLayout) {
 				children:
 					getStateTypes &&
 					getStateTypes.map((stage) => ({
-						name: stageTypeEnumToString(stage),
-						href: `/tournament/${params.tournamentId}/mappool/${stage}`,
+						name: stage.label,
+						href: `/tournament/${params.tournamentId}/mappool/${stage.stageType}`,
 					})),
 			};
 		}

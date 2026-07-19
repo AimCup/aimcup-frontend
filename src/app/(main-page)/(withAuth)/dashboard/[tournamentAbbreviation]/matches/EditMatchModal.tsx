@@ -5,7 +5,7 @@ import type { MatchResponseDto } from "../../../../../../../client";
 import { SubmitButton } from "@ui/atoms/Button/SubmitButton";
 import Modal from "@ui/organisms/Modal/Modal";
 import { StaffMemberAutocomplete } from "@ui/atoms/Forms/Select/StaffMemberAutocomplete";
-import type { selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
+import { ComboBox, type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { Input } from "@ui/atoms/Forms/Input/Input";
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { resetFormValues } from "@/lib/helpers";
@@ -15,6 +15,7 @@ import { editMatchAction } from "@/actions/admin/adminEditMatchActions";
 type EditMatchModalType = {
 	match: MatchResponseDto;
 	staffMembers: selectOptions[];
+	stages: selectOptions[];
 };
 
 interface IEditMatchModalProps {
@@ -130,12 +131,20 @@ export const EditMatchModal = ({
 							type={"hidden"}
 							required={true}
 						/>
-						<Input
+						<ComboBox
 							name={"stageType"}
-							label={"stageType"}
-							value={modalType.match.stage?.stageType || ""}
-							type={"hidden"}
+							label={"Stage"}
+							selectOptions={modalType.stages}
 							required={true}
+							selectedOption={
+								modalType.match.stage?.stageType
+									? [modalType.match.stage.stageType]
+									: []
+							}
+							errorMessage={
+								stateEditMatch?.errors.stageType &&
+								stateEditMatch?.errors.stageType[0]
+							}
 						/>
 						<Input
 							name={"dataTimeStart"}

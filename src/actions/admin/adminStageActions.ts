@@ -28,6 +28,7 @@ export async function createStageAction(formData: CreateStageSchemaType) {
 			startDate: new Date(formData.startDate).toISOString(),
 			endDate: new Date(formData.endDate).toISOString(),
 			stageType: formData.stageType as stageType,
+			showInSchedule: formData.showInSchedule,
 		},
 	});
 
@@ -69,6 +70,7 @@ export async function editStageAction(formData: EditStageSchemaType) {
 		body: {
 			startDate: new Date(formData.startDate).toISOString(),
 			endDate: new Date(formData.endDate).toISOString(),
+			showInSchedule: formData.showInSchedule,
 		},
 	});
 
