@@ -23,6 +23,7 @@ type EditStage = {
 		stageType: string;
 		dateStart: string;
 		dateEnd: string;
+		showInSchedule: boolean;
 	};
 };
 
@@ -52,7 +53,9 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 			modalRef.current?.close();
 			resetFormValues({
 				formRef,
-				resetWithoutInputNames: ["tournamentAbb"],
+				// showInSchedule is excluded because resetting a checkbox force-unchecks it, which would
+				// make the next stage default to hidden instead of visible.
+				resetWithoutInputNames: ["tournamentAbb", "showInSchedule"],
 				schema: createStageSchema,
 			});
 		},
@@ -229,6 +232,24 @@ export const StageForm = ({ modalType, tournamentAbb, alreadyAddedStages }: IAdd
 									: undefined
 							}
 						/>
+						<div className={"form-control"}>
+							<label className={"label flex cursor-pointer justify-start gap-4"}>
+								<input
+									type={"checkbox"}
+									name={"showInSchedule"}
+									className={"checkbox"}
+									defaultChecked={
+										modalType.type === "edit" ? modalType.stage.showInSchedule : true
+									}
+								/>
+								<span className={"label-text"}>Show as its own stage</span>
+							</label>
+							<span className={"pl-1 text-xs opacity-60"}>
+								Untick for rounds that share another stage&apos;s mappool (e.g. later Swiss
+								rounds). They disappear from the public schedule and the mappool menu, but
+								matches can still be created for them.
+							</span>
+						</div>
 						<Input
 							errorMessage={
 								(stateAddNewStage?.errors.tournamentAbb &&

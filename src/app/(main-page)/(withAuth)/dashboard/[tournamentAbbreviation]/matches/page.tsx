@@ -7,6 +7,7 @@ import {
 	getMatches,
 	getParticipants,
 	getStaffMembers1,
+	getStages,
 	getTeamsByTournament,
 	getTournamentByAbbreviation,
 	getTournamentStaffMember,
@@ -17,6 +18,7 @@ import {
 import { MatchResultModal } from "./MatchResultModal";
 import { RevertResultButton } from "./RevertResultButton";
 import ExportScheduleButton from "./ExportScheduleButton";
+import { compareStageTypes, stageTypeEnumToString } from "@/lib/helpers";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { MatchesModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/matches/MatchesModal";
@@ -53,13 +55,27 @@ const MatchesPage = async ({
 		{ data: getStaffMembers },
 		{ data: getTournament },
 		{ data },
+		{ data: getStagesData },
 	] = await Promise.all([
 		getUser(),
 		getTournamentStaffMember({ path: { abbreviation: tournamentAbbreviation } }),
 		getStaffMembers1({ path: { abbreviation: tournamentAbbreviation } }),
 		getTournamentByAbbreviation({ path: { abbreviation: tournamentAbbreviation } }),
 		getMatches({ path: { abbreviation: tournamentAbbreviation } }),
+		getStages({ path: { abbreviation: tournamentAbbreviation } }),
 	]);
+
+	// Every stage is selectable, including ones hidden from the public schedule: those exist precisely
+	// so matches can be assigned to them (e.g. later Swiss rounds sharing an earlier round's mappool).
+	const stageSelectOptions: selectOptions[] = (getStagesData ?? [])
+		.slice()
+		.sort((a, b) => compareStageTypes(a.stageType, b.stageType))
+		.map((stage) => ({
+			id: stage.stageType,
+			label: stage.showInSchedule
+				? stageTypeEnumToString(stage.stageType)
+				: `${stageTypeEnumToString(stage.stageType)} (not on schedule)`,
+		}));
 
 	const staffMemberSelectOptions: selectOptions[] =
 		getStaffMembers
@@ -358,6 +374,7 @@ const MatchesPage = async ({
 																modalType={{
 																	match: match,
 																	staffMembers: staffMemberSelectOptions,
+																	stages: stageSelectOptions,
 																}}
 															/>
 															<DeleteMatchButton
@@ -445,6 +462,16 @@ const MatchesPage = async ({
 															tournamentAbbreviation={tournamentAbbreviation}
 															match={match}
 															mode="edit"
+														/>
+													)}
+													{isHost && (
+														<EditMatchModal
+															tournamentAbb={tournamentAbbreviation}
+															modalType={{
+																match: match,
+																staffMembers: staffMemberSelectOptions,
+																stages: stageSelectOptions,
+															}}
 														/>
 													)}
 													{(isHost || isDeveloper) && (

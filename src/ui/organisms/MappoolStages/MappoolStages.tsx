@@ -2,7 +2,7 @@ import React from "react";
 import { format } from "date-fns";
 import { type MappoolResponseDto, type StageResponseDto, type stageType } from "../../../../client";
 import { TournamentCard } from "@ui/molecules/Cards/TournamentCard";
-import { stageTypeEnumToString } from "@/lib/helpers";
+import { mappoolLabel } from "@/lib/helpers";
 
 interface IMappoolStagesProps {
 	stage: {
@@ -26,7 +26,7 @@ export const MappoolStages = (props: IMappoolStagesProps) => {
 	return (
 		<TournamentCard
 			key={stage.id}
-			title={stageTypeEnumToString(stage.stageEnum as stageType)}
+			title={mappoolLabel(stage.stageEnum as stageType, props.mappool.displayName)}
 			date={{
 				start: format(new Date(stage.date?.start || 0), "dd/MM/yyyy"),
 				end: format(new Date(stage.date?.end || 0), "dd/MM/yyyy"),
