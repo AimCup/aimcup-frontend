@@ -63,13 +63,18 @@ export const EditMatchModal = ({
 			modalRef.current?.close();
 			resetFormValues({
 				formRef,
-				resetWithoutInputNames: ["tournamentAbbreviation", "matchId", "dataTimeStart"],
+				resetWithoutInputNames: [
+					"tournamentAbbreviation",
+					"matchId",
+					"customMatchId",
+					"dataTimeStart",
+				],
 				schema: editMatchSchema,
 			});
 		},
 	);
 
-	// Function to update date input value
+	// Function to update the uncontrolled inputs (their defaultValue is stale once the match reloads)
 	const updateDateInput = React.useCallback(() => {
 		if (formRef.current) {
 			const dateInput = formRef.current.querySelector<HTMLInputElement>(
@@ -78,8 +83,14 @@ export const EditMatchModal = ({
 			if (dateInput) {
 				dateInput.value = formatDateForInput(modalType.match.startDate);
 			}
+			const customIdInput = formRef.current.querySelector<HTMLInputElement>(
+				'input[name="customMatchId"]',
+			);
+			if (customIdInput) {
+				customIdInput.value = modalType.match.matchId ?? "";
+			}
 		}
-	}, [modalType.match.startDate]);
+	}, [modalType.match.startDate, modalType.match.matchId]);
 
 	// Update input value when modal opens
 	const handleOpenModal = () => {
@@ -130,6 +141,17 @@ export const EditMatchModal = ({
 							value={modalType.match.id}
 							type={"hidden"}
 							required={true}
+						/>
+						<Input
+							name={"customMatchId"}
+							label={"Match ID"}
+							required={true}
+							key={`customMatchId-${modalType.match.id}`}
+							defaultValue={modalType.match.matchId ?? ""}
+							errorMessage={
+								stateEditMatch?.errors.customMatchId &&
+								stateEditMatch?.errors.customMatchId[0]
+							}
 						/>
 						<ComboBox
 							name={"stageType"}

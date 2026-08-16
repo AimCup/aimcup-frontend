@@ -404,6 +404,7 @@ const MatchesPage = async ({
 					<table className="table">
 						<thead>
 							<tr>
+								<th>Match ID</th>
 								<th>Start date (UTC+0)</th>
 								<th>Stage</th>
 								<th>Team blue</th>
@@ -418,7 +419,7 @@ const MatchesPage = async ({
 							{finishedMatches.length === 0 ? (
 								<tr>
 									<td
-										colSpan={showFinishedActions ? 8 : 7}
+										colSpan={showFinishedActions ? 9 : 8}
 										className="py-8 text-center text-white/40"
 									>
 										No finished matches yet.
@@ -427,6 +428,7 @@ const MatchesPage = async ({
 							) : (
 								finishedMatches.map((match) => (
 									<tr key={match.id}>
+										<td>{match.matchId}</td>
 										<td>
 											{format(new Date(match.startDate), "dd/MM/yyyy HH:mm")}
 										</td>
