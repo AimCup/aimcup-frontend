@@ -23,6 +23,7 @@ export async function editMatchAction(formData: EditMatchSchemaType) {
 			matchId: formData.matchId,
 		},
 		body: {
+			matchId: formData.customMatchId,
 			startDate: formData.dataTimeStart,
 			stageType: formData.stageType as MatchRequestDto["stageType"],
 			commentatorIds: formData.commentatorIds ?? [],
