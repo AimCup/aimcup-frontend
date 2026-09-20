@@ -35,12 +35,13 @@ const BracketPage = async ({ params }: { params: { tournamentId: string } }) => 
   const numTeams: number = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
   const directSeeds: number | undefined = tournamentData?.numQualifiers ?? undefined;
   const playInTeams: number | undefined = tournamentData?.playInTeams ?? undefined;
+  const bracketReset: boolean = tournamentData?.bracketReset ?? false;
 
   return (
     <Section id="bracket" className="flex-col">
       <div className="flex w-full flex-col !px-3 !py-2">
         <h2 className="mb-8 text-3xl font-bold leading-relaxed">Bracket</h2>
-        <BracketContainer entries={entries} hasSwiss={hasSwiss} numTeams={numTeams} numSwissTeams={numSwissTeams} directSeeds={directSeeds} playInTeams={playInTeams} />
+        <BracketContainer entries={entries} hasSwiss={hasSwiss} numTeams={numTeams} numSwissTeams={numSwissTeams} directSeeds={directSeeds} playInTeams={playInTeams} bracketReset={bracketReset} />
       </div>
     </Section>
   );

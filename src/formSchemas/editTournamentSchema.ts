@@ -9,6 +9,8 @@ export const editTournamentSchema = zod.object({
 	swissTeams: zod.string().optional(),
 	numQualifiers: zod.string().optional(),
 	playInTeams: zod.string().optional(),
+	// Checkbox: present as "true" when checked, absent from the form data when unchecked.
+	bracketReset: zod.string().optional(),
 	prize0: zod.string(),
 	prize1: zod.string(),
 	prize2: zod.string(),

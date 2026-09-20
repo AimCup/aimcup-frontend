@@ -12,6 +12,7 @@ type ExtendedTournament = TournamentResponseDto & {
 	bracketSize?: number;
 	numQualifiers?: number;
 	playInTeams?: number;
+	bracketReset?: boolean;
 };
 import { useTypeSafeFormState } from "@/hooks/useTypeSafeFormState";
 import { editTournamentSchema } from "@/formSchemas/editTournamentSchema";
@@ -245,6 +246,28 @@ const SettingsPage = () => {
 											} as ExtendedTournament));
 										}}
 									/>
+									<label className="flex cursor-pointer items-start gap-3 py-1">
+										<input
+											type="checkbox"
+											name="bracketReset"
+											value="true"
+											className="checkbox checkbox-sm mt-0.5"
+											checked={(tournamentData as ExtendedTournament)?.bracketReset ?? false}
+											onChange={(e) => {
+												setTournamentData((prev) => ({
+													...prev,
+													bracketReset: e.target.checked,
+												} as ExtendedTournament));
+											}}
+										/>
+										<span className="flex flex-col">
+											<span className="label-text">Enable bracket reset</span>
+											<span className="text-xs text-gray-500">
+												Adds a second grand final, played only if the lower bracket team wins
+												the first one.
+											</span>
+										</span>
+									</label>
 								</>
 							)}
 						</div>

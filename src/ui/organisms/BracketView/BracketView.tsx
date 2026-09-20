@@ -52,8 +52,15 @@ const BracketView = ({ entries, onEdit, deConfig }: BracketViewProps) => {
   const ub = deConfig?.upperBracket ?? UPPER_BRACKET;
   const lb = deConfig?.lowerBracket ?? LOWER_BRACKET;
   const gf = deConfig?.grandFinal ?? GRAND_FINAL;
+  const reset = deConfig?.bracketReset;
   const ubSlotCount = ub[0]?.matches.length ?? 4;
   const lbSlotCount = lb[0]?.matches.length ?? 2;
+
+  // The reset is only played when the lower bracket team (slot 2 of the grand final) wins it.
+  const gfEntry = entryMap.get(gf.matchId) ?? null;
+  const gfScore1 = gfEntry?.score1 ?? null;
+  const gfScore2 = gfEntry?.score2 ?? null;
+  const resetSkipped = gfScore1 !== null && gfScore2 !== null && gfScore1 > gfScore2;
 
   return (
     <div className="w-full overflow-x-auto pb-4">
@@ -84,11 +91,25 @@ const BracketView = ({ entries, onEdit, deConfig }: BracketViewProps) => {
           </div>
         </div>
 
-        <div className="flex-shrink-0 self-center">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-4">
-            Grand Final
-          </p>
-          <BracketMatch config={gf} entry={entryMap.get(gf.matchId) ?? null} onEdit={onEdit} />
+        <div className="flex-shrink-0 self-center flex gap-8 items-end">
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-4">
+              Grand Final
+            </p>
+            <BracketMatch config={gf} entry={gfEntry} onEdit={onEdit} />
+          </div>
+
+          {reset && (
+            <div className={resetSkipped ? "opacity-40" : ""}>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-4 whitespace-nowrap">
+                Bracket Reset
+                <span className="block text-[10px] font-normal normal-case tracking-normal text-gray-500">
+                  {resetSkipped ? "not played" : "if necessary"}
+                </span>
+              </p>
+              <BracketMatch config={reset} entry={entryMap.get(reset.matchId) ?? null} onEdit={onEdit} />
+            </div>
+          )}
         </div>
       </div>
     </div>
