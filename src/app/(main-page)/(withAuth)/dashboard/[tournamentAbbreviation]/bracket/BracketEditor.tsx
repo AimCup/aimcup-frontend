@@ -16,6 +16,7 @@ type BracketEditorProps = {
 	numSwissTeams?: number;
 	directSeeds?: number;
 	playInTeams?: number;
+	bracketReset?: boolean;
 };
 
 function Spinner() {
@@ -41,6 +42,7 @@ function buildDEAdvancementMap(de: DEBracketConfig) {
 		...de.upperBracket,
 		...de.lowerBracket,
 		{ roundName: "Grand Final", matches: [de.grandFinal] },
+		...(de.bracketReset ? [{ roundName: "Bracket Reset", matches: [de.bracketReset] }] : []),
 	];
 	for (const round of allRounds) {
 		for (const match of round.matches) {
@@ -51,11 +53,11 @@ function buildDEAdvancementMap(de: DEBracketConfig) {
 	return map;
 }
 
-export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams }: BracketEditorProps) => {
+export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams, bracketReset }: BracketEditorProps) => {
 	const n = numTeams && numTeams > 0 ? numTeams : 16;
 	const sn = numSwissTeams && numSwissTeams > 0 ? numSwissTeams : n;
 	const swissRounds = getSwissConfig(sn);
-	const deConfig = getDEConfig(n);
+	const deConfig = getDEConfig(n, bracketReset ?? false);
 	const advancementMap = new Map([
 		...buildAdvancementMap(swissRounds),
 		...buildDEAdvancementMap(deConfig),
@@ -158,7 +160,7 @@ export const BracketEditor = ({ tournamentAbb, initialEntries, hasSwiss, numTeam
 
 	return (
 		<>
-			<BracketContainer entries={entries} hasSwiss={hasSwiss} numTeams={n} numSwissTeams={sn} directSeeds={directSeeds} playInTeams={playInTeams} onEdit={openEdit} />
+			<BracketContainer entries={entries} hasSwiss={hasSwiss} numTeams={n} numSwissTeams={sn} directSeeds={directSeeds} playInTeams={playInTeams} bracketReset={bracketReset} onEdit={openEdit} />
 
 			<dialog ref={dialogRef} className="modal">
 				<div className="modal-box max-w-sm">

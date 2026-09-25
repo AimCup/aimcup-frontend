@@ -13,6 +13,8 @@ export type DEBracketConfig = {
   upperBracket: BracketRoundConfig[];
   lowerBracket: BracketRoundConfig[];
   grandFinal: BracketMatchConfig;
+  /** Only set when the tournament enables a bracket reset (true double elimination). */
+  bracketReset?: BracketMatchConfig;
 };
 
 // Upper Bracket
@@ -79,6 +81,14 @@ export const GRAND_FINAL: BracketMatchConfig = {
   defaultLabel2: "W LB Finals",
 };
 
+// Bracket Reset: only played when the LB team wins the grand final.
+// Both slots come from the grand final, so results propagate into it automatically.
+export const BRACKET_RESET: BracketMatchConfig = {
+  matchId: "AC-15",
+  defaultLabel1: "W AC-14",
+  defaultLabel2: "L AC-14",
+};
+
 // ─── Dynamic DE generation ────────────────────────────────────────────────────
 
 function ubRoundNames(k: number): string[] {
@@ -101,7 +111,7 @@ function lbRoundNames(k: number): string[] {
   });
 }
 
-export function generateDEConfig(numTeams: number): DEBracketConfig {
+export function generateDEConfig(numTeams: number, bracketReset = false): DEBracketConfig {
   const n = numTeams;
   const k = Math.log2(n);
 
@@ -173,6 +183,15 @@ export function generateDEConfig(numTeams: number): DEBracketConfig {
     upperBracket,
     lowerBracket,
     grandFinal: { matchId: `AC-${gfId}`, defaultLabel1: "W UB Finals", defaultLabel2: "W LB Finals" },
+    ...(bracketReset
+      ? {
+          bracketReset: {
+            matchId: `AC-${gfId + 1}`,
+            defaultLabel1: `W AC-${gfId}`,
+            defaultLabel2: `L AC-${gfId}`,
+          },
+        }
+      : {}),
   };
 }
 
@@ -237,11 +256,16 @@ export function getPlayInConfig(directSeeds: number, playInTeams: number, bracke
   return { rounds, directSeeds, playInSpots: spotsP2 };
 }
 
-export function getDEConfig(numTeams: number): DEBracketConfig {
+export function getDEConfig(numTeams: number, bracketReset = false): DEBracketConfig {
   if (numTeams <= 8) {
-    return { upperBracket: UPPER_BRACKET, lowerBracket: LOWER_BRACKET, grandFinal: GRAND_FINAL };
+    return {
+      upperBracket: UPPER_BRACKET,
+      lowerBracket: LOWER_BRACKET,
+      grandFinal: GRAND_FINAL,
+      ...(bracketReset ? { bracketReset: BRACKET_RESET } : {}),
+    };
   }
   // Round DOWN to nearest power of 2 — e.g. 20 teams → 16-team DE bracket
   const k = Math.floor(Math.log2(numTeams));
-  return generateDEConfig(Math.pow(2, k));
+  return generateDEConfig(Math.pow(2, k), bracketReset);
 }

@@ -30,6 +30,7 @@ export async function editTournamentAction(formData: EditTournamentSchemaType, f
 			swissTeams: formData.swissTeams ? Number(formData.swissTeams) : undefined,
 			numQualifiers: formData.numQualifiers ? Number(formData.numQualifiers) : undefined,
 			playInTeams: formData.playInTeams ? Number(formData.playInTeams) : undefined,
+			bracketReset: formData.bracketReset === "true",
 			prizePool: [
 				{ type: 0, prize: formData.prize0 },
 				{ type: 1, prize: formData.prize1 },

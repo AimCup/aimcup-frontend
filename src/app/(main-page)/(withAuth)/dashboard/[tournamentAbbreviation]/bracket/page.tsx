@@ -40,6 +40,7 @@ const BracketEditorPage = async ({
 	const numTeams: number = tournamentData?.bracketSize ?? (teams.length > 0 ? teams.length : 16);
 	const directSeeds: number | undefined = tournamentData?.numQualifiers ?? undefined;
 	const playInTeams: number | undefined = tournamentData?.playInTeams ?? undefined;
+	const bracketReset: boolean = tournamentData?.bracketReset ?? false;
 
 	const swissRounds = getSwissConfig(numTeams);
 	const R1_SLOTS = swissRounds[0].pools[0].matches.map((m, i) => ({
@@ -96,6 +97,7 @@ const BracketEditorPage = async ({
 					numSwissTeams={numSwissTeams}
 					directSeeds={directSeeds}
 					playInTeams={playInTeams}
+					bracketReset={bracketReset}
 				/>
 			</Card>
 		</div>

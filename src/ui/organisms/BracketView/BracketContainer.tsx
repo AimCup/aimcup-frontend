@@ -17,14 +17,15 @@ type BracketContainerProps = {
   numSwissTeams?: number;
   directSeeds?: number;
   playInTeams?: number;
+  bracketReset?: boolean;
   onEdit?: (slotId: string) => void;
 };
 
-const BracketContainer = ({ entries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams, onEdit }: BracketContainerProps) => {
+const BracketContainer = ({ entries, hasSwiss, numTeams, numSwissTeams, directSeeds, playInTeams, bracketReset, onEdit }: BracketContainerProps) => {
   const n = numTeams && numTeams > 0 ? numTeams : 16;
   const sn = numSwissTeams && numSwissTeams > 0 ? numSwissTeams : n;
   const swissRounds = getSwissConfig(sn);
-  const deConfig = getDEConfig(n);
+  const deConfig = getDEConfig(n, bracketReset ?? false);
   const deFirstRound = deConfig.upperBracket[0]?.roundName ?? "Quarter Finals";
   const playInConfig = (directSeeds != null && playInTeams != null)
     ? getPlayInConfig(directSeeds, playInTeams, n)
@@ -40,7 +41,11 @@ const BracketContainer = ({ entries, hasSwiss, numTeams, numSwissTeams, directSe
     ...(playInConfig
       ? [{ id: "playin" as View, label: "Play-In", sub: `${playInTeams} teams · ${playInConfig.playInSpots} DE spot${playInConfig.playInSpots > 1 ? "s" : ""}` }]
       : []),
-    { id: "de" as View, label: "Double Elimination", sub: `${deFirstRound} → Grand Final · ${n} teams` },
+    {
+      id: "de" as View,
+      label: "Double Elimination",
+      sub: `${deFirstRound} → Grand Final${bracketReset ? " + reset" : ""} · ${n} teams`,
+    },
   ];
 
   return (
