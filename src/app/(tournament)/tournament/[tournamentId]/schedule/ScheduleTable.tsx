@@ -269,6 +269,9 @@ export const ScheduleTable = ({
 											<th>Score</th>
 											<th>Team red</th>
 											<th>MP</th>
+											<th>Referee</th>
+											<th>Commentators</th>
+											<th>Streamers</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -308,6 +311,21 @@ export const ScheduleTable = ({
 														) : (
 															"-"
 														)}
+													</td>
+													<td>
+														{match.referees?.map((referee) => (
+															<div key={referee?.user?.id}>{referee?.user?.username}</div>
+														))}
+													</td>
+													<td>
+														{match.commentators?.map((commentator) => (
+															<div key={commentator?.user?.id}>{commentator?.user?.username}</div>
+														))}
+													</td>
+													<td>
+														{match.streamers?.map((streamer) => (
+															<div key={streamer?.user?.id}>{streamer?.user?.username}</div>
+														))}
 													</td>
 												</tr>
 											);
