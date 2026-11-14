@@ -127,6 +127,7 @@ const QualificationRoomsPage = async ({
 								<th>Start date time (UTC+0)</th>
 								<th>Roster</th>
 								<th>Referee</th>
+								<th>MP</th>
 								{showActions && <th>Actions</th>}
 							</tr>
 						</thead>
@@ -180,6 +181,20 @@ const QualificationRoomsPage = async ({
 												</div>
 												{room.staffMember.user?.username}
 											</div>
+										) : (
+											"-"
+										)}
+									</td>
+									<td>
+										{room.mpUrl ? (
+											<a
+												href={room.mpUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-mintGreen underline"
+											>
+												MP
+											</a>
 										) : (
 											"-"
 										)}

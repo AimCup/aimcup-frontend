@@ -20,6 +20,7 @@ import {
 } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomRowActions";
 import ExportQualificationRoomsButton from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/ExportQualificationRoomsButton";
 import SignInLockSetting from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/SignInLockSetting";
+import { QualificationRoomMpUrlModal } from "@/app/(main-page)/(withAuth)/dashboard/[tournamentAbbreviation]/qualification-rooms/QualificationRoomMpUrlModal";
 import { type selectOptions } from "@ui/atoms/Forms/Select/ComboBox";
 import { getUser } from "@/actions/public/getUserAction";
 import { PageHeader } from "@ui/molecules/PageHeader/PageHeader";
@@ -114,15 +115,15 @@ const QRoomsPage = async ({
 			})) || [];
 	}
 
-	const canSignIn =
-		getStaffForATournamentUser?.roles?.some((role) =>
-			role.permissions.some(
-				(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
-			),
-		) ||
-		getStaffForATournamentUser?.permissions?.some(
-			(permission) => permission === "QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN",
+	const hasStaffPermission = (permission: string) =>
+		!!(
+			getStaffForATournamentUser?.roles?.some((role) =>
+				role.permissions.some((p) => p === permission),
+			) || getStaffForATournamentUser?.permissions?.some((p) => p === permission)
 		);
+	const canSignIn = hasStaffPermission("QUALIFICATION_ROOM_STAFF_MEMBER_SIGN_IN");
+	// The room's own referee can always set its MP link; anyone who can update rooms can set any of them.
+	const canUpdateRooms = hasStaffPermission("QUALIFICATION_ROOM_UPDATE");
 
 	const rooms = qualificationRooms(getQualificationRoomsData || []);
 	const myRooms = rooms.filter(
@@ -189,13 +190,14 @@ const QRoomsPage = async ({
 								<th>Start date time (UTC+0)</th>
 								<th>Roster</th>
 								<th>Referee</th>
+								<th>MP</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							{rooms.length === 0 ? (
 								<tr>
-									<td colSpan={5} className="py-8 text-center text-white/40">
+									<td colSpan={6} className="py-8 text-center text-white/40">
 										No qualification rooms yet.
 									</td>
 								</tr>
@@ -265,6 +267,31 @@ const QRoomsPage = async ({
 											) : (
 												<span className="text-white/40">-</span>
 											)}
+										</td>
+										<td>
+											<div className="flex items-center gap-1">
+												{room.mpUrl ? (
+													<a
+														href={room.mpUrl}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="text-mintGreen underline"
+													>
+														MP
+													</a>
+												) : (
+													<span className="text-white/40">-</span>
+												)}
+												{(canUpdateRooms ||
+													(!!userData?.id && room.staffMember?.user?.id === userData.id)) && (
+													<QualificationRoomMpUrlModal
+														tournamentAbbreviation={tournamentAbbreviation}
+														roomId={room.id}
+														roomNumber={room.number}
+														mpUrl={room.mpUrl}
+													/>
+												)}
+											</div>
 										</td>
 										<td>
 											<div className="flex items-center gap-1">
