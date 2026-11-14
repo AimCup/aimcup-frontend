@@ -13,6 +13,8 @@ interface QualificationRoom extends QualificationRoomResponseDto {
 	occupiedSlots: number;
 	staffMember: StaffMemberResponseDto;
 	startDate: string;
+	// osu! multiplayer link, set once the lobby has been played. Optional until the generated client includes it.
+	mpUrl?: string | null;
 }
 
 export interface TeamBasedQualificationRoom extends QualificationRoom {

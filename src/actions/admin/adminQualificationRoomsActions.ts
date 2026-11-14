@@ -56,6 +56,29 @@ export async function deleteQualificationRoomAction(tournamentAbbreviation: stri
 	return { status: true as const };
 }
 
+export async function setQualificationRoomMpUrlAction(
+	tournamentAbbreviation: string,
+	roomId: string,
+	mpUrl: string,
+) {
+	configureClient();
+	// Low-level client call because this endpoint is newer than the committed generated client.
+	const { error } = await client.put({
+		url: "/admin/tournaments/{abbreviation}/qualification-rooms/{roomId}/mp-url",
+		path: { abbreviation: tournamentAbbreviation, roomId },
+		body: { mpUrl },
+	});
+	if (error) {
+		const e = error as { errors?: string[]; message?: string };
+		return {
+			status: false as const,
+			errorMessage: e.errors?.join(", ") ?? e.message ?? "Failed to save MP link",
+		};
+	}
+	await multipleRevalidatePaths(qualificationRoomPaths(tournamentAbbreviation));
+	return { status: true as const };
+}
+
 export async function updateQualificationSignInLockAction(
 	tournamentAbbreviation: string,
 	signInLockHours: number,
